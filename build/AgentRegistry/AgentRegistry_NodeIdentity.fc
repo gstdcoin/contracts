@@ -1,0 +1,244 @@
+#pragma version =0.4.6;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+;; AgentRegistry_NodeIdentity.headers.fc
+;;
+;; Header files for NodeIdentity
+;; NOTE: declarations are sorted for optimal order
+;;
+
+;; __tact_context_get_sender
+slice __tact_context_get_sender() inline;
+
+;; $NodeIdentity$_store
+builder $NodeIdentity$_store(builder build_0, (int, slice, slice, int, int, int, int, int, int, int, int, int) v) inline;
+
+;; $NodeIdentity$_load
+(slice, ((int, slice, slice, int, int, int, int, int, int, int, int, int))) $NodeIdentity$_load(slice sc_0) inline;
+
+;; $NodeInfo$_to_external
+(int, slice, int, int, int, int, int, int, int, int, int) $NodeInfo$_to_external(((int, slice, int, int, int, int, int, int, int, int, int)) v) inline;
+
+;; $NodeIdentity$init$_load
+(slice, ((int, slice, slice, int, int, int))) $NodeIdentity$init$_load(slice sc_0) inline;
+
+;; $NodeIdentity$_contract_init
+(int, slice, slice, int, int, int, int, int, int, int, int, int) $NodeIdentity$_contract_init(int $nodeId, slice $registry, slice $owner, int $nodeType, int $capabilities, int $region) impure inline;
+
+;; $NodeIdentity$_contract_load
+(int, slice, slice, int, int, int, int, int, int, int, int, int) $NodeIdentity$_contract_load() impure inline;
+
+;; $NodeIdentity$_contract_store
+() $NodeIdentity$_contract_store((int, slice, slice, int, int, int, int, int, int, int, int, int) v) impure inline;
+
+;; $NodeInfo$_constructor_nodeId_owner_nodeType_capabilities_region_qualityScore_uptimeScore_tasksCompleted_status_registeredAt_lastActiveAt
+((int, slice, int, int, int, int, int, int, int, int, int)) $NodeInfo$_constructor_nodeId_owner_nodeType_capabilities_region_qualityScore_uptimeScore_tasksCompleted_status_registeredAt_lastActiveAt(int $nodeId, slice $owner, int $nodeType, int $capabilities, int $region, int $qualityScore, int $uptimeScore, int $tasksCompleted, int $status, int $registeredAt, int $lastActiveAt) inline;
+
+;; $NodeIdentity$_fun_get_node_info
+((int, slice, slice, int, int, int, int, int, int, int, int, int), (int, slice, int, int, int, int, int, int, int, int, int)) $NodeIdentity$_fun_get_node_info((int, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+
+;; AgentRegistry_NodeIdentity.stdlib.fc
+global (int, slice, int, slice) __tact_context;
+global slice __tact_context_sender;
+global cell __tact_child_contract_codes;
+global int __tact_randomized;
+
+slice __tact_context_get_sender() inline {
+    return __tact_context_sender;
+}
+
+int $global_now() impure asm """
+    NOW
+""";
+
+;; AgentRegistry_NodeIdentity.storage.fc
+;;
+;; Type: NodeInfo
+;; TLB: _ nodeId:uint256 owner:address nodeType:uint8 capabilities:uint32 region:uint8 qualityScore:int64 uptimeScore:int64 tasksCompleted:uint64 status:uint8 registeredAt:uint64 lastActiveAt:uint64 = NodeInfo
+;;
+
+(int, slice, int, int, int, int, int, int, int, int, int) $NodeInfo$_to_external(((int, slice, int, int, int, int, int, int, int, int, int)) v) inline {
+    var (v'nodeId, v'owner, v'nodeType, v'capabilities, v'region, v'qualityScore, v'uptimeScore, v'tasksCompleted, v'status, v'registeredAt, v'lastActiveAt) = v; 
+    return (v'nodeId, v'owner, v'nodeType, v'capabilities, v'region, v'qualityScore, v'uptimeScore, v'tasksCompleted, v'status, v'registeredAt, v'lastActiveAt);
+}
+
+((int, slice, int, int, int, int, int, int, int, int, int)) $NodeInfo$_constructor_nodeId_owner_nodeType_capabilities_region_qualityScore_uptimeScore_tasksCompleted_status_registeredAt_lastActiveAt(int $nodeId, slice $owner, int $nodeType, int $capabilities, int $region, int $qualityScore, int $uptimeScore, int $tasksCompleted, int $status, int $registeredAt, int $lastActiveAt) inline {
+    return ($nodeId, $owner, $nodeType, $capabilities, $region, $qualityScore, $uptimeScore, $tasksCompleted, $status, $registeredAt, $lastActiveAt);
+}
+
+;;
+;; Type: NodeIdentity
+;; TLB: _ nodeId:uint256 registry:address owner:address nodeType:uint8 capabilities:uint32 region:uint8 qualityScore:int64 uptimeScore:int64 tasksCompleted:uint64 status:uint8 registeredAt:uint64 lastActiveAt:uint64 = NodeIdentity
+;;
+
+builder $NodeIdentity$_store(builder build_0, (int, slice, slice, int, int, int, int, int, int, int, int, int) v) inline {
+    var (v'nodeId, v'registry, v'owner, v'nodeType, v'capabilities, v'region, v'qualityScore, v'uptimeScore, v'tasksCompleted, v'status, v'registeredAt, v'lastActiveAt) = v;
+    build_0 = build_0.store_uint(v'nodeId, 256);
+    build_0 = build_0.store_slice(v'registry);
+    build_0 = build_0.store_slice(v'owner);
+    build_0 = build_0.store_uint(v'nodeType, 8);
+    build_0 = build_0.store_uint(v'capabilities, 32);
+    build_0 = build_0.store_uint(v'region, 8);
+    build_0 = build_0.store_int(v'qualityScore, 64);
+    build_0 = build_0.store_int(v'uptimeScore, 64);
+    var build_1 = begin_cell();
+    build_1 = build_1.store_uint(v'tasksCompleted, 64);
+    build_1 = build_1.store_uint(v'status, 8);
+    build_1 = build_1.store_uint(v'registeredAt, 64);
+    build_1 = build_1.store_uint(v'lastActiveAt, 64);
+    build_0 = store_builder_ref(build_0, build_1);
+    return build_0;
+}
+
+(slice, ((int, slice, slice, int, int, int, int, int, int, int, int, int))) $NodeIdentity$_load(slice sc_0) inline {
+    var v'nodeId = sc_0~load_uint(256);
+    var v'registry = sc_0~load_msg_addr();
+    var v'owner = sc_0~load_msg_addr();
+    var v'nodeType = sc_0~load_uint(8);
+    var v'capabilities = sc_0~load_uint(32);
+    var v'region = sc_0~load_uint(8);
+    var v'qualityScore = sc_0~load_int(64);
+    var v'uptimeScore = sc_0~load_int(64);
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'tasksCompleted = sc_1~load_uint(64);
+    var v'status = sc_1~load_uint(8);
+    var v'registeredAt = sc_1~load_uint(64);
+    var v'lastActiveAt = sc_1~load_uint(64);
+    return (sc_0, (v'nodeId, v'registry, v'owner, v'nodeType, v'capabilities, v'region, v'qualityScore, v'uptimeScore, v'tasksCompleted, v'status, v'registeredAt, v'lastActiveAt));
+}
+
+(slice, ((int, slice, slice, int, int, int))) $NodeIdentity$init$_load(slice sc_0) inline {
+    var v'nodeId = sc_0~load_int(257);
+    var v'registry = sc_0~load_msg_addr();
+    var v'owner = sc_0~load_msg_addr();
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'nodeType = sc_1~load_int(257);
+    var v'capabilities = sc_1~load_int(257);
+    var v'region = sc_1~load_int(257);
+    return (sc_0, (v'nodeId, v'registry, v'owner, v'nodeType, v'capabilities, v'region));
+}
+
+(int, slice, slice, int, int, int, int, int, int, int, int, int) $NodeIdentity$_contract_load() impure inline {
+    slice $sc = get_data().begin_parse();
+    int $loaded = $sc~load_int(1);
+    if ($loaded) {
+        return $sc~$NodeIdentity$_load();
+    }
+    else {
+        (int $nodeId, slice $registry, slice $owner, int $nodeType, int $capabilities, int $region) = $sc~$NodeIdentity$init$_load();
+        $sc.end_parse();
+        return $NodeIdentity$_contract_init($nodeId, $registry, $owner, $nodeType, $capabilities, $region);
+    }
+}
+
+() $NodeIdentity$_contract_store((int, slice, slice, int, int, int, int, int, int, int, int, int) v) impure inline {
+    builder b = begin_cell();
+    b = b.store_int(true, 1);
+    b = $NodeIdentity$_store(b, v);
+    set_data(b.end_cell());
+}
+
+;;
+;; Contract NodeIdentity functions
+;;
+
+(int, slice, slice, int, int, int, int, int, int, int, int, int) $NodeIdentity$_contract_init(int $nodeId, slice $registry, slice $owner, int $nodeType, int $capabilities, int $region) impure inline {
+    var (($self'nodeId, $self'registry, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt)) = (null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null());
+    $self'nodeId = $nodeId;
+    $self'registry = $registry;
+    $self'owner = $owner;
+    $self'nodeType = $nodeType;
+    $self'capabilities = $capabilities;
+    $self'region = $region;
+    $self'qualityScore = 0;
+    $self'uptimeScore = 0;
+    $self'tasksCompleted = 0;
+    $self'status = 1;
+    $self'registeredAt = $global_now();
+    $self'lastActiveAt = $global_now();
+    return ($self'nodeId, $self'registry, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt);
+}
+
+((int, slice, slice, int, int, int, int, int, int, int, int, int), (int, slice, int, int, int, int, int, int, int, int, int)) $NodeIdentity$_fun_get_node_info((int, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'nodeId, $self'registry, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt)) = $self;
+    var $fresh$ret_32 = $NodeInfo$_constructor_nodeId_owner_nodeType_capabilities_region_qualityScore_uptimeScore_tasksCompleted_status_registeredAt_lastActiveAt($self'nodeId, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt);
+    return (($self'nodeId, $self'registry, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt), $fresh$ret_32);
+}
+
+;;
+;; Get methods of a Contract NodeIdentity
+;;
+
+_ %get_node_info() method_id(101685) {
+    var self = $NodeIdentity$_contract_load();
+    var res = self~$NodeIdentity$_fun_get_node_info();
+    return $NodeInfo$_to_external(res);
+}
+
+;;
+;; Routing of a Contract NodeIdentity
+;;
+
+;; message opcode reader utility: only binary receivers
+;; Returns 32 bit message opcode, otherwise throws the "Invalid incoming message" exit code
+(slice, int) ~load_opcode_internal(slice s) asm( -> 1 0) "32 LDUQ 130 THROWIFNOT";
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    cs~skip_bits(2);
+    var msg_bounceable = cs~load_int(1);
+    var msg_bounced = cs~load_int(1);
+    slice msg_sender_addr = cs~load_msg_addr();
+    __tact_context = (msg_bounceable, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var ($self'nodeId, $self'registry, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt) = $NodeIdentity$_contract_load();
+    
+    ;; Handle bounced messages
+    if (msg_bounced) { return (); }
+    int op = 0;
+    int in_msg_length = slice_bits(in_msg);
+    if (in_msg_length >= 32) {
+        op = in_msg~load_uint(32);
+        ;; Receive UpdateReputation message
+        if (op == 2787149265) {
+            var $msg'nodeId = in_msg~load_uint(256);
+            var $msg'qualityDelta = in_msg~load_int(32);
+            var $msg'uptimeDelta = in_msg~load_int(32);
+            var $msg'tasksDelta = in_msg~load_uint(32);
+            throw_unless(51748, ( equal_slices_bits(__tact_context_get_sender(), $self'registry) ));
+            $self'qualityScore = ($self'qualityScore + $msg'qualityDelta);
+            $self'uptimeScore = ($self'uptimeScore + $msg'uptimeDelta);
+            $self'tasksCompleted = ($self'tasksCompleted + $msg'tasksDelta);
+            $self'lastActiveAt = $global_now();
+            $NodeIdentity$_contract_store(($self'nodeId, $self'registry, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt));
+            return ();
+        }
+        
+        ;; Receive UpdateNodeStatus message
+        if (op == 830122057) {
+            var $msg'nodeId = in_msg~load_uint(256);
+            var $msg'status = in_msg~load_uint(8);
+            var $msg'reason = in_msg~load_ref().begin_parse();
+            throw_unless(51748, ( equal_slices_bits(__tact_context_get_sender(), $self'registry) ));
+            $self'status = $msg'status;
+            $NodeIdentity$_contract_store(($self'nodeId, $self'registry, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt));
+            return ();
+        }
+        
+    }
+    ;; Empty Receiver and Text Receivers
+    var text_op = slice_hash(in_msg);
+    ;; Receive "init" message
+    if (text_op == 0x9f31fb7c139e4f1313022f5187d632af397344874ad3c3abb365f301d9d7ab67) {
+        $NodeIdentity$_contract_store(($self'nodeId, $self'registry, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt));
+        return ();
+    }
+    ;; Throw if not handled
+    throw(130);
+}

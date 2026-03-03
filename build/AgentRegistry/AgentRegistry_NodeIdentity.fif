@@ -1,0 +1,251 @@
+// automatically generated from `@stdlib/std/stdlib.fc` `/home/ubuntu/contracts/build/AgentRegistry/AgentRegistry_NodeIdentity.fc` 
+PROGRAM{
+  DECLPROC __tact_context_get_sender
+  DECLPROC $NodeIdentity$_store
+  DECLPROC $NodeIdentity$_load
+  DECLPROC $NodeInfo$_to_external
+  DECLPROC $NodeIdentity$init$_load
+  DECLPROC $NodeIdentity$_contract_init
+  DECLPROC $NodeIdentity$_contract_load
+  DECLPROC $NodeIdentity$_contract_store
+  DECLPROC $NodeInfo$_constructor_nodeId_owner_nodeType_capabilities_region_qualityScore_uptimeScore_tasksCompleted_status_registeredAt_lastActiveAt
+  DECLPROC $NodeIdentity$_fun_get_node_info
+  101685 DECLMETHOD %get_node_info
+  DECLPROC recv_internal
+  DECLGLOBVAR __tact_context
+  DECLGLOBVAR __tact_context_sender
+  DECLGLOBVAR __tact_child_contract_codes
+  DECLGLOBVAR __tact_randomized
+  __tact_context_get_sender PROCINLINE:<{
+    __tact_context_sender GETGLOB
+  }>
+  $NodeIdentity$_store PROCINLINE:<{
+    s11 s12 XCHG2
+    256 STU
+    s1 s9 XCHG
+    STSLICE
+    s1 s7 XCHG
+    STSLICE
+    s1 s5 XCHG
+    8 STU
+    s1 s3 XCHG
+    32 STU
+    8 STU
+    64 STI
+    64 STI
+    SWAP
+    NEWC
+    64 STU
+    s1 s2 XCHG
+    8 STU
+    s1 s2 XCHG
+    64 STU
+    s1 s2 XCHG
+    64 STU
+    STBREFR
+  }>
+  $NodeIdentity$_load PROCINLINE:<{
+    256 LDU
+    LDMSGADDR
+    LDMSGADDR
+    8 LDU
+    32 LDU
+    8 LDU
+    64 LDI
+    64 LDI
+    LDREF
+    SWAP
+    CTOS
+    64 LDU
+    8 LDU
+    64 LDU
+    64 LDU
+    DROP
+    s4 s12 XCHG
+    s4 s11 XCHG
+    s4 s10 XCHG
+    s4 s9 XCHG
+    s4 s8 XCHG
+    s4 s7 XCHG
+    s4 s6 XCHG
+    s4 s5 XCHG
+  }>
+  $NodeInfo$_to_external PROCINLINE:<{
+  }>
+  $NodeIdentity$init$_load PROCINLINE:<{
+    257 PUSHINT
+    LDIX
+    LDMSGADDR
+    LDMSGADDR
+    LDREF
+    SWAP
+    CTOS
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    DROP
+    s3 s6 XCHG
+    s3 s5 XCHG
+    s3 s4 XCHG
+  }>
+  $NodeIdentity$_contract_init PROCINLINE:<{
+    0 PUSHINT
+    s0 s0 PUSH2
+    1 PUSHINT
+        NOW
+        NOW
+  }>
+  $NodeIdentity$_contract_load PROCINLINE:<{
+    c4 PUSH
+    CTOS
+    1 LDI
+    SWAP
+    IF:<{
+      $NodeIdentity$_load INLINECALLDICT
+      1 12 BLKDROP2
+    }>ELSE<{
+      $NodeIdentity$init$_load INLINECALLDICT
+      s0 s6 XCHG
+      ENDS
+      5 ROLL
+      $NodeIdentity$_contract_init INLINECALLDICT
+    }>
+  }>
+  $NodeIdentity$_contract_store PROCINLINE:<{
+    NEWC
+    TRUE
+    SWAP
+    1 STI
+    12 -ROLL
+    $NodeIdentity$_store INLINECALLDICT
+    ENDC
+    c4 POP
+  }>
+  $NodeInfo$_constructor_nodeId_owner_nodeType_capabilities_region_qualityScore_uptimeScore_tasksCompleted_status_registeredAt_lastActiveAt PROCINLINE:<{
+  }>
+  $NodeIdentity$_fun_get_node_info PROCREF:<{
+    s11 s9 s8 PUSH3
+    s10 s9 s8 PUSH3
+    s10 s9 s8 PUSH3
+    s10 s9 PUSH2
+    $NodeInfo$_constructor_nodeId_owner_nodeType_capabilities_region_qualityScore_uptimeScore_tasksCompleted_status_registeredAt_lastActiveAt INLINECALLDICT
+  }>
+  %get_node_info PROC:<{
+    $NodeIdentity$_contract_load INLINECALLDICT
+    $NodeIdentity$_fun_get_node_info INLINECALLDICT
+    s11 POP
+    s11 POP
+    s11 POP
+    s11 POP
+    s11 POP
+    s11 POP
+    s11 POP
+    s11 POP
+    s11 POP
+    s11 POP
+    s12 POP
+    1 10 BLKDROP2
+    $NodeInfo$_to_external INLINECALLDICT
+  }>
+  recv_internal PROC:<{
+    c2 SAVE
+    SAMEALTSAVE
+    SWAP
+    CTOS
+    2 PUSHINT
+    SDSKIPFIRST
+    1 LDI
+    1 LDI
+    LDMSGADDR
+    OVER
+    s3 s4 XCHG
+    s6 s6 XCHG2
+    4 TUPLE
+    __tact_context SETGLOB
+    s0 s2 XCHG
+    __tact_context_sender SETGLOB
+    $NodeIdentity$_contract_load INLINECALLDICT
+    s0 s13 XCHG
+    IFJMP:<{
+      13 BLKDROP
+    }>
+    s11 PUSH
+    SBITS
+    31 GTINT
+    IF:<{
+      s0 s11 XCHG
+      32 LDU
+      OVER
+      2787149265 PUSHINT
+      EQUAL
+      IFJMP:<{
+        NIP
+        s12 POP
+        s0 s11 XCHG
+        256 LDU
+        NIP
+        32 LDI
+        32 LDI
+        32 LDU
+        DROP
+        51748 PUSHINT
+        __tact_context_get_sender INLINECALLDICT
+        s12 PUSH
+        SDEQ
+        THROWANYIFNOT
+        s5 s2 XCHG2
+        ADD
+        s3 s4 XCHG2
+        ADD
+        s0 s2 XCHG
+        ADD
+            NOW
+        s9 s11 XCHG
+        s8 s10 XCHG
+        s7 s9 XCHG
+        s6 s8 XCHG
+        s5 s7 XCHG
+        s4 s6 XCHG
+        s3 s5 XCHG
+        s4 s3 s0 XCHG3
+        s1 s2 XCHG
+        $NodeIdentity$_contract_store INLINECALLDICT
+        RETALT
+      }>
+      SWAP
+      830122057 PUSHINT
+      EQUAL
+      IFJMP:<{
+        NIP
+        256 LDU
+        NIP
+        8 LDU
+        DROP
+        51748 PUSHINT
+        __tact_context_get_sender INLINECALLDICT
+        s10 PUSH
+        SDEQ
+        THROWANYIFNOT
+        s9 s11 XCHG
+        2 9 BLKSWAP
+        $NodeIdentity$_contract_store INLINECALLDICT
+        RETALT
+      }>
+      s0 s11 XCHG
+    }>
+    s0 s11 XCHG
+    HASHSU
+    72006054114345985781251395239022388702975327239515186174748819490214008826727 PUSHINT
+    EQUAL
+    IFJMP:<{
+      s9 s11 XCHG
+      2 9 BLKSWAP
+      $NodeIdentity$_contract_store INLINECALLDICT
+    }>
+    12 BLKDROP
+    130 THROW
+  }>
+}END>c

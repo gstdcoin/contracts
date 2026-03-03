@@ -1,0 +1,600 @@
+#pragma version =0.4.6;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+;; DAOVoting_DAOVoting.headers.fc
+;;
+;; Header files for DAOVoting
+;; NOTE: declarations are sorted for optimal order
+;;
+
+;; __tact_context_get
+(int, slice, int, slice) __tact_context_get() inline;
+
+;; __tact_context_get_sender
+slice __tact_context_get_sender() inline;
+
+;; $DeployOk$_store
+builder $DeployOk$_store(builder build_0, (int) v) inline;
+
+;; $DeployOk$_store_cell
+cell $DeployOk$_store_cell((int) v, builder b) inline;
+
+;; $DAOVoting$_store
+builder $DAOVoting$_store(builder build_0, (slice, slice, int, int, int, int, int, int, int) v) inline;
+
+;; $DAOVoting$_load
+(slice, ((slice, slice, int, int, int, int, int, int, int))) $DAOVoting$_load(slice sc_0) inline;
+
+;; $Context$_get_value
+_ $Context$_get_value((int, slice, int, slice) v) inline;
+
+;; $GovernanceStats$_to_external
+(int, int, int, int, int, int, int) $GovernanceStats$_to_external(((int, int, int, int, int, int, int)) v) inline;
+
+;; $DAOVoting$init$_load
+(slice, ((slice, slice))) $DAOVoting$init$_load(slice sc_0) inline;
+
+;; $Proposal$init$_store
+builder $Proposal$init$_store(builder build_0, (int, slice, slice, slice, cell, int, int) v) inline;
+
+;; $DAOVoting$_contract_init
+(slice, slice, int, int, int, int, int, int, int) $DAOVoting$_contract_init(slice $owner, slice $gstdJetton) impure inline;
+
+;; $DAOVoting$_contract_load
+(slice, slice, int, int, int, int, int, int, int) $DAOVoting$_contract_load() impure inline;
+
+;; $DAOVoting$_contract_store
+() $DAOVoting$_contract_store((slice, slice, int, int, int, int, int, int, int) v) impure inline;
+
+;; $Cell$_fun_asSlice
+slice $Cell$_fun_asSlice(cell $self) impure inline;
+
+;; $global_newAddress
+slice $global_newAddress(int $chain, int $hash) impure inline;
+
+;; $global_contractAddressExt
+slice $global_contractAddressExt(int $chain, cell $code, cell $data) impure inline;
+
+;; $global_contractAddress
+slice $global_contractAddress((cell, cell) $s) impure inline;
+
+;; $GovernanceStats$_constructor_proposalCount_executedCount_cancelledCount_quorumPercent_timelockSeconds_minProposalStake_totalStakedGSTD
+((int, int, int, int, int, int, int)) $GovernanceStats$_constructor_proposalCount_executedCount_cancelledCount_quorumPercent_timelockSeconds_minProposalStake_totalStakedGSTD(int $proposalCount, int $executedCount, int $cancelledCount, int $quorumPercent, int $timelockSeconds, int $minProposalStake, int $totalStakedGSTD) inline;
+
+;; $DAOVoting$_fun_get_governance_stats
+((slice, slice, int, int, int, int, int, int, int), (int, int, int, int, int, int, int)) $DAOVoting$_fun_get_governance_stats((slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $Proposal$_init_child
+(cell, cell) $Proposal$_init_child(int $proposalId, slice $dao, slice $proposer, slice $targetContract, cell $payload, int $votingPeriod, int $timelockSeconds) inline_ref;
+
+;; $DAOVoting$_fun_get_proposal_address
+((slice, slice, int, int, int, int, int, int, int), slice) $DAOVoting$_fun_get_proposal_address((slice, slice, int, int, int, int, int, int, int) $self, int $proposalId) impure inline_ref;
+
+;; $MessageParameters$_constructor_bounce_to_value_mode_body
+((int, cell, int, slice, int)) $MessageParameters$_constructor_bounce_to_value_mode_body(int $bounce, slice $to, int $value, int $mode, cell $body) inline;
+
+;; $DAOVoting$_fun_notify
+((slice, slice, int, int, int, int, int, int, int), ()) $DAOVoting$_fun_notify((slice, slice, int, int, int, int, int, int, int) $self, cell $body) impure inline;
+
+;; $DAOVoting$_fun_owner
+((slice, slice, int, int, int, int, int, int, int), slice) $DAOVoting$_fun_owner((slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $SendParameters$_constructor_to_value_mode_bounce_body_code_data
+((int, cell, cell, cell, int, slice, int)) $SendParameters$_constructor_to_value_mode_bounce_body_code_data(slice $to, int $value, int $mode, int $bounce, cell $body, cell $code, cell $data) inline;
+
+;; $DeployOk$_constructor_queryId
+((int)) $DeployOk$_constructor_queryId(int $queryId) inline;
+
+
+;; DAOVoting_DAOVoting.stdlib.fc
+global (int, slice, int, slice) __tact_context;
+global slice __tact_context_sender;
+global cell __tact_child_contract_codes;
+global int __tact_randomized;
+
+(int, slice, int, slice) __tact_context_get() inline {
+    return __tact_context;
+}
+
+slice __tact_context_get_sender() inline {
+    return __tact_context_sender;
+}
+
+builder $global_beginCell() impure asm """
+    NEWC
+""";
+
+cell $global_emptyCell() impure asm """
+    <b b> PUSHREF // Pure Fift: "<b" creates a builder, "b>" turns it into a cell at compile time
+""";
+
+int $global_contractHash(cell $code, cell $data) impure asm """
+    s0 PUSH HASHCU // `data` hash
+    s2 PUSH HASHCU // `code` hash
+    SWAP2
+    CDEPTH         // `data` depth
+    SWAP
+    CDEPTH         // `code` depth
+    131380 INT     // (2 << 16) | (1 << 8) | 0x34
+
+    // Group 2: Composition of the Builder
+    NEWC
+    24 STU  // store refs_descriptor | bits_descriptor | data
+    16 STU  // store depth_descriptor for `code`
+    16 STU  // store depth_descriptor for `data`
+    256 STU // store `code` hash
+    256 STU // store `data` hash
+
+    // Group 3: SHA256 hash of the resulting Builder
+    ONE HASHEXT_SHA256
+""";
+
+slice $Slice$_fun_asAddressUnsafe(slice $self) impure asm "NOP";
+
+slice $Cell$_fun_beginParse(cell $self) impure asm """
+    CTOS
+""";
+
+slice $Cell$_fun_asSlice(cell $self) impure inline {
+    var ($self) = $self;
+    return $Cell$_fun_beginParse($self);
+}
+
+cell $Builder$_fun_endCell(builder $self) impure asm """
+    ENDC
+""";
+
+slice $global_newAddress(int $chain, int $hash) impure inline {
+    return $Slice$_fun_asAddressUnsafe($Cell$_fun_asSlice($Builder$_fun_endCell(store_uint(store_int(store_uint($global_beginCell(), 4, 3), $chain, 8), $hash, 256))));
+}
+
+slice $global_contractAddressExt(int $chain, cell $code, cell $data) impure inline {
+    int $hash = $global_contractHash($code, $data);
+    return $global_newAddress($chain, $hash);
+}
+
+slice $global_contractAddress((cell, cell) $s) impure inline {
+    var (($s'code, $s'data)) = $s;
+    return $global_contractAddressExt(0, $s'code, $s'data);
+}
+
+slice $global_myAddress() impure asm """
+    MYADDR
+""";
+
+int $global_myBalance() impure asm """
+    BALANCE FIRST
+""";
+
+() $global_nativeReserve(int $amount, int $mode) impure asm """
+    RAWRESERVE
+""";
+
+() $global_message((int, cell, int, slice, int) $params) impure asm """
+    NEWC
+    b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+    1 STI               // store `bounce`
+    b{000} STSLICECONST // store bounced = false and src = addr_none
+    STSLICE             // store `to`
+    SWAP
+    STGRAMS             // store `value`
+    106 PUSHINT         // 1 + 4 + 4 + 64 + 32 + 1
+    STZEROES
+    // → Stack state
+    // s0: Builder
+    // s1: `body`
+    // s2: `mode`
+    STDICT
+    ENDC
+    SWAP
+    SENDRAWMSG
+""";
+
+() $global_send((int, cell, cell, cell, int, slice, int) $params) impure asm """
+    NEWC
+    b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+    1 STI               // store `bounce`
+    b{000} STSLICECONST // store bounced = false and src = addr_none
+    STSLICE             // store `to`
+    SWAP
+    STGRAMS             // store `value`
+    105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+    STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+    // → Stack state
+    // s0: Builder
+    // s1: `data`
+    // s2: `code`
+    // s3: `body`
+    // s4: `mode`
+
+    // Group 2: Placing the Builder after code and data, then checking those for nullability
+    s2 XCHG0
+    DUP2
+    ISNULL
+    SWAP
+    ISNULL
+    AND
+    // → Stack state
+    // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+    // s1: `code`
+    // s2: `data`
+    // s3: Builder
+    // s4: `body`
+    // s5: `mode`
+
+    // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+    <{
+        DROP2 // drop `data` and `code`, since either of those is null
+        b{0} STSLICECONST
+    }> PUSHCONT
+
+    // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+    <{
+        // _ split_depth:(Maybe (## 5))
+        //   special:(Maybe TickTock)
+        //   code:(Maybe ^Cell)
+        //   data:(Maybe ^Cell)
+        //   library:(Maybe ^Cell)
+        // = StateInit;
+        ROT                // place message Builder on top
+        b{10} STSLICECONST // store Maybe = true, Either = false
+        // Start composing inlined StateInit
+        b{00} STSLICECONST // store split_depth and special first
+        STDICT             // store code
+        STDICT             // store data
+        b{0} STSLICECONST  // store library
+    }> PUSHCONT
+
+    // Group 3: IFELSE that does the branching shown above
+    IFELSE
+    // → Stack state
+    // s0: Builder
+    // s1: null or StateInit
+    // s2: `body`
+    // s3: `mode`
+
+    // Group 4: Finalizing the message
+    STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+    ENDC
+    // → Stack state
+    // s0: Cell
+    // s1: `mode`
+
+    // Group 5: Sending the message, with `mode` on top
+    SWAP
+    SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+""";
+
+((slice, slice, int, int, int, int, int, int, int), ()) $DAOVoting$_fun_notify((slice, slice, int, int, int, int, int, int, int) $self, cell $body) impure inline {
+    var (($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount)) = $self;
+    slice $to = __tact_context_get_sender();
+    int $bounce = false;
+    if (false) {
+        int $balance = $global_myBalance();
+        int $balanceBeforeMessage = ($balance - $Context$_get_value(__tact_context_get()));
+        if (($balanceBeforeMessage < 0)) {
+            $global_nativeReserve(0, 0);
+            $global_message($MessageParameters$_constructor_bounce_to_value_mode_body($bounce, $to, 0, 130, $body));
+            return (($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount), ());
+        }
+    }
+    $global_message($MessageParameters$_constructor_bounce_to_value_mode_body($bounce, $to, 0, 66, $body));
+    return (($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount), ());
+}
+
+((slice, slice, int, int, int, int, int, int, int), slice) $DAOVoting$_fun_owner((slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount)) = $self;
+    var $fresh$ret_45 = $self'owner;
+    return (($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount), $fresh$ret_45);
+}
+
+;; DAOVoting_DAOVoting.constants.fc
+;; EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c
+slice __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c() asm """
+    B{b5ee9c72410101010024000043800000000000000000000000000000000000000000000000000000000000000000104aec829d} B>boc <s PUSHSLICE
+""";
+
+;; Cell 3dMOF3Ysd6jxHZ6wCyp7aIhIYkl+XXEOJYpaA87rkX0=
+cell __gen_cell_cell_ddd30e17762c77a8f11d9eb00b2a7b68884862497e5d710e258a5a03ceeb917d() asm """
+    B{b5ee9c7241010101000a00001000000000696e69748005f29f} B>boc PUSHREF
+""";
+
+;; DAOVoting_DAOVoting.storage.fc
+;;
+;; Type: Context
+;; TLB: _ bounceable:bool sender:address value:int257 raw:^slice = Context
+;;
+
+_ $Context$_get_value((int, slice, int, slice) v) inline {
+    var (v'bounceable, v'sender, v'value, v'raw) = v;
+    return v'value;
+}
+
+;;
+;; Type: SendParameters
+;; TLB: _ mode:int257 body:Maybe ^cell code:Maybe ^cell data:Maybe ^cell value:int257 to:address bounce:bool = SendParameters
+;;
+
+((int, cell, cell, cell, int, slice, int)) $SendParameters$_constructor_to_value_mode_bounce_body_code_data(slice $to, int $value, int $mode, int $bounce, cell $body, cell $code, cell $data) inline {
+    return ($mode, $body, $code, $data, $value, $to, $bounce);
+}
+
+;;
+;; Type: MessageParameters
+;; TLB: _ mode:int257 body:Maybe ^cell value:int257 to:address bounce:bool = MessageParameters
+;;
+
+((int, cell, int, slice, int)) $MessageParameters$_constructor_bounce_to_value_mode_body(int $bounce, slice $to, int $value, int $mode, cell $body) inline {
+    return ($mode, $body, $value, $to, $bounce);
+}
+
+;;
+;; Type: DeployOk
+;; Header: 0xaff90f57
+;; TLB: deploy_ok#aff90f57 queryId:uint64 = DeployOk
+;;
+
+builder $DeployOk$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 2952335191, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $DeployOk$_store_cell((int) v, builder b) inline {
+    return $DeployOk$_store(b, v).end_cell();
+}
+
+((int)) $DeployOk$_constructor_queryId(int $queryId) inline {
+    return ($queryId);
+}
+
+;;
+;; Type: GovernanceStats
+;; TLB: _ proposalCount:uint64 executedCount:uint64 cancelledCount:uint64 quorumPercent:uint8 timelockSeconds:uint32 minProposalStake:coins totalStakedGSTD:coins = GovernanceStats
+;;
+
+(int, int, int, int, int, int, int) $GovernanceStats$_to_external(((int, int, int, int, int, int, int)) v) inline {
+    var (v'proposalCount, v'executedCount, v'cancelledCount, v'quorumPercent, v'timelockSeconds, v'minProposalStake, v'totalStakedGSTD) = v; 
+    return (v'proposalCount, v'executedCount, v'cancelledCount, v'quorumPercent, v'timelockSeconds, v'minProposalStake, v'totalStakedGSTD);
+}
+
+((int, int, int, int, int, int, int)) $GovernanceStats$_constructor_proposalCount_executedCount_cancelledCount_quorumPercent_timelockSeconds_minProposalStake_totalStakedGSTD(int $proposalCount, int $executedCount, int $cancelledCount, int $quorumPercent, int $timelockSeconds, int $minProposalStake, int $totalStakedGSTD) inline {
+    return ($proposalCount, $executedCount, $cancelledCount, $quorumPercent, $timelockSeconds, $minProposalStake, $totalStakedGSTD);
+}
+
+;;
+;; Type: DAOVoting
+;; TLB: _ owner:address gstdJetton:address quorumPercent:uint8 timelockSeconds:uint32 minProposalStake:coins totalStakedGSTD:coins proposalCount:uint64 executedCount:uint64 cancelledCount:uint64 = DAOVoting
+;;
+
+builder $DAOVoting$_store(builder build_0, (slice, slice, int, int, int, int, int, int, int) v) inline {
+    var (v'owner, v'gstdJetton, v'quorumPercent, v'timelockSeconds, v'minProposalStake, v'totalStakedGSTD, v'proposalCount, v'executedCount, v'cancelledCount) = v;
+    build_0 = build_0.store_slice(v'owner);
+    build_0 = build_0.store_slice(v'gstdJetton);
+    build_0 = build_0.store_uint(v'quorumPercent, 8);
+    build_0 = build_0.store_uint(v'timelockSeconds, 32);
+    build_0 = build_0.store_varuint16(v'minProposalStake);
+    build_0 = build_0.store_varuint16(v'totalStakedGSTD);
+    build_0 = build_0.store_uint(v'proposalCount, 64);
+    build_0 = build_0.store_uint(v'executedCount, 64);
+    build_0 = build_0.store_uint(v'cancelledCount, 64);
+    return build_0;
+}
+
+(slice, ((slice, slice, int, int, int, int, int, int, int))) $DAOVoting$_load(slice sc_0) inline {
+    var v'owner = sc_0~load_msg_addr();
+    var v'gstdJetton = sc_0~load_msg_addr();
+    var v'quorumPercent = sc_0~load_uint(8);
+    var v'timelockSeconds = sc_0~load_uint(32);
+    var v'minProposalStake = sc_0~load_varuint16();
+    var v'totalStakedGSTD = sc_0~load_varuint16();
+    var v'proposalCount = sc_0~load_uint(64);
+    var v'executedCount = sc_0~load_uint(64);
+    var v'cancelledCount = sc_0~load_uint(64);
+    return (sc_0, (v'owner, v'gstdJetton, v'quorumPercent, v'timelockSeconds, v'minProposalStake, v'totalStakedGSTD, v'proposalCount, v'executedCount, v'cancelledCount));
+}
+
+(slice, ((slice, slice))) $DAOVoting$init$_load(slice sc_0) inline {
+    var v'owner = sc_0~load_msg_addr();
+    var v'gstdJetton = sc_0~load_msg_addr();
+    return (sc_0, (v'owner, v'gstdJetton));
+}
+
+(slice, slice, int, int, int, int, int, int, int) $DAOVoting$_contract_load() impure inline {
+    slice $sc = get_data().begin_parse();
+    int $loaded = $sc~load_int(1);
+    if ($loaded) {
+        return $sc~$DAOVoting$_load();
+    }
+    else {
+        (slice $owner, slice $gstdJetton) = $sc~$DAOVoting$init$_load();
+        $sc.end_parse();
+        return $DAOVoting$_contract_init($owner, $gstdJetton);
+    }
+}
+
+() $DAOVoting$_contract_store((slice, slice, int, int, int, int, int, int, int) v) impure inline {
+    builder b = begin_cell();
+    b = b.store_int(true, 1);
+    b = $DAOVoting$_store(b, v);
+    set_data(b.end_cell());
+}
+
+;;
+;; Type: Proposal
+;; TLB: _ proposalId:uint64 dao:address proposer:address targetContract:address payload:^cell votesFor:coins votesAgainst:coins voterCount:uint32 createdAt:uint64 votingEndsAt:uint64 executionUnlocksAt:uint64 status:uint8 = Proposal
+;;
+
+builder $Proposal$init$_store(builder build_0, (int, slice, slice, slice, cell, int, int) v) inline {
+    var (v'proposalId, v'dao, v'proposer, v'targetContract, v'payload, v'votingPeriod, v'timelockSeconds) = v;
+    build_0 = build_0.store_int(v'proposalId, 257);
+    build_0 = build_0.store_slice(v'dao);
+    build_0 = build_0.store_slice(v'proposer);
+    var build_1 = begin_cell();
+    build_1 = build_1.store_slice(v'targetContract);
+    build_1 = build_1.store_ref(v'payload);
+    build_1 = build_1.store_int(v'votingPeriod, 257);
+    build_1 = build_1.store_int(v'timelockSeconds, 257);
+    build_0 = store_builder_ref(build_0, build_1);
+    return build_0;
+}
+
+cell $Proposal$_child_get_code() impure asm """
+    B{b5ee9c7201020c0100033e000114ff00f4a413f4bcf2c80b0102016202030138d0eda2edfb01d072d721d200d200fa4021103450666f04f86102f8620401eda05211da89a1a400031c53a67ff481f481f481a9f401a803a1f401a63fa67fa67fa67fa60e6020d820d620d420d220d020ced8391c79020203ae01f481f481a803a1f481a9020203ae01020203ae0060208e208c208a0fa2aa0ae0a601f047f0464d41f046a00f40a00b4042208c206a2049c5b678d9950b02feed44d0d200018e29d33ffa40fa40fa40d4fa00d401d0fa00d31fd33fd33fd33fd30730106c106b106a1069106810676c1c8e3c810101d700fa40fa40d401d0fa40d4810101d700810101d7003010471046104507d15505705300f823f82326a0f8235007a05005a021104610351024e20d925f0de02bd749c21fe3000bf901050601fa0bd31f21821090ab8b70ba8e6431d33f31d200fa00308120362ec000f2f4813c8df82324b9f2f4019215a09414a00304e202a4109b108a1079106810575e32444403c87f01ca0055b050bccb3f19ce17ce15ce13cc01fa02c858fa0212cb1f12cb3f12cb3f12cb3f12cb07cdc9ed54db31e00182106a693742bae3020b0702fc2082f09f31fb7c139e4f1313022f5187d632af397344874ad3c3abb365f301d9d7ab67ba8e3230109b5518c87f01ca0055b050bccb3f19ce17ce15ce13cc01fa02c858fa0212cb1f12cb3f12cb3f12cb3f12cb07cdc9ed54e082f0b14fdeec46f0654aee9d76d3e481c5026f579fad38ebfd74a2bb463891c05838bae302080900a0308200a5c3f84229c705917f95f8422ac705e2f2f48178350cc0001cf2f4551874c87f01ca0055b050bccb3f19ce17ce15ce13cc01fa02c858fa0212cb1f12cb3f12cb3f12cb3f12cb07cdc9ed54db3101ee813bfa2cc000923c7f930cc001e21cf2f48200f5fbf8232bbef2f48200bc715343bcf2f47326821005f5e10072702910246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00109b108a107910681057104610354430120a000a5f0cf2c082005ac87f01ca0055b050bccb3f19ce17ce15ce13cc01fa02c858fa0212cb1f12cb3f12cb3f12cb3f12cb07cdc9ed540014547b9854798754798729} B>boc PUSHREF
+""";
+
+(cell, cell) $Proposal$_init_child(int $proposalId, slice $dao, slice $proposer, slice $targetContract, cell $payload, int $votingPeriod, int $timelockSeconds) inline_ref {
+    ;; Build init code cell
+
+    ;; Contract Code: Proposal
+    cell init_code = $Proposal$_child_get_code();
+
+
+    builder b = begin_cell();
+    b = b.store_int(false, 1);
+    b = $Proposal$init$_store(b, ($proposalId, $dao, $proposer, $targetContract, $payload, $votingPeriod, $timelockSeconds));
+    return (init_code, b.end_cell());
+}
+
+;;
+;; Contract DAOVoting functions
+;;
+
+(slice, slice, int, int, int, int, int, int, int) $DAOVoting$_contract_init(slice $owner, slice $gstdJetton) impure inline {
+    var (($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount)) = (null(), null(), null(), null(), null(), null(), null(), null(), null());
+    $self'owner = $owner;
+    $self'gstdJetton = $gstdJetton;
+    $self'quorumPercent = 10;
+    $self'timelockSeconds = 172800;
+    $self'minProposalStake = 10000000000000;
+    $self'totalStakedGSTD = 0;
+    $self'proposalCount = 0;
+    $self'executedCount = 0;
+    $self'cancelledCount = 0;
+    return ($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount);
+}
+
+((slice, slice, int, int, int, int, int, int, int), (int, int, int, int, int, int, int)) $DAOVoting$_fun_get_governance_stats((slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount)) = $self;
+    var $fresh$ret_43 = $GovernanceStats$_constructor_proposalCount_executedCount_cancelledCount_quorumPercent_timelockSeconds_minProposalStake_totalStakedGSTD($self'proposalCount, $self'executedCount, $self'cancelledCount, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD);
+    return (($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount), $fresh$ret_43);
+}
+
+((slice, slice, int, int, int, int, int, int, int), slice) $DAOVoting$_fun_get_proposal_address((slice, slice, int, int, int, int, int, int, int) $self, int $proposalId) impure inline_ref {
+    var (($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount)) = $self;
+    var ($init'code, $init'data) = $Proposal$_init_child($proposalId, $global_myAddress(), __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c(), __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c(), $global_emptyCell(), 0, 0);
+    var $fresh$ret_44 = $global_contractAddress(($init'code, $init'data));
+    return (($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount), $fresh$ret_44);
+}
+
+;;
+;; Get methods of a Contract DAOVoting
+;;
+
+_ %get_governance_stats() method_id(113359) {
+    var self = $DAOVoting$_contract_load();
+    var res = self~$DAOVoting$_fun_get_governance_stats();
+    return $GovernanceStats$_to_external(res);
+}
+
+_ %get_proposal_address(int $proposalId) method_id(85020) {
+    int $proposalId = $proposalId;
+    var self = $DAOVoting$_contract_load();
+    var res = self~$DAOVoting$_fun_get_proposal_address($proposalId);
+    return res;
+}
+
+_ %owner() method_id(83229) {
+    var self = $DAOVoting$_contract_load();
+    var res = self~$DAOVoting$_fun_owner();
+    return res;
+}
+
+;;
+;; Routing of a Contract DAOVoting
+;;
+
+;; message opcode reader utility: only binary receivers
+;; Returns 32 bit message opcode, otherwise throws the "Invalid incoming message" exit code
+(slice, int) ~load_opcode_internal(slice s) asm( -> 1 0) "32 LDUQ 130 THROWIFNOT";
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    cs~skip_bits(2);
+    var msg_bounceable = cs~load_int(1);
+    var msg_bounced = cs~load_int(1);
+    slice msg_sender_addr = cs~load_msg_addr();
+    __tact_context = (msg_bounceable, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var ($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount) = $DAOVoting$_contract_load();
+    
+    ;; Handle bounced messages
+    if (msg_bounced) { return (); }
+    int op = 0;
+    int in_msg_length = slice_bits(in_msg);
+    if (in_msg_length >= 32) {
+        op = in_msg~load_uint(32);
+        ;; Receive CreateProposal message
+        if (op == 3565067208) {
+            var $msg'title = in_msg~load_ref().begin_parse();
+            var $msg'descriptionHash = in_msg~load_uint(256);
+            var $msg'targetContract = in_msg~load_msg_addr();
+            var $msg'payload = in_msg~load_ref();
+            var $msg'votingPeriod = in_msg~load_uint(32);
+            int $proposalId = $self'proposalCount;
+            $self'proposalCount = ($self'proposalCount + 1);
+            var ($proposalInit'code, $proposalInit'data) = $Proposal$_init_child($proposalId, $global_myAddress(), __tact_context_get_sender(), $msg'targetContract, $msg'payload, $msg'votingPeriod, $self'timelockSeconds);
+            $global_send($SendParameters$_constructor_to_value_mode_bounce_body_code_data($global_contractAddress(($proposalInit'code, $proposalInit'data)), 100000000, 2, false, __gen_cell_cell_ddd30e17762c77a8f11d9eb00b2a7b68884862497e5d710e258a5a03ceeb917d(), $proposalInit'code, $proposalInit'data));
+            $DAOVoting$_contract_store(($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount));
+            return ();
+        }
+        
+        ;; Receive ExecuteProposal message
+        if (op == 2470491975) {
+            var $msg'proposalId = in_msg~load_uint(64);
+            $self'executedCount = ($self'executedCount + 1);
+            $DAOVoting$_contract_store(($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount));
+            return ();
+        }
+        
+        ;; Receive UpdateGovernanceParams message
+        if (op == 2128179073) {
+            var $msg'quorumPercent = in_msg~load_uint(8);
+            var $msg'timelockSeconds = in_msg~load_uint(32);
+            var $msg'minProposalStake = in_msg~load_varuint16();
+            throw_unless(56882, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+            throw_unless(14831, ( (($msg'quorumPercent >= 5)) ? (($msg'quorumPercent <= 51)) : (false) ));
+            $self'quorumPercent = $msg'quorumPercent;
+            $self'timelockSeconds = $msg'timelockSeconds;
+            $self'minProposalStake = $msg'minProposalStake;
+            $DAOVoting$_contract_store(($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount));
+            return ();
+        }
+        
+        ;; Receive Deploy message
+        if (op == 0x946a98b6) {
+            var $deploy'queryId = in_msg~load_uint(64);
+            ($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount)~$DAOVoting$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId), begin_cell()));
+            $DAOVoting$_contract_store(($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount));
+            return ();
+        }
+        
+    }
+    ;; Empty Receiver and Text Receivers
+    var text_op = slice_hash(in_msg);
+    ;; Receive "renounce" message
+    if (text_op == 0x5240c307401835ee4ec0137f373534d474d56ddc78888246070a7b12c2ef6a39) {
+        throw_unless(35499, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+        $self'owner = $global_myAddress();
+        $DAOVoting$_contract_store(($self'owner, $self'gstdJetton, $self'quorumPercent, $self'timelockSeconds, $self'minProposalStake, $self'totalStakedGSTD, $self'proposalCount, $self'executedCount, $self'cancelledCount));
+        return ();
+    }
+    ;; Throw if not handled
+    throw(130);
+}

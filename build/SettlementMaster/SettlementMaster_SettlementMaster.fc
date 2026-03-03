@@ -1,0 +1,657 @@
+#pragma version =0.4.6;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+;; SettlementMaster_SettlementMaster.headers.fc
+;;
+;; Header files for SettlementMaster
+;; NOTE: declarations are sorted for optimal order
+;;
+
+;; __tact_context_get
+(int, slice, int, slice) __tact_context_get() inline;
+
+;; __tact_context_get_sender
+slice __tact_context_get_sender() inline;
+
+;; $DeployOk$_store
+builder $DeployOk$_store(builder build_0, (int) v) inline;
+
+;; $DeployOk$_store_cell
+cell $DeployOk$_store_cell((int) v, builder b) inline;
+
+;; $WorkerPayment$_store
+builder $WorkerPayment$_store(builder build_0, (int, int, int) v) inline;
+
+;; $WorkerPayment$_store_cell
+cell $WorkerPayment$_store_cell((int, int, int) v, builder b) inline;
+
+;; $MintWorkerReward$_store
+builder $MintWorkerReward$_store(builder build_0, (slice, int, int) v) inline;
+
+;; $MintWorkerReward$_store_cell
+cell $MintWorkerReward$_store_cell((slice, int, int) v, builder b) inline;
+
+;; $SettlementMaster$_store
+builder $SettlementMaster$_store(builder build_0, (slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) v) inline;
+
+;; $SettlementMaster$_load
+(slice, ((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int))) $SettlementMaster$_load(slice sc_0) inline;
+
+;; $Context$_get_value
+_ $Context$_get_value((int, slice, int, slice) v) inline;
+
+;; $SettlementStats$_to_external
+(int, int, int, int) $SettlementStats$_to_external(((int, int, int, int)) v) inline;
+
+;; $RevenueSplit$_to_external
+(int, int, int) $RevenueSplit$_to_external(((int, int, int)) v) inline;
+
+;; $ContractAddresses$_to_external
+(slice, slice, slice, slice) $ContractAddresses$_to_external(((slice, slice, slice, slice)) v) inline;
+
+;; $SettlementMaster$init$_load
+(slice, ((slice, slice, slice, slice))) $SettlementMaster$init$_load(slice sc_0) inline;
+
+;; $SettlementMaster$_contract_init
+(slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $SettlementMaster$_contract_init(slice $owner, slice $gstdJetton, slice $treasury, slice $protocolFee) impure inline;
+
+;; $SettlementMaster$_contract_load
+(slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $SettlementMaster$_contract_load() impure inline;
+
+;; $SettlementMaster$_contract_store
+() $SettlementMaster$_contract_store((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) v) impure inline;
+
+;; $SettlementStats$_constructor_totalSettled_totalGSTDMinted_taskCount_baseRate
+((int, int, int, int)) $SettlementStats$_constructor_totalSettled_totalGSTDMinted_taskCount_baseRate(int $totalSettled, int $totalGSTDMinted, int $taskCount, int $baseRate) inline;
+
+;; $SettlementMaster$_fun_get_settlement_stats
+((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int), (int, int, int, int)) $SettlementMaster$_fun_get_settlement_stats((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $RevenueSplit$_constructor_worker_treasury_protocol
+((int, int, int)) $RevenueSplit$_constructor_worker_treasury_protocol(int $worker, int $treasury, int $protocol) inline;
+
+;; $SettlementMaster$_fun_get_revenue_split
+((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int), (int, int, int)) $SettlementMaster$_fun_get_revenue_split((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $ContractAddresses$_constructor_gstdJetton_treasury_protocolFee_owner
+((slice, slice, slice, slice)) $ContractAddresses$_constructor_gstdJetton_treasury_protocolFee_owner(slice $gstdJetton, slice $treasury, slice $protocolFee, slice $owner) inline;
+
+;; $SettlementMaster$_fun_get_addresses
+((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int), (slice, slice, slice, slice)) $SettlementMaster$_fun_get_addresses((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $SettlementMaster$_fun_is_paused
+((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int), int) $SettlementMaster$_fun_is_paused((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $MessageParameters$_constructor_bounce_to_value_mode_body
+((int, cell, int, slice, int)) $MessageParameters$_constructor_bounce_to_value_mode_body(int $bounce, slice $to, int $value, int $mode, cell $body) inline;
+
+;; $SettlementMaster$_fun_notify
+((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int), ()) $SettlementMaster$_fun_notify((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $self, cell $body) impure inline;
+
+;; $SettlementMaster$_fun_owner
+((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int), slice) $SettlementMaster$_fun_owner((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $SendParameters$_constructor_to_value_mode_bounce_body
+((int, cell, cell, cell, int, slice, int)) $SendParameters$_constructor_to_value_mode_bounce_body(slice $to, int $value, int $mode, int $bounce, cell $body) inline;
+
+;; $WorkerPayment$_constructor_taskId_amount_bonusGSTD
+((int, int, int)) $WorkerPayment$_constructor_taskId_amount_bonusGSTD(int $taskId, int $amount, int $bonusGSTD) inline;
+
+;; $MintWorkerReward$_constructor_workerAddr_amount_taskId
+((slice, int, int)) $MintWorkerReward$_constructor_workerAddr_amount_taskId(slice $workerAddr, int $amount, int $taskId) inline;
+
+;; $DeployOk$_constructor_queryId
+((int)) $DeployOk$_constructor_queryId(int $queryId) inline;
+
+
+;; SettlementMaster_SettlementMaster.stdlib.fc
+global (int, slice, int, slice) __tact_context;
+global slice __tact_context_sender;
+global cell __tact_child_contract_codes;
+global int __tact_randomized;
+
+(int, slice, int, slice) __tact_context_get() inline {
+    return __tact_context;
+}
+
+slice __tact_context_get_sender() inline {
+    return __tact_context_sender;
+}
+
+int $global_myBalance() impure asm """
+    BALANCE FIRST
+""";
+
+() $global_nativeReserve(int $amount, int $mode) impure asm """
+    RAWRESERVE
+""";
+
+() $global_message((int, cell, int, slice, int) $params) impure asm """
+    NEWC
+    b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+    1 STI               // store `bounce`
+    b{000} STSLICECONST // store bounced = false and src = addr_none
+    STSLICE             // store `to`
+    SWAP
+    STGRAMS             // store `value`
+    106 PUSHINT         // 1 + 4 + 4 + 64 + 32 + 1
+    STZEROES
+    // → Stack state
+    // s0: Builder
+    // s1: `body`
+    // s2: `mode`
+    STDICT
+    ENDC
+    SWAP
+    SENDRAWMSG
+""";
+
+() $global_send((int, cell, cell, cell, int, slice, int) $params) impure asm """
+    NEWC
+    b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+    1 STI               // store `bounce`
+    b{000} STSLICECONST // store bounced = false and src = addr_none
+    STSLICE             // store `to`
+    SWAP
+    STGRAMS             // store `value`
+    105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+    STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+    // → Stack state
+    // s0: Builder
+    // s1: `data`
+    // s2: `code`
+    // s3: `body`
+    // s4: `mode`
+
+    // Group 2: Placing the Builder after code and data, then checking those for nullability
+    s2 XCHG0
+    DUP2
+    ISNULL
+    SWAP
+    ISNULL
+    AND
+    // → Stack state
+    // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+    // s1: `code`
+    // s2: `data`
+    // s3: Builder
+    // s4: `body`
+    // s5: `mode`
+
+    // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+    <{
+        DROP2 // drop `data` and `code`, since either of those is null
+        b{0} STSLICECONST
+    }> PUSHCONT
+
+    // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+    <{
+        // _ split_depth:(Maybe (## 5))
+        //   special:(Maybe TickTock)
+        //   code:(Maybe ^Cell)
+        //   data:(Maybe ^Cell)
+        //   library:(Maybe ^Cell)
+        // = StateInit;
+        ROT                // place message Builder on top
+        b{10} STSLICECONST // store Maybe = true, Either = false
+        // Start composing inlined StateInit
+        b{00} STSLICECONST // store split_depth and special first
+        STDICT             // store code
+        STDICT             // store data
+        b{0} STSLICECONST  // store library
+    }> PUSHCONT
+
+    // Group 3: IFELSE that does the branching shown above
+    IFELSE
+    // → Stack state
+    // s0: Builder
+    // s1: null or StateInit
+    // s2: `body`
+    // s3: `mode`
+
+    // Group 4: Finalizing the message
+    STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+    ENDC
+    // → Stack state
+    // s0: Cell
+    // s1: `mode`
+
+    // Group 5: Sending the message, with `mode` on top
+    SWAP
+    SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+""";
+
+((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int), ()) $SettlementMaster$_fun_notify((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $self, cell $body) impure inline {
+    var (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment)) = $self;
+    slice $to = __tact_context_get_sender();
+    int $bounce = false;
+    if (false) {
+        int $balance = $global_myBalance();
+        int $balanceBeforeMessage = ($balance - $Context$_get_value(__tact_context_get()));
+        if (($balanceBeforeMessage < 0)) {
+            $global_nativeReserve(0, 0);
+            $global_message($MessageParameters$_constructor_bounce_to_value_mode_body($bounce, $to, 0, 130, $body));
+            return (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment), ());
+        }
+    }
+    $global_message($MessageParameters$_constructor_bounce_to_value_mode_body($bounce, $to, 0, 66, $body));
+    return (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment), ());
+}
+
+((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int), slice) $SettlementMaster$_fun_owner((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment)) = $self;
+    var $fresh$ret_22 = $self'owner;
+    return (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment), $fresh$ret_22);
+}
+
+;; SettlementMaster_SettlementMaster.constants.fc
+;; Cell bH8JWyg03NEBgbUw+6h1ZZ6Rr3Z7HQhCQ5WMB7/kDfU=
+cell __gen_cell_cell_6c7f095b2834dcd10181b530fba875659e91af767b1d084243958c07bfe40df5() asm """
+    B{b5ee9c7241010101000d000016000000006465706f736974b5adf9ec} B>boc PUSHREF
+""";
+
+;; Cell pTdjaqX8PC1E0j2II/CkbqZg6+dounaFlsMEbNKXMEs=
+cell __gen_cell_cell_a537636aa5fc3c2d44d23d8823f0a46ea660ebe768ba768596c3046cd297304b() asm """
+    B{b5ee9c7241010101000d000016000000006275796261636bc0ba973f} B>boc PUSHREF
+""";
+
+;; SettlementMaster_SettlementMaster.storage.fc
+;;
+;; Type: Context
+;; TLB: _ bounceable:bool sender:address value:int257 raw:^slice = Context
+;;
+
+_ $Context$_get_value((int, slice, int, slice) v) inline {
+    var (v'bounceable, v'sender, v'value, v'raw) = v;
+    return v'value;
+}
+
+;;
+;; Type: SendParameters
+;; TLB: _ mode:int257 body:Maybe ^cell code:Maybe ^cell data:Maybe ^cell value:int257 to:address bounce:bool = SendParameters
+;;
+
+((int, cell, cell, cell, int, slice, int)) $SendParameters$_constructor_to_value_mode_bounce_body(slice $to, int $value, int $mode, int $bounce, cell $body) inline {
+    return ($mode, $body, null(), null(), $value, $to, $bounce);
+}
+
+;;
+;; Type: MessageParameters
+;; TLB: _ mode:int257 body:Maybe ^cell value:int257 to:address bounce:bool = MessageParameters
+;;
+
+((int, cell, int, slice, int)) $MessageParameters$_constructor_bounce_to_value_mode_body(int $bounce, slice $to, int $value, int $mode, cell $body) inline {
+    return ($mode, $body, $value, $to, $bounce);
+}
+
+;;
+;; Type: DeployOk
+;; Header: 0xaff90f57
+;; TLB: deploy_ok#aff90f57 queryId:uint64 = DeployOk
+;;
+
+builder $DeployOk$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 2952335191, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $DeployOk$_store_cell((int) v, builder b) inline {
+    return $DeployOk$_store(b, v).end_cell();
+}
+
+((int)) $DeployOk$_constructor_queryId(int $queryId) inline {
+    return ($queryId);
+}
+
+;;
+;; Type: WorkerPayment
+;; Header: 0x59694c6e
+;; TLB: worker_payment#59694c6e taskId:uint64 amount:coins bonusGSTD:coins = WorkerPayment
+;;
+
+builder $WorkerPayment$_store(builder build_0, (int, int, int) v) inline {
+    var (v'taskId, v'amount, v'bonusGSTD) = v;
+    build_0 = store_uint(build_0, 1500073070, 32);
+    build_0 = build_0.store_uint(v'taskId, 64);
+    build_0 = build_0.store_varuint16(v'amount);
+    build_0 = build_0.store_varuint16(v'bonusGSTD);
+    return build_0;
+}
+
+cell $WorkerPayment$_store_cell((int, int, int) v, builder b) inline {
+    return $WorkerPayment$_store(b, v).end_cell();
+}
+
+((int, int, int)) $WorkerPayment$_constructor_taskId_amount_bonusGSTD(int $taskId, int $amount, int $bonusGSTD) inline {
+    return ($taskId, $amount, $bonusGSTD);
+}
+
+;;
+;; Type: MintWorkerReward
+;; Header: 0xbb7a9ab8
+;; TLB: mint_worker_reward#bb7a9ab8 workerAddr:address amount:coins taskId:uint64 = MintWorkerReward
+;;
+
+builder $MintWorkerReward$_store(builder build_0, (slice, int, int) v) inline {
+    var (v'workerAddr, v'amount, v'taskId) = v;
+    build_0 = store_uint(build_0, 3145374392, 32);
+    build_0 = build_0.store_slice(v'workerAddr);
+    build_0 = build_0.store_varuint16(v'amount);
+    build_0 = build_0.store_uint(v'taskId, 64);
+    return build_0;
+}
+
+cell $MintWorkerReward$_store_cell((slice, int, int) v, builder b) inline {
+    return $MintWorkerReward$_store(b, v).end_cell();
+}
+
+((slice, int, int)) $MintWorkerReward$_constructor_workerAddr_amount_taskId(slice $workerAddr, int $amount, int $taskId) inline {
+    return ($workerAddr, $amount, $taskId);
+}
+
+;;
+;; Type: SettlementStats
+;; TLB: _ totalSettled:coins totalGSTDMinted:coins taskCount:uint64 baseRate:coins = SettlementStats
+;;
+
+(int, int, int, int) $SettlementStats$_to_external(((int, int, int, int)) v) inline {
+    var (v'totalSettled, v'totalGSTDMinted, v'taskCount, v'baseRate) = v; 
+    return (v'totalSettled, v'totalGSTDMinted, v'taskCount, v'baseRate);
+}
+
+((int, int, int, int)) $SettlementStats$_constructor_totalSettled_totalGSTDMinted_taskCount_baseRate(int $totalSettled, int $totalGSTDMinted, int $taskCount, int $baseRate) inline {
+    return ($totalSettled, $totalGSTDMinted, $taskCount, $baseRate);
+}
+
+;;
+;; Type: RevenueSplit
+;; TLB: _ worker:uint8 treasury:uint8 protocol:uint8 = RevenueSplit
+;;
+
+(int, int, int) $RevenueSplit$_to_external(((int, int, int)) v) inline {
+    var (v'worker, v'treasury, v'protocol) = v; 
+    return (v'worker, v'treasury, v'protocol);
+}
+
+((int, int, int)) $RevenueSplit$_constructor_worker_treasury_protocol(int $worker, int $treasury, int $protocol) inline {
+    return ($worker, $treasury, $protocol);
+}
+
+;;
+;; Type: ContractAddresses
+;; TLB: _ gstdJetton:address treasury:address protocolFee:address owner:address = ContractAddresses
+;;
+
+(slice, slice, slice, slice) $ContractAddresses$_to_external(((slice, slice, slice, slice)) v) inline {
+    var (v'gstdJetton, v'treasury, v'protocolFee, v'owner) = v; 
+    return (v'gstdJetton, v'treasury, v'protocolFee, v'owner);
+}
+
+((slice, slice, slice, slice)) $ContractAddresses$_constructor_gstdJetton_treasury_protocolFee_owner(slice $gstdJetton, slice $treasury, slice $protocolFee, slice $owner) inline {
+    return ($gstdJetton, $treasury, $protocolFee, $owner);
+}
+
+;;
+;; Type: SettlementMaster
+;; TLB: _ owner:address gstdJetton:address treasury:address protocolFee:address workerShare:uint8 treasuryShare:uint8 protocolShare:uint8 baseRate:coins totalSettled:coins totalGSTDMinted:coins taskCount:uint64 paused:bool minPayment:coins = SettlementMaster
+;;
+
+builder $SettlementMaster$_store(builder build_0, (slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) v) inline {
+    var (v'owner, v'gstdJetton, v'treasury, v'protocolFee, v'workerShare, v'treasuryShare, v'protocolShare, v'baseRate, v'totalSettled, v'totalGSTDMinted, v'taskCount, v'paused, v'minPayment) = v;
+    build_0 = build_0.store_slice(v'owner);
+    build_0 = build_0.store_slice(v'gstdJetton);
+    build_0 = build_0.store_slice(v'treasury);
+    var build_1 = begin_cell();
+    build_1 = build_1.store_slice(v'protocolFee);
+    build_1 = build_1.store_uint(v'workerShare, 8);
+    build_1 = build_1.store_uint(v'treasuryShare, 8);
+    build_1 = build_1.store_uint(v'protocolShare, 8);
+    build_1 = build_1.store_varuint16(v'baseRate);
+    build_1 = build_1.store_varuint16(v'totalSettled);
+    build_1 = build_1.store_varuint16(v'totalGSTDMinted);
+    build_1 = build_1.store_uint(v'taskCount, 64);
+    build_1 = build_1.store_int(v'paused, 1);
+    build_1 = build_1.store_varuint16(v'minPayment);
+    build_0 = store_builder_ref(build_0, build_1);
+    return build_0;
+}
+
+(slice, ((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int))) $SettlementMaster$_load(slice sc_0) inline {
+    var v'owner = sc_0~load_msg_addr();
+    var v'gstdJetton = sc_0~load_msg_addr();
+    var v'treasury = sc_0~load_msg_addr();
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'protocolFee = sc_1~load_msg_addr();
+    var v'workerShare = sc_1~load_uint(8);
+    var v'treasuryShare = sc_1~load_uint(8);
+    var v'protocolShare = sc_1~load_uint(8);
+    var v'baseRate = sc_1~load_varuint16();
+    var v'totalSettled = sc_1~load_varuint16();
+    var v'totalGSTDMinted = sc_1~load_varuint16();
+    var v'taskCount = sc_1~load_uint(64);
+    var v'paused = sc_1~load_int(1);
+    var v'minPayment = sc_1~load_varuint16();
+    return (sc_0, (v'owner, v'gstdJetton, v'treasury, v'protocolFee, v'workerShare, v'treasuryShare, v'protocolShare, v'baseRate, v'totalSettled, v'totalGSTDMinted, v'taskCount, v'paused, v'minPayment));
+}
+
+(slice, ((slice, slice, slice, slice))) $SettlementMaster$init$_load(slice sc_0) inline {
+    var v'owner = sc_0~load_msg_addr();
+    var v'gstdJetton = sc_0~load_msg_addr();
+    var v'treasury = sc_0~load_msg_addr();
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'protocolFee = sc_1~load_msg_addr();
+    return (sc_0, (v'owner, v'gstdJetton, v'treasury, v'protocolFee));
+}
+
+(slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $SettlementMaster$_contract_load() impure inline {
+    slice $sc = get_data().begin_parse();
+    int $loaded = $sc~load_int(1);
+    if ($loaded) {
+        return $sc~$SettlementMaster$_load();
+    }
+    else {
+        (slice $owner, slice $gstdJetton, slice $treasury, slice $protocolFee) = $sc~$SettlementMaster$init$_load();
+        $sc.end_parse();
+        return $SettlementMaster$_contract_init($owner, $gstdJetton, $treasury, $protocolFee);
+    }
+}
+
+() $SettlementMaster$_contract_store((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) v) impure inline {
+    builder b = begin_cell();
+    b = b.store_int(true, 1);
+    b = $SettlementMaster$_store(b, v);
+    set_data(b.end_cell());
+}
+
+;;
+;; Contract SettlementMaster functions
+;;
+
+(slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $SettlementMaster$_contract_init(slice $owner, slice $gstdJetton, slice $treasury, slice $protocolFee) impure inline {
+    var (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment)) = (null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null());
+    $self'owner = $owner;
+    $self'gstdJetton = $gstdJetton;
+    $self'treasury = $treasury;
+    $self'protocolFee = $protocolFee;
+    $self'workerShare = 85;
+    $self'treasuryShare = 10;
+    $self'protocolShare = 5;
+    $self'baseRate = 1000000;
+    $self'totalSettled = 0;
+    $self'totalGSTDMinted = 0;
+    $self'taskCount = 0;
+    $self'paused = false;
+    $self'minPayment = 100000000;
+    return ($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment);
+}
+
+((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int), (int, int, int, int)) $SettlementMaster$_fun_get_settlement_stats((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment)) = $self;
+    var $fresh$ret_18 = $SettlementStats$_constructor_totalSettled_totalGSTDMinted_taskCount_baseRate($self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'baseRate);
+    return (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment), $fresh$ret_18);
+}
+
+((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int), (int, int, int)) $SettlementMaster$_fun_get_revenue_split((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment)) = $self;
+    var $fresh$ret_19 = $RevenueSplit$_constructor_worker_treasury_protocol($self'workerShare, $self'treasuryShare, $self'protocolShare);
+    return (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment), $fresh$ret_19);
+}
+
+((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int), (slice, slice, slice, slice)) $SettlementMaster$_fun_get_addresses((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment)) = $self;
+    var $fresh$ret_20 = $ContractAddresses$_constructor_gstdJetton_treasury_protocolFee_owner($self'gstdJetton, $self'treasury, $self'protocolFee, $self'owner);
+    return (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment), $fresh$ret_20);
+}
+
+((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int), int) $SettlementMaster$_fun_is_paused((slice, slice, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment)) = $self;
+    var $fresh$ret_21 = $self'paused;
+    return (($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment), $fresh$ret_21);
+}
+
+;;
+;; Get methods of a Contract SettlementMaster
+;;
+
+_ %get_settlement_stats() method_id(70039) {
+    var self = $SettlementMaster$_contract_load();
+    var res = self~$SettlementMaster$_fun_get_settlement_stats();
+    return $SettlementStats$_to_external(res);
+}
+
+_ %get_revenue_split() method_id(100776) {
+    var self = $SettlementMaster$_contract_load();
+    var res = self~$SettlementMaster$_fun_get_revenue_split();
+    return $RevenueSplit$_to_external(res);
+}
+
+_ %get_addresses() method_id(110491) {
+    var self = $SettlementMaster$_contract_load();
+    var res = self~$SettlementMaster$_fun_get_addresses();
+    return $ContractAddresses$_to_external(res);
+}
+
+_ %is_paused() method_id(95098) {
+    var self = $SettlementMaster$_contract_load();
+    var res = self~$SettlementMaster$_fun_is_paused();
+    return res;
+}
+
+_ %owner() method_id(83229) {
+    var self = $SettlementMaster$_contract_load();
+    var res = self~$SettlementMaster$_fun_owner();
+    return res;
+}
+
+;;
+;; Routing of a Contract SettlementMaster
+;;
+
+;; message opcode reader utility: only binary receivers
+;; Returns 32 bit message opcode, otherwise throws the "Invalid incoming message" exit code
+(slice, int) ~load_opcode_internal(slice s) asm( -> 1 0) "32 LDUQ 130 THROWIFNOT";
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    cs~skip_bits(2);
+    var msg_bounceable = cs~load_int(1);
+    var msg_bounced = cs~load_int(1);
+    slice msg_sender_addr = cs~load_msg_addr();
+    __tact_context = (msg_bounceable, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var ($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment) = $SettlementMaster$_contract_load();
+    
+    ;; Handle bounced messages
+    if (msg_bounced) { return (); }
+    var op = in_msg~load_opcode_internal();
+    ;; Receive SettleTask message
+    if (op == 1462673144) {
+        var $msg'taskId = in_msg~load_uint(64);
+        var $msg'workerAddr = in_msg~load_msg_addr();
+        var $msg'gstdBonusAmount = in_msg~load_varuint16();
+        var $msg'qualityScore = in_msg~load_uint(32);
+        var $msg'computeUnits = in_msg~load_uint(64);
+        throw_unless(38610, (~ $self'paused));
+        int $total = ($Context$_get_value(__tact_context_get()) - 100000000);
+        throw_unless(8484, ($total >= $self'minPayment));
+        int $workerAmt = (($total * $self'workerShare) / 100);
+        int $treasuryAmt = (($total * $self'treasuryShare) / 100);
+        int $protocolAmt = (($total - $workerAmt) - $treasuryAmt);
+        $global_send($SendParameters$_constructor_to_value_mode_bounce_body($msg'workerAddr, $workerAmt, 2, false, $WorkerPayment$_store_cell($WorkerPayment$_constructor_taskId_amount_bonusGSTD($msg'taskId, $workerAmt, $msg'gstdBonusAmount), begin_cell())));
+        $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'treasury, $treasuryAmt, 2, false, __gen_cell_cell_6c7f095b2834dcd10181b530fba875659e91af767b1d084243958c07bfe40df5()));
+        $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'protocolFee, $protocolAmt, 2, false, __gen_cell_cell_a537636aa5fc3c2d44d23d8823f0a46ea660ebe768ba768596c3046cd297304b()));
+        if (($msg'gstdBonusAmount > 0)) {
+            $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'gstdJetton, 80000000, 2, false, $MintWorkerReward$_store_cell($MintWorkerReward$_constructor_workerAddr_amount_taskId($msg'workerAddr, $msg'gstdBonusAmount, $msg'taskId), begin_cell())));
+        }
+        $self'totalSettled = ($self'totalSettled + $total);
+        $self'totalGSTDMinted = ($self'totalGSTDMinted + $msg'gstdBonusAmount);
+        $self'taskCount = ($self'taskCount + 1);
+        $SettlementMaster$_contract_store(($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment));
+        return ();
+    }
+    
+    ;; Receive UpdateShares message
+    if (op == 3201974444) {
+        var $msg'worker = in_msg~load_uint(8);
+        var $msg'treasury = in_msg~load_uint(8);
+        var $msg'protocol = in_msg~load_uint(8);
+        throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+        throw_unless(22722, ((($msg'worker + $msg'treasury) + $msg'protocol) == 100));
+        throw_unless(45933, ($msg'worker >= 50));
+        $self'workerShare = $msg'worker;
+        $self'treasuryShare = $msg'treasury;
+        $self'protocolShare = $msg'protocol;
+        $SettlementMaster$_contract_store(($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment));
+        return ();
+    }
+    
+    ;; Receive UpdateAddresses message
+    if (op == 1410061209) {
+        var $msg'treasury = in_msg~load_msg_addr();
+        var $msg'protocolFee = in_msg~load_msg_addr();
+        var $msg'gstdJetton = in_msg~load_msg_addr();
+        throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+        $self'treasury = $msg'treasury;
+        $self'protocolFee = $msg'protocolFee;
+        $self'gstdJetton = $msg'gstdJetton;
+        $SettlementMaster$_contract_store(($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment));
+        return ();
+    }
+    
+    ;; Receive SetBaseRate message
+    if (op == 3608050927) {
+        var $msg'rate = in_msg~load_varuint16();
+        throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+        throw_unless(27818, ($msg'rate > 0));
+        $self'baseRate = $msg'rate;
+        $SettlementMaster$_contract_store(($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment));
+        return ();
+    }
+    
+    ;; Receive EmergencyPause message
+    if (op == 1064338113) {
+        var $msg'paused = in_msg~load_int(1);
+        throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+        $self'paused = $msg'paused;
+        $SettlementMaster$_contract_store(($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment));
+        return ();
+    }
+    
+    ;; Receive Deploy message
+    if (op == 0x946a98b6) {
+        var $deploy'queryId = in_msg~load_uint(64);
+        ($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment)~$SettlementMaster$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId), begin_cell()));
+        $SettlementMaster$_contract_store(($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment));
+        return ();
+    }
+    
+    ;; Throw if not handled
+    throw(130);
+}

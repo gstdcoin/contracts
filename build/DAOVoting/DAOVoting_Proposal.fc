@@ -1,0 +1,344 @@
+#pragma version =0.4.6;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+;; DAOVoting_Proposal.headers.fc
+;;
+;; Header files for Proposal
+;; NOTE: declarations are sorted for optimal order
+;;
+
+;; __tact_context_get_sender
+slice __tact_context_get_sender() inline;
+
+;; $Proposal$_store
+builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, int, int, int, int, int, int) v) inline;
+
+;; $Proposal$_load
+(slice, ((int, slice, slice, slice, cell, int, int, int, int, int, int, int))) $Proposal$_load(slice sc_0) inline;
+
+;; $ProposalData$_to_external
+(int, slice, slice, int, int, int, int, int, int, int) $ProposalData$_to_external(((int, slice, slice, int, int, int, int, int, int, int)) v) inline;
+
+;; $Proposal$init$_load
+(slice, ((int, slice, slice, slice, cell, int, int))) $Proposal$init$_load(slice sc_0) inline;
+
+;; $Proposal$_contract_init
+(int, slice, slice, slice, cell, int, int, int, int, int, int, int) $Proposal$_contract_init(int $proposalId, slice $dao, slice $proposer, slice $targetContract, cell $payload, int $votingPeriod, int $timelockSeconds) impure inline;
+
+;; $Proposal$_contract_load
+(int, slice, slice, slice, cell, int, int, int, int, int, int, int) $Proposal$_contract_load() impure inline;
+
+;; $Proposal$_contract_store
+() $Proposal$_contract_store((int, slice, slice, slice, cell, int, int, int, int, int, int, int) v) impure inline;
+
+;; $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_createdAt_votingEndsAt_executionUnlocksAt_status
+((int, slice, slice, int, int, int, int, int, int, int)) $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_createdAt_votingEndsAt_executionUnlocksAt_status(int $proposalId, slice $proposer, slice $targetContract, int $votesFor, int $votesAgainst, int $voterCount, int $createdAt, int $votingEndsAt, int $executionUnlocksAt, int $status) inline;
+
+;; $Proposal$_fun_get_proposal_data
+((int, slice, slice, slice, cell, int, int, int, int, int, int, int), (int, slice, slice, int, int, int, int, int, int, int)) $Proposal$_fun_get_proposal_data((int, slice, slice, slice, cell, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $SendParameters$_constructor_to_value_mode_bounce_body
+((int, cell, cell, cell, int, slice, int)) $SendParameters$_constructor_to_value_mode_bounce_body(slice $to, int $value, int $mode, int $bounce, cell $body) inline;
+
+
+;; DAOVoting_Proposal.stdlib.fc
+global (int, slice, int, slice) __tact_context;
+global slice __tact_context_sender;
+global cell __tact_child_contract_codes;
+global int __tact_randomized;
+
+slice __tact_context_get_sender() inline {
+    return __tact_context_sender;
+}
+
+int $global_now() impure asm """
+    NOW
+""";
+
+() $global_send((int, cell, cell, cell, int, slice, int) $params) impure asm """
+    NEWC
+    b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+    1 STI               // store `bounce`
+    b{000} STSLICECONST // store bounced = false and src = addr_none
+    STSLICE             // store `to`
+    SWAP
+    STGRAMS             // store `value`
+    105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+    STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+    // → Stack state
+    // s0: Builder
+    // s1: `data`
+    // s2: `code`
+    // s3: `body`
+    // s4: `mode`
+
+    // Group 2: Placing the Builder after code and data, then checking those for nullability
+    s2 XCHG0
+    DUP2
+    ISNULL
+    SWAP
+    ISNULL
+    AND
+    // → Stack state
+    // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+    // s1: `code`
+    // s2: `data`
+    // s3: Builder
+    // s4: `body`
+    // s5: `mode`
+
+    // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+    <{
+        DROP2 // drop `data` and `code`, since either of those is null
+        b{0} STSLICECONST
+    }> PUSHCONT
+
+    // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+    <{
+        // _ split_depth:(Maybe (## 5))
+        //   special:(Maybe TickTock)
+        //   code:(Maybe ^Cell)
+        //   data:(Maybe ^Cell)
+        //   library:(Maybe ^Cell)
+        // = StateInit;
+        ROT                // place message Builder on top
+        b{10} STSLICECONST // store Maybe = true, Either = false
+        // Start composing inlined StateInit
+        b{00} STSLICECONST // store split_depth and special first
+        STDICT             // store code
+        STDICT             // store data
+        b{0} STSLICECONST  // store library
+    }> PUSHCONT
+
+    // Group 3: IFELSE that does the branching shown above
+    IFELSE
+    // → Stack state
+    // s0: Builder
+    // s1: null or StateInit
+    // s2: `body`
+    // s3: `mode`
+
+    // Group 4: Finalizing the message
+    STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+    ENDC
+    // → Stack state
+    // s0: Cell
+    // s1: `mode`
+
+    // Group 5: Sending the message, with `mode` on top
+    SWAP
+    SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+""";
+
+;; DAOVoting_Proposal.storage.fc
+;;
+;; Type: SendParameters
+;; TLB: _ mode:int257 body:Maybe ^cell code:Maybe ^cell data:Maybe ^cell value:int257 to:address bounce:bool = SendParameters
+;;
+
+((int, cell, cell, cell, int, slice, int)) $SendParameters$_constructor_to_value_mode_bounce_body(slice $to, int $value, int $mode, int $bounce, cell $body) inline {
+    return ($mode, $body, null(), null(), $value, $to, $bounce);
+}
+
+;;
+;; Type: ProposalData
+;; TLB: _ proposalId:uint64 proposer:address targetContract:address votesFor:coins votesAgainst:coins voterCount:uint32 createdAt:uint64 votingEndsAt:uint64 executionUnlocksAt:uint64 status:uint8 = ProposalData
+;;
+
+(int, slice, slice, int, int, int, int, int, int, int) $ProposalData$_to_external(((int, slice, slice, int, int, int, int, int, int, int)) v) inline {
+    var (v'proposalId, v'proposer, v'targetContract, v'votesFor, v'votesAgainst, v'voterCount, v'createdAt, v'votingEndsAt, v'executionUnlocksAt, v'status) = v; 
+    return (v'proposalId, v'proposer, v'targetContract, v'votesFor, v'votesAgainst, v'voterCount, v'createdAt, v'votingEndsAt, v'executionUnlocksAt, v'status);
+}
+
+((int, slice, slice, int, int, int, int, int, int, int)) $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_createdAt_votingEndsAt_executionUnlocksAt_status(int $proposalId, slice $proposer, slice $targetContract, int $votesFor, int $votesAgainst, int $voterCount, int $createdAt, int $votingEndsAt, int $executionUnlocksAt, int $status) inline {
+    return ($proposalId, $proposer, $targetContract, $votesFor, $votesAgainst, $voterCount, $createdAt, $votingEndsAt, $executionUnlocksAt, $status);
+}
+
+;;
+;; Type: Proposal
+;; TLB: _ proposalId:uint64 dao:address proposer:address targetContract:address payload:^cell votesFor:coins votesAgainst:coins voterCount:uint32 createdAt:uint64 votingEndsAt:uint64 executionUnlocksAt:uint64 status:uint8 = Proposal
+;;
+
+builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, int, int, int, int, int, int) v) inline {
+    var (v'proposalId, v'dao, v'proposer, v'targetContract, v'payload, v'votesFor, v'votesAgainst, v'voterCount, v'createdAt, v'votingEndsAt, v'executionUnlocksAt, v'status) = v;
+    build_0 = build_0.store_uint(v'proposalId, 64);
+    build_0 = build_0.store_slice(v'dao);
+    build_0 = build_0.store_slice(v'proposer);
+    build_0 = build_0.store_slice(v'targetContract);
+    build_0 = build_0.store_ref(v'payload);
+    build_0 = build_0.store_varuint16(v'votesFor);
+    var build_1 = begin_cell();
+    build_1 = build_1.store_varuint16(v'votesAgainst);
+    build_1 = build_1.store_uint(v'voterCount, 32);
+    build_1 = build_1.store_uint(v'createdAt, 64);
+    build_1 = build_1.store_uint(v'votingEndsAt, 64);
+    build_1 = build_1.store_uint(v'executionUnlocksAt, 64);
+    build_1 = build_1.store_uint(v'status, 8);
+    build_0 = store_builder_ref(build_0, build_1);
+    return build_0;
+}
+
+(slice, ((int, slice, slice, slice, cell, int, int, int, int, int, int, int))) $Proposal$_load(slice sc_0) inline {
+    var v'proposalId = sc_0~load_uint(64);
+    var v'dao = sc_0~load_msg_addr();
+    var v'proposer = sc_0~load_msg_addr();
+    var v'targetContract = sc_0~load_msg_addr();
+    var v'payload = sc_0~load_ref();
+    var v'votesFor = sc_0~load_varuint16();
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'votesAgainst = sc_1~load_varuint16();
+    var v'voterCount = sc_1~load_uint(32);
+    var v'createdAt = sc_1~load_uint(64);
+    var v'votingEndsAt = sc_1~load_uint(64);
+    var v'executionUnlocksAt = sc_1~load_uint(64);
+    var v'status = sc_1~load_uint(8);
+    return (sc_0, (v'proposalId, v'dao, v'proposer, v'targetContract, v'payload, v'votesFor, v'votesAgainst, v'voterCount, v'createdAt, v'votingEndsAt, v'executionUnlocksAt, v'status));
+}
+
+(slice, ((int, slice, slice, slice, cell, int, int))) $Proposal$init$_load(slice sc_0) inline {
+    var v'proposalId = sc_0~load_int(257);
+    var v'dao = sc_0~load_msg_addr();
+    var v'proposer = sc_0~load_msg_addr();
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'targetContract = sc_1~load_msg_addr();
+    var v'payload = sc_1~load_ref();
+    var v'votingPeriod = sc_1~load_int(257);
+    var v'timelockSeconds = sc_1~load_int(257);
+    return (sc_0, (v'proposalId, v'dao, v'proposer, v'targetContract, v'payload, v'votingPeriod, v'timelockSeconds));
+}
+
+(int, slice, slice, slice, cell, int, int, int, int, int, int, int) $Proposal$_contract_load() impure inline {
+    slice $sc = get_data().begin_parse();
+    int $loaded = $sc~load_int(1);
+    if ($loaded) {
+        return $sc~$Proposal$_load();
+    }
+    else {
+        (int $proposalId, slice $dao, slice $proposer, slice $targetContract, cell $payload, int $votingPeriod, int $timelockSeconds) = $sc~$Proposal$init$_load();
+        $sc.end_parse();
+        return $Proposal$_contract_init($proposalId, $dao, $proposer, $targetContract, $payload, $votingPeriod, $timelockSeconds);
+    }
+}
+
+() $Proposal$_contract_store((int, slice, slice, slice, cell, int, int, int, int, int, int, int) v) impure inline {
+    builder b = begin_cell();
+    b = b.store_int(true, 1);
+    b = $Proposal$_store(b, v);
+    set_data(b.end_cell());
+}
+
+;;
+;; Contract Proposal functions
+;;
+
+(int, slice, slice, slice, cell, int, int, int, int, int, int, int) $Proposal$_contract_init(int $proposalId, slice $dao, slice $proposer, slice $targetContract, cell $payload, int $votingPeriod, int $timelockSeconds) impure inline {
+    var (($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status)) = (null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null());
+    $self'proposalId = $proposalId;
+    $self'dao = $dao;
+    $self'proposer = $proposer;
+    $self'targetContract = $targetContract;
+    $self'payload = $payload;
+    $self'votesFor = 0;
+    $self'votesAgainst = 0;
+    $self'voterCount = 0;
+    $self'createdAt = $global_now();
+    $self'votingEndsAt = ($global_now() + $votingPeriod);
+    $self'executionUnlocksAt = (($global_now() + $votingPeriod) + $timelockSeconds);
+    $self'status = 0;
+    return ($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status);
+}
+
+((int, slice, slice, slice, cell, int, int, int, int, int, int, int), (int, slice, slice, int, int, int, int, int, int, int)) $Proposal$_fun_get_proposal_data((int, slice, slice, slice, cell, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status)) = $self;
+    var $fresh$ret_42 = $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_createdAt_votingEndsAt_executionUnlocksAt_status($self'proposalId, $self'proposer, $self'targetContract, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status);
+    return (($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status), $fresh$ret_42);
+}
+
+;;
+;; Get methods of a Contract Proposal
+;;
+
+_ %get_proposal_data() method_id(76040) {
+    var self = $Proposal$_contract_load();
+    var res = self~$Proposal$_fun_get_proposal_data();
+    return $ProposalData$_to_external(res);
+}
+
+;;
+;; Routing of a Contract Proposal
+;;
+
+;; message opcode reader utility: only binary receivers
+;; Returns 32 bit message opcode, otherwise throws the "Invalid incoming message" exit code
+(slice, int) ~load_opcode_internal(slice s) asm( -> 1 0) "32 LDUQ 130 THROWIFNOT";
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    cs~skip_bits(2);
+    var msg_bounceable = cs~load_int(1);
+    var msg_bounced = cs~load_int(1);
+    slice msg_sender_addr = cs~load_msg_addr();
+    __tact_context = (msg_bounceable, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var ($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status) = $Proposal$_contract_load();
+    
+    ;; Handle bounced messages
+    if (msg_bounced) { return (); }
+    int op = 0;
+    int in_msg_length = slice_bits(in_msg);
+    if (in_msg_length >= 32) {
+        op = in_msg~load_uint(32);
+        ;; Receive CastVote message
+        if (op == 2427161456) {
+            var $msg'proposalId = in_msg~load_uint(64);
+            var $msg'support = in_msg~load_int(1);
+            var $msg'weight = in_msg~load_varuint16();
+            throw_unless(8246, ($self'status == 0));
+            throw_unless(15501, ($global_now() < $self'votingEndsAt));
+            if ($msg'support) {
+                $self'votesFor = ($self'votesFor + $msg'weight);
+            } else {
+                $self'votesAgainst = ($self'votesAgainst + $msg'weight);
+            }
+            $self'voterCount = ($self'voterCount + 1);
+            $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
+            return ();
+        }
+        
+        ;; Receive CancelProposal message
+        if (op == 1785280322) {
+            var $msg'proposalId = in_msg~load_uint(64);
+            var $msg'reason = in_msg~load_ref().begin_parse();
+            throw_unless(42435, ( (( equal_slices_bits(__tact_context_get_sender(), $self'proposer) )) ? (true) : (( equal_slices_bits(__tact_context_get_sender(), $self'dao) )) ));
+            throw_unless(30773, ($self'status == 0));
+            $self'status = 4;
+            $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
+            return ();
+        }
+        
+    }
+    ;; Empty Receiver and Text Receivers
+    var text_op = slice_hash(in_msg);
+    ;; Receive "init" message
+    if (text_op == 0x9f31fb7c139e4f1313022f5187d632af397344874ad3c3abb365f301d9d7ab67) {
+        $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
+        return ();
+    }
+    ;; Receive "execute" message
+    if (text_op == 0xb14fdeec46f0654aee9d76d3e481c5026f579fad38ebfd74a2bb463891c05838) {
+        throw_unless(15354, ( (($self'status == 0)) ? (true) : (($self'status == 1)) ));
+        throw_unless(62971, ($global_now() >= $self'executionUnlocksAt));
+        throw_unless(48241, ($self'votesFor > $self'votesAgainst));
+        $self'status = 3;
+        $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'targetContract, 100000000, 2, false, $self'payload));
+        $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
+        return ();
+    }
+    ;; Throw if not handled
+    throw(130);
+}

@@ -1,0 +1,529 @@
+#pragma version =0.4.6;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+;; TreasuryGold_TreasuryGold.headers.fc
+;;
+;; Header files for TreasuryGold
+;; NOTE: declarations are sorted for optimal order
+;;
+
+;; __tact_context_get
+(int, slice, int, slice) __tact_context_get() inline;
+
+;; __tact_context_get_sender
+slice __tact_context_get_sender() inline;
+
+;; $DeployOk$_store
+builder $DeployOk$_store(builder build_0, (int) v) inline;
+
+;; $DeployOk$_store_cell
+cell $DeployOk$_store_cell((int) v, builder b) inline;
+
+;; $TreasuryGold$_store
+builder $TreasuryGold$_store(builder build_0, (slice, slice, slice, int, int, int, int, int, int, int) v) inline;
+
+;; $TreasuryGold$_load
+(slice, ((slice, slice, slice, int, int, int, int, int, int, int))) $TreasuryGold$_load(slice sc_0) inline;
+
+;; $Context$_get_value
+_ $Context$_get_value((int, slice, int, slice) v) inline;
+
+;; $GoldReserveData$_to_external
+(int, int, int, int, int, int) $GoldReserveData$_to_external(((int, int, int, int, int, int)) v) inline;
+
+;; $TreasuryGold$init$_load
+(slice, ((slice, slice, slice))) $TreasuryGold$init$_load(slice sc_0) inline;
+
+;; $TreasuryGold$_contract_init
+(slice, slice, slice, int, int, int, int, int, int, int) $TreasuryGold$_contract_init(slice $owner, slice $xautJetton, slice $dexRouter) impure inline;
+
+;; $TreasuryGold$_contract_load
+(slice, slice, slice, int, int, int, int, int, int, int) $TreasuryGold$_contract_load() impure inline;
+
+;; $TreasuryGold$_contract_store
+() $TreasuryGold$_contract_store((slice, slice, slice, int, int, int, int, int, int, int) v) impure inline;
+
+;; $GoldReserveData$_constructor_goldReserveXAUt_totalTONReceived_totalTONConvertedToGold_convertRatio_depositCount_lastDepositTime
+((int, int, int, int, int, int)) $GoldReserveData$_constructor_goldReserveXAUt_totalTONReceived_totalTONConvertedToGold_convertRatio_depositCount_lastDepositTime(int $goldReserveXAUt, int $totalTONReceived, int $totalTONConvertedToGold, int $convertRatio, int $depositCount, int $lastDepositTime) inline;
+
+;; $TreasuryGold$_fun_get_gold_reserve
+((slice, slice, slice, int, int, int, int, int, int, int), (int, int, int, int, int, int)) $TreasuryGold$_fun_get_gold_reserve((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $TreasuryGold$_fun_get_operational_balance
+((slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_operational_balance((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $TreasuryGold$_fun_get_convert_ratio
+((slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_convert_ratio((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $MessageParameters$_constructor_bounce_to_value_mode_body
+((int, cell, int, slice, int)) $MessageParameters$_constructor_bounce_to_value_mode_body(int $bounce, slice $to, int $value, int $mode, cell $body) inline;
+
+;; $TreasuryGold$_fun_notify
+((slice, slice, slice, int, int, int, int, int, int, int), ()) $TreasuryGold$_fun_notify((slice, slice, slice, int, int, int, int, int, int, int) $self, cell $body) impure inline;
+
+;; $TreasuryGold$_fun_owner
+((slice, slice, slice, int, int, int, int, int, int, int), slice) $TreasuryGold$_fun_owner((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $SendParameters$_constructor_to_value_mode_bounce_body
+((int, cell, cell, cell, int, slice, int)) $SendParameters$_constructor_to_value_mode_bounce_body(slice $to, int $value, int $mode, int $bounce, cell $body) inline;
+
+;; $DeployOk$_constructor_queryId
+((int)) $DeployOk$_constructor_queryId(int $queryId) inline;
+
+
+;; TreasuryGold_TreasuryGold.stdlib.fc
+global (int, slice, int, slice) __tact_context;
+global slice __tact_context_sender;
+global cell __tact_child_contract_codes;
+global int __tact_randomized;
+
+(int, slice, int, slice) __tact_context_get() inline {
+    return __tact_context;
+}
+
+slice __tact_context_get_sender() inline {
+    return __tact_context_sender;
+}
+
+int $global_myBalance() impure asm """
+    BALANCE FIRST
+""";
+
+() $global_nativeReserve(int $amount, int $mode) impure asm """
+    RAWRESERVE
+""";
+
+() $global_message((int, cell, int, slice, int) $params) impure asm """
+    NEWC
+    b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+    1 STI               // store `bounce`
+    b{000} STSLICECONST // store bounced = false and src = addr_none
+    STSLICE             // store `to`
+    SWAP
+    STGRAMS             // store `value`
+    106 PUSHINT         // 1 + 4 + 4 + 64 + 32 + 1
+    STZEROES
+    // → Stack state
+    // s0: Builder
+    // s1: `body`
+    // s2: `mode`
+    STDICT
+    ENDC
+    SWAP
+    SENDRAWMSG
+""";
+
+() $global_send((int, cell, cell, cell, int, slice, int) $params) impure asm """
+    NEWC
+    b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+    1 STI               // store `bounce`
+    b{000} STSLICECONST // store bounced = false and src = addr_none
+    STSLICE             // store `to`
+    SWAP
+    STGRAMS             // store `value`
+    105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+    STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+    // → Stack state
+    // s0: Builder
+    // s1: `data`
+    // s2: `code`
+    // s3: `body`
+    // s4: `mode`
+
+    // Group 2: Placing the Builder after code and data, then checking those for nullability
+    s2 XCHG0
+    DUP2
+    ISNULL
+    SWAP
+    ISNULL
+    AND
+    // → Stack state
+    // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+    // s1: `code`
+    // s2: `data`
+    // s3: Builder
+    // s4: `body`
+    // s5: `mode`
+
+    // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+    <{
+        DROP2 // drop `data` and `code`, since either of those is null
+        b{0} STSLICECONST
+    }> PUSHCONT
+
+    // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+    <{
+        // _ split_depth:(Maybe (## 5))
+        //   special:(Maybe TickTock)
+        //   code:(Maybe ^Cell)
+        //   data:(Maybe ^Cell)
+        //   library:(Maybe ^Cell)
+        // = StateInit;
+        ROT                // place message Builder on top
+        b{10} STSLICECONST // store Maybe = true, Either = false
+        // Start composing inlined StateInit
+        b{00} STSLICECONST // store split_depth and special first
+        STDICT             // store code
+        STDICT             // store data
+        b{0} STSLICECONST  // store library
+    }> PUSHCONT
+
+    // Group 3: IFELSE that does the branching shown above
+    IFELSE
+    // → Stack state
+    // s0: Builder
+    // s1: null or StateInit
+    // s2: `body`
+    // s3: `mode`
+
+    // Group 4: Finalizing the message
+    STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+    ENDC
+    // → Stack state
+    // s0: Cell
+    // s1: `mode`
+
+    // Group 5: Sending the message, with `mode` on top
+    SWAP
+    SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+""";
+
+int $global_now() impure asm """
+    NOW
+""";
+
+((slice, slice, slice, int, int, int, int, int, int, int), ()) $TreasuryGold$_fun_notify((slice, slice, slice, int, int, int, int, int, int, int) $self, cell $body) impure inline {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
+    slice $to = __tact_context_get_sender();
+    int $bounce = false;
+    if (false) {
+        int $balance = $global_myBalance();
+        int $balanceBeforeMessage = ($balance - $Context$_get_value(__tact_context_get()));
+        if (($balanceBeforeMessage < 0)) {
+            $global_nativeReserve(0, 0);
+            $global_message($MessageParameters$_constructor_bounce_to_value_mode_body($bounce, $to, 0, 130, $body));
+            return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), ());
+        }
+    }
+    $global_message($MessageParameters$_constructor_bounce_to_value_mode_body($bounce, $to, 0, 66, $body));
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), ());
+}
+
+((slice, slice, slice, int, int, int, int, int, int, int), slice) $TreasuryGold$_fun_owner((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
+    var $fresh$ret_26 = $self'owner;
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_26);
+}
+
+;; TreasuryGold_TreasuryGold.constants.fc
+;; Cell GGhGDC6GNUswbuS3jZgSvTbGnQRyDU0YLM934NwXqUo=
+cell __gen_cell_cell_1868460c2e86354b306ee4b78d9812bd36c69d04720d4d182ccf77e0dc17a94a() asm """
+    B{b5ee9c7241010101001c000034000000006f7065726174696f6e616c5f7769746864726177616c97d2878c} B>boc PUSHREF
+""";
+
+;; Cell 5F4RzDcC4eMa0N+tJkaJJ7g4Ysxx2mK9/qEKc8D0Wn4=
+cell __gen_cell_cell_e45e11cc3702e1e31ad0dfad26468927b83862cc71da62bdfea10a73c0f45a7e() asm """
+    B{b5ee9c7241010101001200002000000000737761705f746f5f7861757471124bde} B>boc PUSHREF
+""";
+
+;; TreasuryGold_TreasuryGold.storage.fc
+;;
+;; Type: Context
+;; TLB: _ bounceable:bool sender:address value:int257 raw:^slice = Context
+;;
+
+_ $Context$_get_value((int, slice, int, slice) v) inline {
+    var (v'bounceable, v'sender, v'value, v'raw) = v;
+    return v'value;
+}
+
+;;
+;; Type: SendParameters
+;; TLB: _ mode:int257 body:Maybe ^cell code:Maybe ^cell data:Maybe ^cell value:int257 to:address bounce:bool = SendParameters
+;;
+
+((int, cell, cell, cell, int, slice, int)) $SendParameters$_constructor_to_value_mode_bounce_body(slice $to, int $value, int $mode, int $bounce, cell $body) inline {
+    return ($mode, $body, null(), null(), $value, $to, $bounce);
+}
+
+;;
+;; Type: MessageParameters
+;; TLB: _ mode:int257 body:Maybe ^cell value:int257 to:address bounce:bool = MessageParameters
+;;
+
+((int, cell, int, slice, int)) $MessageParameters$_constructor_bounce_to_value_mode_body(int $bounce, slice $to, int $value, int $mode, cell $body) inline {
+    return ($mode, $body, $value, $to, $bounce);
+}
+
+;;
+;; Type: DeployOk
+;; Header: 0xaff90f57
+;; TLB: deploy_ok#aff90f57 queryId:uint64 = DeployOk
+;;
+
+builder $DeployOk$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 2952335191, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $DeployOk$_store_cell((int) v, builder b) inline {
+    return $DeployOk$_store(b, v).end_cell();
+}
+
+((int)) $DeployOk$_constructor_queryId(int $queryId) inline {
+    return ($queryId);
+}
+
+;;
+;; Type: GoldReserveData
+;; TLB: _ goldReserveXAUt:coins totalTONReceived:coins totalTONConvertedToGold:coins convertRatio:uint8 depositCount:uint64 lastDepositTime:uint64 = GoldReserveData
+;;
+
+(int, int, int, int, int, int) $GoldReserveData$_to_external(((int, int, int, int, int, int)) v) inline {
+    var (v'goldReserveXAUt, v'totalTONReceived, v'totalTONConvertedToGold, v'convertRatio, v'depositCount, v'lastDepositTime) = v; 
+    return (v'goldReserveXAUt, v'totalTONReceived, v'totalTONConvertedToGold, v'convertRatio, v'depositCount, v'lastDepositTime);
+}
+
+((int, int, int, int, int, int)) $GoldReserveData$_constructor_goldReserveXAUt_totalTONReceived_totalTONConvertedToGold_convertRatio_depositCount_lastDepositTime(int $goldReserveXAUt, int $totalTONReceived, int $totalTONConvertedToGold, int $convertRatio, int $depositCount, int $lastDepositTime) inline {
+    return ($goldReserveXAUt, $totalTONReceived, $totalTONConvertedToGold, $convertRatio, $depositCount, $lastDepositTime);
+}
+
+;;
+;; Type: TreasuryGold
+;; TLB: _ owner:address xautJetton:address dexRouter:address goldReserveXAUt:coins totalTONReceived:coins totalTONConvertedToGold:coins totalOperationalSpent:coins goldConvertRatio:uint8 depositCount:uint64 lastDepositTime:uint64 = TreasuryGold
+;;
+
+builder $TreasuryGold$_store(builder build_0, (slice, slice, slice, int, int, int, int, int, int, int) v) inline {
+    var (v'owner, v'xautJetton, v'dexRouter, v'goldReserveXAUt, v'totalTONReceived, v'totalTONConvertedToGold, v'totalOperationalSpent, v'goldConvertRatio, v'depositCount, v'lastDepositTime) = v;
+    build_0 = build_0.store_slice(v'owner);
+    build_0 = build_0.store_slice(v'xautJetton);
+    build_0 = build_0.store_slice(v'dexRouter);
+    build_0 = build_0.store_varuint16(v'goldReserveXAUt);
+    var build_1 = begin_cell();
+    build_1 = build_1.store_varuint16(v'totalTONReceived);
+    build_1 = build_1.store_varuint16(v'totalTONConvertedToGold);
+    build_1 = build_1.store_varuint16(v'totalOperationalSpent);
+    build_1 = build_1.store_uint(v'goldConvertRatio, 8);
+    build_1 = build_1.store_uint(v'depositCount, 64);
+    build_1 = build_1.store_uint(v'lastDepositTime, 64);
+    build_0 = store_builder_ref(build_0, build_1);
+    return build_0;
+}
+
+(slice, ((slice, slice, slice, int, int, int, int, int, int, int))) $TreasuryGold$_load(slice sc_0) inline {
+    var v'owner = sc_0~load_msg_addr();
+    var v'xautJetton = sc_0~load_msg_addr();
+    var v'dexRouter = sc_0~load_msg_addr();
+    var v'goldReserveXAUt = sc_0~load_varuint16();
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'totalTONReceived = sc_1~load_varuint16();
+    var v'totalTONConvertedToGold = sc_1~load_varuint16();
+    var v'totalOperationalSpent = sc_1~load_varuint16();
+    var v'goldConvertRatio = sc_1~load_uint(8);
+    var v'depositCount = sc_1~load_uint(64);
+    var v'lastDepositTime = sc_1~load_uint(64);
+    return (sc_0, (v'owner, v'xautJetton, v'dexRouter, v'goldReserveXAUt, v'totalTONReceived, v'totalTONConvertedToGold, v'totalOperationalSpent, v'goldConvertRatio, v'depositCount, v'lastDepositTime));
+}
+
+(slice, ((slice, slice, slice))) $TreasuryGold$init$_load(slice sc_0) inline {
+    var v'owner = sc_0~load_msg_addr();
+    var v'xautJetton = sc_0~load_msg_addr();
+    var v'dexRouter = sc_0~load_msg_addr();
+    return (sc_0, (v'owner, v'xautJetton, v'dexRouter));
+}
+
+(slice, slice, slice, int, int, int, int, int, int, int) $TreasuryGold$_contract_load() impure inline {
+    slice $sc = get_data().begin_parse();
+    int $loaded = $sc~load_int(1);
+    if ($loaded) {
+        return $sc~$TreasuryGold$_load();
+    }
+    else {
+        (slice $owner, slice $xautJetton, slice $dexRouter) = $sc~$TreasuryGold$init$_load();
+        $sc.end_parse();
+        return $TreasuryGold$_contract_init($owner, $xautJetton, $dexRouter);
+    }
+}
+
+() $TreasuryGold$_contract_store((slice, slice, slice, int, int, int, int, int, int, int) v) impure inline {
+    builder b = begin_cell();
+    b = b.store_int(true, 1);
+    b = $TreasuryGold$_store(b, v);
+    set_data(b.end_cell());
+}
+
+;;
+;; Contract TreasuryGold functions
+;;
+
+(slice, slice, slice, int, int, int, int, int, int, int) $TreasuryGold$_contract_init(slice $owner, slice $xautJetton, slice $dexRouter) impure inline {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = (null(), null(), null(), null(), null(), null(), null(), null(), null(), null());
+    $self'owner = $owner;
+    $self'xautJetton = $xautJetton;
+    $self'dexRouter = $dexRouter;
+    $self'goldReserveXAUt = 0;
+    $self'totalTONReceived = 0;
+    $self'totalTONConvertedToGold = 0;
+    $self'totalOperationalSpent = 0;
+    $self'goldConvertRatio = 70;
+    $self'depositCount = 0;
+    $self'lastDepositTime = 0;
+    return ($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime);
+}
+
+((slice, slice, slice, int, int, int, int, int, int, int), (int, int, int, int, int, int)) $TreasuryGold$_fun_get_gold_reserve((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
+    var $fresh$ret_23 = $GoldReserveData$_constructor_goldReserveXAUt_totalTONReceived_totalTONConvertedToGold_convertRatio_depositCount_lastDepositTime($self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime);
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_23);
+}
+
+((slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_operational_balance((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
+    var $fresh$ret_24 = $global_myBalance();
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_24);
+}
+
+((slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_convert_ratio((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
+    var $fresh$ret_25 = $self'goldConvertRatio;
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_25);
+}
+
+;;
+;; Get methods of a Contract TreasuryGold
+;;
+
+_ %get_gold_reserve() method_id(123418) {
+    var self = $TreasuryGold$_contract_load();
+    var res = self~$TreasuryGold$_fun_get_gold_reserve();
+    return $GoldReserveData$_to_external(res);
+}
+
+_ %get_operational_balance() method_id(128921) {
+    var self = $TreasuryGold$_contract_load();
+    var res = self~$TreasuryGold$_fun_get_operational_balance();
+    return res;
+}
+
+_ %get_convert_ratio() method_id(120756) {
+    var self = $TreasuryGold$_contract_load();
+    var res = self~$TreasuryGold$_fun_get_convert_ratio();
+    return res;
+}
+
+_ %owner() method_id(83229) {
+    var self = $TreasuryGold$_contract_load();
+    var res = self~$TreasuryGold$_fun_owner();
+    return res;
+}
+
+;;
+;; Routing of a Contract TreasuryGold
+;;
+
+;; message opcode reader utility: only binary receivers
+;; Returns 32 bit message opcode, otherwise throws the "Invalid incoming message" exit code
+(slice, int) ~load_opcode_internal(slice s) asm( -> 1 0) "32 LDUQ 130 THROWIFNOT";
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    cs~skip_bits(2);
+    var msg_bounceable = cs~load_int(1);
+    var msg_bounced = cs~load_int(1);
+    slice msg_sender_addr = cs~load_msg_addr();
+    __tact_context = (msg_bounceable, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var ($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime) = $TreasuryGold$_contract_load();
+    
+    ;; Handle bounced messages
+    if (msg_bounced) { return (); }
+    int op = 0;
+    int in_msg_length = slice_bits(in_msg);
+    if (in_msg_length >= 32) {
+        op = in_msg~load_uint(32);
+        ;; Receive GoldSwapConfirmed message
+        if (op == 1577629790) {
+            var $msg'amount = in_msg~load_varuint16();
+            var $msg'txHash = in_msg~load_uint(256);
+            $self'goldReserveXAUt = ($self'goldReserveXAUt + $msg'amount);
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            return ();
+        }
+        
+        ;; Receive WithdrawOperational message
+        if (op == 2255565524) {
+            var $msg'amount = in_msg~load_varuint16();
+            var $msg'destination = in_msg~load_msg_addr();
+            throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+            throw_unless(15283, ($msg'amount <= ($global_myBalance() - 1000000000)));
+            $self'totalOperationalSpent = ($self'totalOperationalSpent + $msg'amount);
+            $global_send($SendParameters$_constructor_to_value_mode_bounce_body($msg'destination, $msg'amount, 2, false, __gen_cell_cell_1868460c2e86354b306ee4b78d9812bd36c69d04720d4d182ccf77e0dc17a94a()));
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            return ();
+        }
+        
+        ;; Receive SetConvertRatio message
+        if (op == 3740403761) {
+            var $msg'ratio = in_msg~load_uint(8);
+            throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+            throw_unless(60938, ( (($msg'ratio >= 50)) ? (($msg'ratio <= 95)) : (false) ));
+            $self'goldConvertRatio = $msg'ratio;
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            return ();
+        }
+        
+        ;; Receive SetDexRouter message
+        if (op == 2701254185) {
+            var $msg'router = in_msg~load_msg_addr();
+            throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+            $self'dexRouter = $msg'router;
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            return ();
+        }
+        
+        ;; Receive SetXautJetton message
+        if (op == 3103292198) {
+            var $msg'xautAddr = in_msg~load_msg_addr();
+            throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+            $self'xautJetton = $msg'xautAddr;
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            return ();
+        }
+        
+        ;; Receive Deploy message
+        if (op == 0x946a98b6) {
+            var $deploy'queryId = in_msg~load_uint(64);
+            ($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)~$TreasuryGold$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId), begin_cell()));
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            return ();
+        }
+        
+    }
+    ;; Empty Receiver and Text Receivers
+    var text_op = slice_hash(in_msg);
+    ;; Receive "deposit" message
+    if (text_op == 0x66d23e7744329745f6f26d2907874b52b0232e43983b1c95de8dc315bb45ba1f) {
+        int $amount = ($Context$_get_value(__tact_context_get()) - 50000000);
+        throw_unless(7620, ($amount > 0));
+        $self'totalTONReceived = ($self'totalTONReceived + $amount);
+        $self'depositCount = ($self'depositCount + 1);
+        $self'lastDepositTime = $global_now();
+        int $goldAmt = (($amount * $self'goldConvertRatio) / 100);
+        int $operAmt = ($amount - $goldAmt);
+        if (($goldAmt > 500000000)) {
+            $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'dexRouter, $goldAmt, 2, true, __gen_cell_cell_e45e11cc3702e1e31ad0dfad26468927b83862cc71da62bdfea10a73c0f45a7e()));
+            $self'totalTONConvertedToGold = ($self'totalTONConvertedToGold + $goldAmt);
+        }
+        $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+        return ();
+    }
+    ;; Throw if not handled
+    throw(130);
+}

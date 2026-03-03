@@ -1,0 +1,18 @@
+{
+    "name": "gstd-contracts",
+    "version": "1.0.0",
+    "description": "GSTD TON Smart Contract Deployment",
+    "scripts": {
+        "build": "npx @tact-lang/compiler@latest --config tact.config.json",
+        "deploy:mainnet": "node scripts/deploy-mainnet.js",
+        "deploy:testnet": "TON_NETWORK=testnet node scripts/deploy-mainnet.js",
+        "verify": "node scripts/verify-contracts.js"
+    },
+    "dependencies": {
+        "@tact-lang/compiler": "^1.5.0",
+        "@ton/core": "^0.62.0",
+        "@ton/crypto": "^3.3.0",
+        "@ton/ton": "^15.0.0",
+        "dotenv": "^16.4.0"
+    }
+}

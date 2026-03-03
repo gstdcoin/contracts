@@ -1,0 +1,29 @@
+{
+    "projects": [
+        {
+            "name": "GSTDJetton",
+            "path": "./GSTDJetton.tact",
+            "output": "./build/GSTDJetton"
+        },
+        {
+            "name": "SettlementMaster",
+            "path": "./SettlementMaster.tact",
+            "output": "./build/SettlementMaster"
+        },
+        {
+            "name": "TreasuryGold",
+            "path": "./TreasuryGold.tact",
+            "output": "./build/TreasuryGold"
+        },
+        {
+            "name": "AgentRegistry",
+            "path": "./AgentRegistry.tact",
+            "output": "./build/AgentRegistry"
+        },
+        {
+            "name": "DAOVoting",
+            "path": "./DAOVoting.tact",
+            "output": "./build/DAOVoting"
+        }
+    ]
+}

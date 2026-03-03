@@ -1,0 +1,382 @@
+// automatically generated from `@stdlib/std/stdlib.fc` `/home/ubuntu/contracts/build/DAOVoting/DAOVoting_Proposal.fc` 
+PROGRAM{
+  DECLPROC __tact_context_get_sender
+  DECLPROC $Proposal$_store
+  DECLPROC $Proposal$_load
+  DECLPROC $ProposalData$_to_external
+  DECLPROC $Proposal$init$_load
+  DECLPROC $Proposal$_contract_init
+  DECLPROC $Proposal$_contract_load
+  DECLPROC $Proposal$_contract_store
+  DECLPROC $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_createdAt_votingEndsAt_executionUnlocksAt_status
+  DECLPROC $Proposal$_fun_get_proposal_data
+  DECLPROC $SendParameters$_constructor_to_value_mode_bounce_body
+  76040 DECLMETHOD %get_proposal_data
+  DECLPROC recv_internal
+  DECLGLOBVAR __tact_context
+  DECLGLOBVAR __tact_context_sender
+  DECLGLOBVAR __tact_child_contract_codes
+  DECLGLOBVAR __tact_randomized
+  __tact_context_get_sender PROCINLINE:<{
+    __tact_context_sender GETGLOB
+  }>
+  $Proposal$_store PROCINLINE:<{
+    s11 s12 XCHG2
+    64 STU
+    s1 s9 XCHG
+    STSLICE
+    s1 s7 XCHG
+    STSLICE
+    s1 s5 XCHG
+    STSLICE
+    s1 s3 XCHG
+    STREF
+    SWAP
+    STVARUINT16
+    NEWC
+    ROT
+    STVARUINT16
+    s1 s2 XCHG
+    32 STU
+    s1 s2 XCHG
+    64 STU
+    s1 s2 XCHG
+    64 STU
+    s1 s2 XCHG
+    64 STU
+    s1 s2 XCHG
+    8 STU
+    STBREFR
+  }>
+  $Proposal$_load PROCINLINE:<{
+    64 LDU
+    LDMSGADDR
+    LDMSGADDR
+    LDMSGADDR
+    LDREF
+    LDVARUINT16
+    LDREF
+    SWAP
+    CTOS
+    LDVARUINT16
+    32 LDU
+    64 LDU
+    64 LDU
+    64 LDU
+    8 LDU
+    DROP
+    s6 s12 XCHG
+    s6 s11 XCHG
+    s6 s10 XCHG
+    s6 s9 XCHG
+    s6 s8 XCHG
+    s6 s7 XCHG
+  }>
+  $ProposalData$_to_external PROCINLINE:<{
+  }>
+  $Proposal$init$_load PROCINLINE:<{
+    257 PUSHINT
+    LDIX
+    LDMSGADDR
+    LDMSGADDR
+    LDREF
+    SWAP
+    CTOS
+    LDMSGADDR
+    LDREF
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    DROP
+    s4 s7 XCHG
+    s4 s6 XCHG
+    s4 s5 XCHG
+  }>
+  $Proposal$_contract_init PROCINLINE:<{
+    0 PUSHINT
+    s0 s0 PUSH2
+        NOW
+        NOW
+    s6 PUSH
+    ADD
+        NOW
+    s0 s7 XCHG2
+    ADD
+    s0 s5 XCHG2
+    ADD
+    OVER
+    s4 s6 XCHG
+    s3 s5 XCHG
+    s2 s4 XCHG
+  }>
+  $Proposal$_contract_load PROCINLINE:<{
+    c4 PUSH
+    CTOS
+    1 LDI
+    SWAP
+    IF:<{
+      $Proposal$_load INLINECALLDICT
+      1 12 BLKDROP2
+    }>ELSE<{
+      $Proposal$init$_load INLINECALLDICT
+      s0 s7 XCHG
+      ENDS
+      6 ROLL
+      $Proposal$_contract_init INLINECALLDICT
+    }>
+  }>
+  $Proposal$_contract_store PROCINLINE:<{
+    NEWC
+    TRUE
+    SWAP
+    1 STI
+    12 -ROLL
+    $Proposal$_store INLINECALLDICT
+    ENDC
+    c4 POP
+  }>
+  $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_createdAt_votingEndsAt_executionUnlocksAt_status PROCINLINE:<{
+  }>
+  $Proposal$_fun_get_proposal_data PROCREF:<{
+    s11 s9 s8 PUSH3
+    s9 s8 s7 PUSH3
+    s9 s8 s7 PUSH3
+    s9 PUSH
+    $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_createdAt_votingEndsAt_executionUnlocksAt_status INLINECALLDICT
+  }>
+  $SendParameters$_constructor_to_value_mode_bounce_body PROCINLINE:<{
+    s2 s4 XCHG
+    PUSHNULL
+    s4 s3 XCHG2
+    PUSHNULL
+    s0 s3 XCHG
+  }>
+  %get_proposal_data PROC:<{
+    $Proposal$_contract_load INLINECALLDICT
+    $Proposal$_fun_get_proposal_data INLINECALLDICT
+    12 10 BLKDROP2
+    $ProposalData$_to_external INLINECALLDICT
+  }>
+  recv_internal PROC:<{
+    c2 SAVE
+    SAMEALTSAVE
+    SWAP
+    CTOS
+    2 PUSHINT
+    SDSKIPFIRST
+    1 LDI
+    1 LDI
+    LDMSGADDR
+    OVER
+    s3 s4 XCHG
+    s6 s6 XCHG2
+    4 TUPLE
+    __tact_context SETGLOB
+    s0 s2 XCHG
+    __tact_context_sender SETGLOB
+    $Proposal$_contract_load INLINECALLDICT
+    s0 s13 XCHG
+    IFJMP:<{
+      13 BLKDROP
+    }>
+    s11 PUSH
+    SBITS
+    31 GTINT
+    IF:<{
+      s0 s11 XCHG
+      32 LDU
+      OVER
+      2427161456 PUSHINT
+      EQUAL
+      IFJMP:<{
+        NIP
+        64 LDU
+        NIP
+        1 LDI
+        LDVARUINT16
+        DROP
+        8246 PUSHINT
+        s14 PUSH
+        0 EQINT
+        THROWANYIFNOT
+        15501 PUSHINT
+            NOW
+        s4 PUSH
+        LESS
+        THROWANYIFNOT
+        SWAP
+        IF:<{
+          s1 s5 XCHG
+          ADD
+        }>ELSE<{
+          s1 s4 XCHG
+          ADD
+          s0 s3 XCHG
+          s0 s4 XCHG
+        }>
+        s0 s2 XCHG
+        INC
+        s9 s11 XCHG
+        s8 s10 XCHG
+        s7 s9 XCHG
+        s6 s8 XCHG
+        s5 s7 XCHG
+        5 2 REVERSE
+        s4 s4 s4 XCHG3
+        s0 s3 XCHG
+        $Proposal$_contract_store INLINECALLDICT
+        RETALT
+      }>
+      SWAP
+      1785280322 PUSHINT
+      EQUAL
+      IFJMP:<{
+        DROP
+        42435 PUSHINT
+        __tact_context_get_sender INLINECALLDICT
+        s9 PUSH
+        SDEQ
+        IF:<{
+          TRUE
+        }>ELSE<{
+          __tact_context_get_sender INLINECALLDICT
+          s10 PUSH
+          SDEQ
+        }>
+        THROWANYIFNOT
+        30773 PUSHINT
+        s0 s12 XCHG
+        0 EQINT
+        s1 s12 XCHG
+        THROWANYIFNOT
+        2 9 BLKSWAP
+        4 PUSHINT
+        $Proposal$_contract_store INLINECALLDICT
+        RETALT
+      }>
+      s0 s11 XCHG
+    }>
+    s0 s11 XCHG
+    HASHSU
+    DUP
+    72006054114345985781251395239022388702975327239515186174748819490214008826727 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      s9 s11 XCHG
+      2 9 BLKSWAP
+      $Proposal$_contract_store INLINECALLDICT
+    }>
+    80200493675062797518164358012289467868653153781039047180376166852964107966520 PUSHINT
+    EQUAL
+    IFJMP:<{
+      15354 PUSHINT
+      s12 PUSH
+      0 EQINT
+      IF:<{
+        s12 POP
+        TRUE
+      }>ELSE<{
+        s0 s12 XCHG
+        1 EQINT
+      }>
+      s1 s12 XCHG
+      THROWANYIFNOT
+      62971 PUSHINT
+          NOW
+      s11 PUSH
+      GEQ
+      THROWANYIFNOT
+      48241 PUSHINT
+      s4 s3 PUSH2
+      GREATER
+      THROWANYIFNOT
+      3 PUSHINT
+      s6 PUSH
+      100000000 PUSHINT
+      2 PUSHINT
+      FALSE
+      s9 PUSH
+      $SendParameters$_constructor_to_value_mode_bounce_body INLINECALLDICT
+          NEWC
+          b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+          1 STI               // store `bounce`
+          b{000} STSLICECONST // store bounced = false and src = addr_none
+          STSLICE             // store `to`
+          SWAP
+          STGRAMS             // store `value`
+          105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+          STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+          // → Stack state
+          // s0: Builder
+          // s1: `data`
+          // s2: `code`
+          // s3: `body`
+          // s4: `mode`
+          // Group 2: Placing the Builder after code and data, then checking those for nullability
+          s2 XCHG0
+          DUP2
+          ISNULL
+          SWAP
+          ISNULL
+          AND
+          // → Stack state
+          // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+          // s1: `code`
+          // s2: `data`
+          // s3: Builder
+          // s4: `body`
+          // s5: `mode`
+          // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+          <{
+              DROP2 // drop `data` and `code`, since either of those is null
+              b{0} STSLICECONST
+          }> PUSHCONT
+          // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+          <{
+              // _ split_depth:(Maybe (## 5))
+              //   special:(Maybe TickTock)
+              //   code:(Maybe ^Cell)
+              //   data:(Maybe ^Cell)
+              //   library:(Maybe ^Cell)
+              // = StateInit;
+              ROT                // place message Builder on top
+              b{10} STSLICECONST // store Maybe = true, Either = false
+              // Start composing inlined StateInit
+              b{00} STSLICECONST // store split_depth and special first
+              STDICT             // store code
+              STDICT             // store data
+              b{0} STSLICECONST  // store library
+          }> PUSHCONT
+          // Group 3: IFELSE that does the branching shown above
+          IFELSE
+          // → Stack state
+          // s0: Builder
+          // s1: null or StateInit
+          // s2: `body`
+          // s3: `mode`
+          // Group 4: Finalizing the message
+          STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+          ENDC
+          // → Stack state
+          // s0: Cell
+          // s1: `mode`
+          // Group 5: Sending the message, with `mode` on top
+          SWAP
+          SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+      s9 s11 XCHG
+      s8 s10 XCHG
+      s7 s9 XCHG
+      s6 s8 XCHG
+      s5 s7 XCHG
+      s4 s6 XCHG
+      s3 s5 XCHG
+      s4 s3 s0 XCHG3
+      s1 s2 XCHG
+      $Proposal$_contract_store INLINECALLDICT
+    }>
+    12 BLKDROP
+    130 THROW
+  }>
+}END>c
