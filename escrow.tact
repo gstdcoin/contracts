@@ -33,12 +33,9 @@ contract Escrow with Deployable, Ownable {
     
     // Withdraw funds based on structured message
     receive(msg: Withdraw, forward: Cell?) {
-        // Verify sender is authorized (owner or executor)
+        // Verify sender is authorized
         let sender = context().sender;
-        let isOwner = self.isOwner(sender);
-        let isExecutor = sender == msg.executorAddress;
-        
-        require(isOwner || isExecutor, "Unauthorized withdrawal");
+        require(self.isOwner(sender), "Unauthorized withdrawal: only owner can authorize payouts");
         
         // Verify contract has sufficient balance
         let totalAmount = msg.platformFee + msg.executorReward;

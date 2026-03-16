@@ -62,7 +62,7 @@ contract Escrow with Deployable, Ownable {
         if (existing != null) {
             // Update existing deposit
             let updated = existing!!;
-            updated.totalAmount = updated.totalAmount + depositAmount;
+            updated.totalAmount = depositAmount + updated.totalAmount;
             self.taskDeposits.set(taskId, updated);
         } else {
             // Create new deposit
@@ -83,12 +83,9 @@ contract Escrow with Deployable, Ownable {
         // Verify minimum message value
         require(context().value >= self.minMessageValue, "Message value too low");
         
-        // Verify sender is authorized (owner or executor)
+        // Verify sender is authorized
         let sender = context().sender;
-        let isOwner = self.isOwner(sender);
-        let isExecutor = sender == msg.executorAddress;
-        
-        require(isOwner || isExecutor, "Unauthorized withdrawal");
+        require(self.isOwner(sender), "Unauthorized withdrawal: only owner can authorize payouts");
         
         // Replay attack protection: check nonce
         let senderNonce = self.nonces.get(sender);

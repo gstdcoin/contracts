@@ -104,6 +104,7 @@ contract SettlementMaster with Deployable, Ownable {
     // ── Main Settlement Function ────────────────────────────────────────
     // Called by Gateway/Orchestrator with TON payment attached
     receive(msg: SettleTask) {
+        require(sender() == self.owner, "Only Gateway/Orchestrator can settle");
         require(!self.paused, "Settlement paused");
 
         let total: Int = context().value - ton("0.1"); // reserve for gas
@@ -161,9 +162,9 @@ contract SettlementMaster with Deployable, Ownable {
         }
 
         // ── 5. Update statistics ────────────────────────────────────────
-        self.totalSettled = self.totalSettled + total;
-        self.totalGSTDMinted = self.totalGSTDMinted + msg.gstdBonusAmount;
-        self.taskCount = self.taskCount + 1;
+        self.totalSettled = total + self.totalSettled;
+        self.totalGSTDMinted = msg.gstdBonusAmount + self.totalGSTDMinted;
+        self.taskCount = 1 + self.taskCount;
     }
 
     // ── DAO Governance: Update revenue split ────────────────────────────
