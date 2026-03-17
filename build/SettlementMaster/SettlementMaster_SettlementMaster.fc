@@ -26,6 +26,9 @@ builder $WorkerPayment$_store(builder build_0, (int, int, int) v) inline;
 ;; $WorkerPayment$_store_cell
 cell $WorkerPayment$_store_cell((int, int, int) v, builder b) inline;
 
+;; $WorkerPayment$_load_bounced
+(slice, ((int, int))) $WorkerPayment$_load_bounced(slice sc_0) inline;
+
 ;; $MintWorkerReward$_store
 builder $MintWorkerReward$_store(builder build_0, (slice, int, int) v) inline;
 
@@ -246,6 +249,11 @@ int $global_myBalance() impure asm """
 }
 
 ;; SettlementMaster_SettlementMaster.constants.fc
+;; Cell 69q6O39uZoXl5WU1y8vnbXwxL2+r4m1HYMluduAaXck=
+cell __gen_cell_cell_ebdaba3b7f6e6685e5e56535cbcbe76d7c312f6fabe26d4760c96e76e01a5dc9() asm """
+    B{b5ee9c7241010101001c00003400000000626f756e6365645f776f726b65725f7061796d656e748033f50b} B>boc PUSHREF
+""";
+
 ;; Cell bH8JWyg03NEBgbUw+6h1ZZ6Rr3Z7HQhCQ5WMB7/kDfU=
 cell __gen_cell_cell_6c7f095b2834dcd10181b530fba875659e91af767b1d084243958c07bfe40df5() asm """
     B{b5ee9c7241010101000d000016000000006465706f736974b5adf9ec} B>boc PUSHREF
@@ -323,6 +331,12 @@ builder $WorkerPayment$_store(builder build_0, (int, int, int) v) inline {
 
 cell $WorkerPayment$_store_cell((int, int, int) v, builder b) inline {
     return $WorkerPayment$_store(b, v).end_cell();
+}
+
+(slice, ((int, int))) $WorkerPayment$_load_bounced(slice sc_0) inline {
+    var v'taskId = sc_0~load_uint(64);
+    var v'amount = sc_0~load_varuint16();
+    return (sc_0, (v'taskId, v'amount));
 }
 
 ((int, int, int)) $WorkerPayment$_constructor_taskId_amount_bonusGSTD(int $taskId, int $amount, int $bonusGSTD) inline {
@@ -569,7 +583,23 @@ _ %owner() method_id(83229) {
     var ($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment) = $SettlementMaster$_contract_load();
     
     ;; Handle bounced messages
-    if (msg_bounced) { return (); }
+    if (msg_bounced) {
+        ;; Skip 0xFFFFFFFF prefix of a bounced message
+        in_msg~skip_bits(32);
+        int op = 0;
+        if (slice_bits(in_msg) >= 32) {
+            op = in_msg~load_uint(32);
+        }
+        ;; Bounced handler for WorkerPayment message
+        if (op == 1500073070) {
+            var ($src'taskId, $src'amount) = in_msg~$WorkerPayment$_load_bounced();
+            $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'treasury, 0, 66, false, __gen_cell_cell_ebdaba3b7f6e6685e5e56535cbcbe76d7c312f6fabe26d4760c96e76e01a5dc9()));
+            $SettlementMaster$_contract_store(($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment));
+            return ();
+        }
+        
+        return ();
+    }
     var op = in_msg~load_opcode_internal();
     ;; Receive SettleTask message
     if (op == 1462673144) {
@@ -578,21 +608,22 @@ _ %owner() method_id(83229) {
         var $msg'gstdBonusAmount = in_msg~load_varuint16();
         var $msg'qualityScore = in_msg~load_uint(32);
         var $msg'computeUnits = in_msg~load_uint(64);
+        throw_unless(1730, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
         throw_unless(38610, (~ $self'paused));
         int $total = ($Context$_get_value(__tact_context_get()) - 100000000);
         throw_unless(8484, ($total >= $self'minPayment));
         int $workerAmt = (($total * $self'workerShare) / 100);
         int $treasuryAmt = (($total * $self'treasuryShare) / 100);
         int $protocolAmt = (($total - $workerAmt) - $treasuryAmt);
-        $global_send($SendParameters$_constructor_to_value_mode_bounce_body($msg'workerAddr, $workerAmt, 2, false, $WorkerPayment$_store_cell($WorkerPayment$_constructor_taskId_amount_bonusGSTD($msg'taskId, $workerAmt, $msg'gstdBonusAmount), begin_cell())));
+        $self'totalSettled = ($total + $self'totalSettled);
+        $self'totalGSTDMinted = ($msg'gstdBonusAmount + $self'totalGSTDMinted);
+        $self'taskCount = (1 + $self'taskCount);
+        $global_send($SendParameters$_constructor_to_value_mode_bounce_body($msg'workerAddr, $workerAmt, 2, true, $WorkerPayment$_store_cell($WorkerPayment$_constructor_taskId_amount_bonusGSTD($msg'taskId, $workerAmt, $msg'gstdBonusAmount), begin_cell())));
         $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'treasury, $treasuryAmt, 2, false, __gen_cell_cell_6c7f095b2834dcd10181b530fba875659e91af767b1d084243958c07bfe40df5()));
         $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'protocolFee, $protocolAmt, 2, false, __gen_cell_cell_a537636aa5fc3c2d44d23d8823f0a46ea660ebe768ba768596c3046cd297304b()));
         if (($msg'gstdBonusAmount > 0)) {
             $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'gstdJetton, 80000000, 2, false, $MintWorkerReward$_store_cell($MintWorkerReward$_constructor_workerAddr_amount_taskId($msg'workerAddr, $msg'gstdBonusAmount, $msg'taskId), begin_cell())));
         }
-        $self'totalSettled = ($self'totalSettled + $total);
-        $self'totalGSTDMinted = ($self'totalGSTDMinted + $msg'gstdBonusAmount);
-        $self'taskCount = ($self'taskCount + 1);
         $SettlementMaster$_contract_store(($self'owner, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment));
         return ();
     }

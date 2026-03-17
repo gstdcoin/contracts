@@ -115,12 +115,17 @@ contract SettlementMaster with Deployable, Ownable {
         let treasuryAmt: Int = total * self.treasuryShare / 100;
         let protocolAmt: Int = total - workerAmt - treasuryAmt; // remainder
 
-        // ── 1. Pay worker (85% TON) ────────────────────────────────────
+        // ── Update statistics BEFORE sends (prevent race conditions) ────
+        self.totalSettled = total + self.totalSettled;
+        self.totalGSTDMinted = msg.gstdBonusAmount + self.totalGSTDMinted;
+        self.taskCount = 1 + self.taskCount;
+
+        // ── 1. Pay worker (85% TON) — bounce:true to recover on failure ─
         send(SendParameters {
             to: msg.workerAddr,
             value: workerAmt,
             mode: SendIgnoreErrors,
-            bounce: false,
+            bounce: true,
             body: WorkerPayment {
                 taskId: msg.taskId,
                 amount: workerAmt,
@@ -160,11 +165,19 @@ contract SettlementMaster with Deployable, Ownable {
                 }.toCell(),
             });
         }
+    }
 
-        // ── 5. Update statistics ────────────────────────────────────────
-        self.totalSettled = total + self.totalSettled;
-        self.totalGSTDMinted = msg.gstdBonusAmount + self.totalGSTDMinted;
-        self.taskCount = 1 + self.taskCount;
+    // ── Handle bounced worker payments (return TON to settlement pool) ──
+    bounced(src: bounced<WorkerPayment>) {
+        // Worker payment failed (invalid address). TON returns here.
+        // Re-add to treasury as fallback
+        send(SendParameters {
+            to: self.treasury,
+            value: 0,
+            mode: SendRemainingValue + SendIgnoreErrors,
+            bounce: false,
+            body: "bounced_worker_payment".asComment(),
+        });
     }
 
     // ── DAO Governance: Update revenue split ────────────────────────────

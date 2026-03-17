@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: SettlementMaster
-BoC Size: 1719 bytes
+BoC Size: 1916 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 26
@@ -164,6 +164,7 @@ No arguments
 * 135: Code of a contract was not found
 * 136: Invalid standard address
 * 138: Not a basechain address
+* 1730: Only Gateway/Orchestrator can settle
 * 8484: Payment below minimum
 * 22722: Must sum to 100
 * 27818: Rate must be positive

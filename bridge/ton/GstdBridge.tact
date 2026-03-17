@@ -34,8 +34,8 @@ message StonfiSwapPayload {
     refAddress: Address; // Referral
 }
 
-fun stringHash(str: String): Int {
-    return beginCell().storeStringRef(str).endCell().hash();
+inline fun stringHash(str: String): Int {
+    return sha256(str);
 }
 
 contract GstdBridgeRouter with Deployable, Ownable {

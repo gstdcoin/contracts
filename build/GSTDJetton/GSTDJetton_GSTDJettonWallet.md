@@ -98,8 +98,8 @@ TL-B: `burn#4056115d queryId:uint64 amount:coins responseDestination:address = B
 Signature: `Burn{queryId:uint64,amount:coins,responseDestination:address}`
 
 ### GSTDJetton$Data
-TL-B: `_ totalSupply:coins maxSupply:coins owner:address mintAuthority:address content:^cell mintable:bool workerPoolMinted:coins workerPoolMax:coins totalBurned:coins totalMintEvents:uint64 = GSTDJetton`
-Signature: `GSTDJetton{totalSupply:coins,maxSupply:coins,owner:address,mintAuthority:address,content:^cell,mintable:bool,workerPoolMinted:coins,workerPoolMax:coins,totalBurned:coins,totalMintEvents:uint64}`
+TL-B: `_ totalSupply:coins maxSupply:coins owner:address mintAuthority:address content:^cell mintable:bool workerPoolMinted:coins workerPoolMax:coins totalBurned:coins totalMintEvents:uint64 authorityLocked:bool = GSTDJetton`
+Signature: `GSTDJetton{totalSupply:coins,maxSupply:coins,owner:address,mintAuthority:address,content:^cell,mintable:bool,workerPoolMinted:coins,workerPoolMax:coins,totalBurned:coins,totalMintEvents:uint64,authorityLocked:bool}`
 
 ### JettonData
 TL-B: `_ totalSupply:coins mintable:bool adminAddress:address jettonContent:^cell jettonWalletCode:^cell = JettonData`
@@ -168,6 +168,7 @@ No arguments
 * 4429: Invalid sender
 * 8319: Only Settlement can mint
 * 21543: Only owner can burn
+* 28612: Mint authority already locked
 * 35499: Only owner
 * 36952: Only owner can transfer
 * 37727: Worker pool exhausted

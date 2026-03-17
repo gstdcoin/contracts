@@ -1,87 +1,81 @@
-// GSTD Platform - Escrow Smart Contract
+// GSTD Platform — Escrow Smart Contract
 // Handles task compensation distribution via pull-model
+// Worker deposits → Task completion → Owner authorizes payout → Split 95/5
 
 import "@stdlib/deploy";
 import "@stdlib/ownable";
 
-// Withdraw message with structured payload
+// Messages
 message Withdraw {
     executorAddress: Address;
     platformFee: Int as coins;
     executorReward: Int as coins;
-    taskId: String;
+    taskId: Int as uint64;
 }
 
-// Escrow contract state
+message UpdateAdmin {
+    newAdmin: Address;
+}
+
+// Escrow contract
 contract Escrow with Deployable, Ownable {
-    // Admin wallet address (receives 5% platform fee)
+    owner: Address;
     adminWallet: Address;
-    
-    // Minimum message value to prevent spam
-    minMessageValue: Int as coins = 10000000; // 0.01 TON
-    
+    minMessageValue: Int as coins;
+
     init(owner: Address, adminWalletAddress: Address) {
-        Ownable.init(owner);
+        self.owner = owner;
         self.adminWallet = adminWalletAddress;
+        self.minMessageValue = ton("0.01");
     }
-    
-    // Receive TON for task compensation
-    receive(msg: Cell, forward: Cell?) {
-        // Accept any incoming TON
-        // Funds are locked until withdrawal is authorized
+
+    // Accept deposits (lock funds for tasks)
+    receive("deposit") {
+        require(context().value >= self.minMessageValue, "Below minimum deposit");
     }
-    
-    // Withdraw funds based on structured message
-    receive(msg: Withdraw, forward: Cell?) {
-        // Verify sender is authorized
-        let sender = context().sender;
-        require(self.isOwner(sender), "Unauthorized withdrawal: only owner can authorize payouts");
-        
-        // Verify contract has sufficient balance
-        let totalAmount = msg.platformFee + msg.executorReward;
-        require(myBalance() >= totalAmount, "Insufficient balance");
-        
-        // Send platform fee (5%) to admin wallet
+
+    // Withdraw: Owner authorizes split payout
+    receive(msg: Withdraw) {
+        require(sender() == self.owner, "Only owner can authorize payouts");
+
+        let totalAmount: Int = msg.platformFee + msg.executorReward;
+        require(myBalance() >= totalAmount + ton("0.05"), "Insufficient balance");
+
+        // 1. Send platform fee (5%) to admin wallet
         if (msg.platformFee > 0) {
             send(SendParameters{
                 to: self.adminWallet,
                 value: msg.platformFee,
-                mode: SendRemainingValue,
+                mode: SendIgnoreErrors,
                 bounce: false,
-                body: emptyCell()
+                body: "platform_fee".asComment(),
             });
         }
-        
-        // Send executor reward
+
+        // 2. Send executor reward (95%) — bounce:true for safety
         if (msg.executorReward > 0) {
             send(SendParameters{
                 to: msg.executorAddress,
                 value: msg.executorReward,
-                mode: SendRemainingValue,
-                bounce: false,
-                body: emptyCell()
+                mode: SendIgnoreErrors,
+                bounce: true,
+                body: "task_reward".asComment(),
             });
         }
-        
-        // Send remaining value back to sender (gas refund)
-        send(SendParameters{
-            to: sender,
-            value: 0,
-            mode: SendRemainingValue,
-            bounce: false,
-            body: emptyCell()
-        });
     }
-    
-    // Get contract balance
-    get fun balance(): Int as coins {
+
+    // Admin update (owner only)
+    receive(msg: UpdateAdmin) {
+        require(sender() == self.owner, "Only owner");
+        self.adminWallet = msg.newAdmin;
+    }
+
+    // Getters
+    get fun balance(): Int {
         return myBalance();
     }
-    
-    // Update admin wallet address (only owner)
-    set fun updateAdminWallet(newAdminWallet: Address) {
-        self.requireOwner();
-        self.adminWallet = newAdminWallet;
+
+    get fun get_admin(): Address {
+        return self.adminWallet;
     }
 }
-

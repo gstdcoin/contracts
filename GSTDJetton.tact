@@ -84,6 +84,7 @@ contract GSTDJetton with Deployable, Ownable {
     // ── Statistics ──────────────────────────────────────────────────────
     totalBurned: Int as coins;
     totalMintEvents: Int as uint64;
+    authorityLocked: Bool;  // One-time lock for mint authority transfer
 
     init(owner: Address, content: Cell) {
         self.owner = owner;
@@ -96,6 +97,7 @@ contract GSTDJetton with Deployable, Ownable {
         self.workerPoolMax = 400000000000000000;     // 400M * 10^9
         self.totalBurned = 0;
         self.totalMintEvents = 0;
+        self.authorityLocked = false;
     }
 
     // ── Worker Reward Mint (from Settlement Contract only) ──────────────
@@ -150,10 +152,12 @@ contract GSTDJetton with Deployable, Ownable {
         }
     }
 
-    // ── Admin: Set mint authority (one-time transfer to Settlement) ─────
+    // ── Admin: Set mint authority (ONE-TIME transfer to Settlement) ──────
     receive(msg: SetMintAuthority) {
         require(sender() == self.owner, "Only owner");
+        require(!self.authorityLocked, "Mint authority already locked");
         self.mintAuthority = msg.newAuthority;
+        self.authorityLocked = true;  // Cannot be changed again
     }
 
     // ── Admin: Update content metadata ──────────────────────────────────
@@ -198,7 +202,7 @@ contract GSTDJetton with Deployable, Ownable {
     get fun get_burn_stats(): BurnStats {
         return BurnStats{
             totalBurned: self.totalBurned,
-            circulatingSupply: self.totalSupply - self.totalBurned,
+            circulatingSupply: self.totalSupply,  // totalSupply already decreased on burn
             totalMintEvents: self.totalMintEvents
         };
     }

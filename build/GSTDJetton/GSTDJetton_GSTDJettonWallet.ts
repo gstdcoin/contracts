@@ -1376,6 +1376,7 @@ export type GSTDJetton$Data = {
     workerPoolMax: bigint;
     totalBurned: bigint;
     totalMintEvents: bigint;
+    authorityLocked: boolean;
 }
 
 export function storeGSTDJetton$Data(src: GSTDJetton$Data) {
@@ -1392,6 +1393,7 @@ export function storeGSTDJetton$Data(src: GSTDJetton$Data) {
         b_1.storeCoins(src.workerPoolMax);
         b_1.storeCoins(src.totalBurned);
         b_1.storeUint(src.totalMintEvents, 64);
+        b_1.storeBit(src.authorityLocked);
         b_0.storeRef(b_1.endCell());
     };
 }
@@ -1409,7 +1411,8 @@ export function loadGSTDJetton$Data(slice: Slice) {
     const _workerPoolMax = sc_1.loadCoins();
     const _totalBurned = sc_1.loadCoins();
     const _totalMintEvents = sc_1.loadUintBig(64);
-    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents };
+    const _authorityLocked = sc_1.loadBit();
+    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked };
 }
 
 export function loadTupleGSTDJetton$Data(source: TupleReader) {
@@ -1423,7 +1426,8 @@ export function loadTupleGSTDJetton$Data(source: TupleReader) {
     const _workerPoolMax = source.readBigNumber();
     const _totalBurned = source.readBigNumber();
     const _totalMintEvents = source.readBigNumber();
-    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents };
+    const _authorityLocked = source.readBoolean();
+    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked };
 }
 
 export function loadGetterTupleGSTDJetton$Data(source: TupleReader) {
@@ -1437,7 +1441,8 @@ export function loadGetterTupleGSTDJetton$Data(source: TupleReader) {
     const _workerPoolMax = source.readBigNumber();
     const _totalBurned = source.readBigNumber();
     const _totalMintEvents = source.readBigNumber();
-    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents };
+    const _authorityLocked = source.readBoolean();
+    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked };
 }
 
 export function storeTupleGSTDJetton$Data(source: GSTDJetton$Data) {
@@ -1452,6 +1457,7 @@ export function storeTupleGSTDJetton$Data(source: GSTDJetton$Data) {
     builder.writeNumber(source.workerPoolMax);
     builder.writeNumber(source.totalBurned);
     builder.writeNumber(source.totalMintEvents);
+    builder.writeBoolean(source.authorityLocked);
     return builder.build();
 }
 
@@ -1833,6 +1839,7 @@ export const GSTDJettonWallet_errors = {
     4429: { message: "Invalid sender" },
     8319: { message: "Only Settlement can mint" },
     21543: { message: "Only owner can burn" },
+    28612: { message: "Mint authority already locked" },
     35499: { message: "Only owner" },
     36952: { message: "Only owner can transfer" },
     37727: { message: "Worker pool exhausted" },
@@ -1882,6 +1889,7 @@ export const GSTDJettonWallet_errors_backward = {
     "Invalid sender": 4429,
     "Only Settlement can mint": 8319,
     "Only owner can burn": 21543,
+    "Mint authority already locked": 28612,
     "Only owner": 35499,
     "Only owner can transfer": 36952,
     "Worker pool exhausted": 37727,
@@ -1914,7 +1922,7 @@ const GSTDJettonWallet_types: ABIType[] = [
     {"name":"Transfer","header":1435380091,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"destination","type":{"kind":"simple","type":"address","optional":false}},{"name":"responseDestination","type":{"kind":"simple","type":"address","optional":false}},{"name":"customPayload","type":{"kind":"simple","type":"cell","optional":true}},{"name":"forwardTonAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"forwardPayload","type":{"kind":"simple","type":"slice","optional":false,"format":"remainder"}}]},
     {"name":"InternalTransfer","header":2886927703,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"from","type":{"kind":"simple","type":"address","optional":false}},{"name":"responseAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"forwardTonAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"forwardPayload","type":{"kind":"simple","type":"slice","optional":false,"format":"remainder"}}]},
     {"name":"Burn","header":1079382365,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"responseDestination","type":{"kind":"simple","type":"address","optional":false}}]},
-    {"name":"GSTDJetton$Data","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"maxSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"mintAuthority","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"workerPoolMinted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"workerPoolMax","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalBurned","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalMintEvents","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
+    {"name":"GSTDJetton$Data","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"maxSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"mintAuthority","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"workerPoolMinted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"workerPoolMax","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalBurned","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalMintEvents","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"authorityLocked","type":{"kind":"simple","type":"bool","optional":false}}]},
     {"name":"JettonData","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"adminAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"jettonContent","type":{"kind":"simple","type":"cell","optional":false}},{"name":"jettonWalletCode","type":{"kind":"simple","type":"cell","optional":false}}]},
     {"name":"WorkerPoolStats","header":null,"fields":[{"name":"minted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"max","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"remaining","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
     {"name":"BurnStats","header":null,"fields":[{"name":"totalBurned","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"circulatingSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalMintEvents","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},

@@ -90,14 +90,15 @@ PROGRAM{
     ENDC
   }>
   $GSTDJetton$_store PROCINLINE:<{
-    s10 s9 XCHG2
+    s11 s10 XCHG2
     STVARUINT16
-    s0 s7 XCHG2
+    s0 s8 XCHG2
     STVARUINT16
-    s1 s5 XCHG
+    s1 s6 XCHG
     STSLICE
-    s1 s3 XCHG
+    s1 s4 XCHG
     STSLICE
+    s1 s2 XCHG
     STREF
     1 STI
     SWAP
@@ -105,9 +106,11 @@ PROGRAM{
     NEWC
     ROT
     STVARUINT16
-    s0 s3 XCHG2
+    ROT
     STVARUINT16
+    s1 s3 XCHG
     64 STU
+    1 STI
     STBREFR
   }>
   $GSTDJetton$_load PROCINLINE:<{
@@ -124,14 +127,15 @@ PROGRAM{
     LDVARUINT16
     LDVARUINT16
     64 LDU
+    1 LDI
     DROP
-    s3 s10 XCHG
-    s3 s9 XCHG
-    s3 s8 XCHG
-    s3 s7 XCHG
-    s3 s6 XCHG
-    s3 s5 XCHG
-    s3 s4 XCHG
+    s4 s11 XCHG
+    s4 s10 XCHG
+    s4 s9 XCHG
+    s4 s8 XCHG
+    s4 s7 XCHG
+    s4 s6 XCHG
+    s4 s5 XCHG
   }>
   $StateInit$_get_code PROCINLINE:<{
     DROP
@@ -166,6 +170,7 @@ PROGRAM{
     s1 s1 PUSH2
     s6 s9 XCHG
     s5 s8 XCHG
+    FALSE
   }>
   $GSTDJetton$_contract_load PROCINLINE:<{
     c4 PUSH
@@ -174,7 +179,7 @@ PROGRAM{
     SWAP
     IF:<{
       $GSTDJetton$_load INLINECALLDICT
-      1 10 BLKDROP2
+      1 11 BLKDROP2
     }>ELSE<{
       $GSTDJetton$init$_load INLINECALLDICT
       s0 s2 XCHG
@@ -188,7 +193,7 @@ PROGRAM{
     TRUE
     SWAP
     1 STI
-    10 -ROLL
+    11 -ROLL
     $GSTDJetton$_store INLINECALLDICT
     ENDC
     c4 POP
@@ -248,24 +253,26 @@ PROGRAM{
     $GSTDJettonWallet$_init_child INLINECALLDICT
   }>
   $GSTDJetton$_fun_get_jetton_data PROCREF:<{
-    s9 s4 s7 PUSH3
-    s8 PUSH
+    s10 s5 s8 PUSH3
+    s9 PUSH
         MYADDR
+    s11 s15 XCHG
     s10 s14 XCHG
     s9 s13 XCHG
     s8 s12 XCHG
-    s7 s11 XCHG
+    s7 s15 XCHG
     s6 s14 XCHG
     s5 s13 XCHG
     s4 s12 XCHG
-    s3 s11 XCHG
+    s3 s15 XCHG
     s14 s13 s0 XCHG3
     $GSTDJetton$_fun_getJettonWalletInit INLINECALLDICT
     $StateInit$_get_code INLINECALLDICT
     s4 s12 XCHG
-    s3 s11 XCHG
+    s3 s15 XCHG
     s14 s13 s0 XCHG3
     $JettonData$_constructor_totalSupply_mintable_adminAddress_jettonContent_jettonWalletCode INLINECALLDICT
+    s11 s15 XCHG
     s10 s14 XCHG
     s9 s13 XCHG
     s8 s12 XCHG
@@ -278,26 +285,24 @@ PROGRAM{
     $global_contractAddress INLINECALLDICT
   }>
   $GSTDJetton$_fun_get_max_supply PROCREF:<{
-    s8 PUSH
+    s9 PUSH
   }>
   $WorkerPoolStats$_constructor_minted_max_remaining PROCINLINE:<{
   }>
   $GSTDJetton$_fun_get_worker_pool_stats PROCREF:<{
-    s2 s3 PUSH2
+    s3 s4 PUSH2
     SUB
-    s4 s3 s(-2) PU2XC
+    s5 s4 s(-2) PU2XC
     $WorkerPoolStats$_constructor_minted_max_remaining INLINECALLDICT
   }>
   $BurnStats$_constructor_totalBurned_circulatingSupply_totalMintEvents PROCINLINE:<{
   }>
   $GSTDJetton$_fun_get_burn_stats PROCREF:<{
-    s9 s1 PUSH2
-    SUB
-    s2 s1 s(-1) PU2XC
+    s2 s10 s1 PUSH3
     $BurnStats$_constructor_totalBurned_circulatingSupply_totalMintEvents INLINECALLDICT
   }>
   $GSTDJetton$_fun_get_mint_authority PROCREF:<{
-    s6 PUSH
+    s7 PUSH
   }>
   $MessageParameters$_constructor_bounce_to_value_mode_body PROCINLINE:<{
     s3 s3 XCHG2
@@ -330,7 +335,7 @@ PROGRAM{
         SENDRAWMSG
   }>
   $GSTDJetton$_fun_owner PROCREF:<{
-    s7 PUSH
+    s8 PUSH
   }>
   $SendParameters$_constructor_to_value_mode_bounce_body_code_data PROCINLINE:<{
     s4 s6 XCHG
@@ -350,41 +355,41 @@ PROGRAM{
   %get_jetton_data PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
     $GSTDJetton$_fun_get_jetton_data INLINECALLDICT
-    10 5 BLKDROP2
+    11 5 BLKDROP2
     $JettonData$_to_external INLINECALLDICT
   }>
   %get_wallet_address PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
-    10 ROLL
+    11 ROLL
     $GSTDJetton$_fun_get_wallet_address INLINECALLDICT
-    10 1 BLKDROP2
+    11 1 BLKDROP2
   }>
   %get_max_supply PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
     $GSTDJetton$_fun_get_max_supply INLINECALLDICT
-    10 1 BLKDROP2
+    11 1 BLKDROP2
   }>
   %get_worker_pool_stats PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
     $GSTDJetton$_fun_get_worker_pool_stats INLINECALLDICT
-    10 3 BLKDROP2
+    11 3 BLKDROP2
     $WorkerPoolStats$_to_external INLINECALLDICT
   }>
   %get_burn_stats PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
     $GSTDJetton$_fun_get_burn_stats INLINECALLDICT
-    10 3 BLKDROP2
+    11 3 BLKDROP2
     $BurnStats$_to_external INLINECALLDICT
   }>
   %get_mint_authority PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
     $GSTDJetton$_fun_get_mint_authority INLINECALLDICT
-    10 1 BLKDROP2
+    11 1 BLKDROP2
   }>
   %owner PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
     $GSTDJetton$_fun_owner INLINECALLDICT
-    10 1 BLKDROP2
+    11 1 BLKDROP2
   }>
   recv_internal PROC:<{
     c2 SAVE
@@ -404,15 +409,15 @@ PROGRAM{
     s0 s2 XCHG
     __tact_context_sender SETGLOB
     $GSTDJetton$_contract_load INLINECALLDICT
-    s0 s11 XCHG
+    s0 s12 XCHG
     IFJMP:<{
-      11 BLKDROP
+      12 BLKDROP
     }>
-    s9 PUSH
+    s10 PUSH
     SBITS
     31 GTINT
     IF:<{
-      s0 s9 XCHG
+      s0 s10 XCHG
       32 LDU
       OVER
       3145374392 PUSHINT
@@ -424,33 +429,33 @@ PROGRAM{
         DROP
         8319 PUSHINT
         __tact_context_get_sender INLINECALLDICT
-        s8 PUSH
+        s9 PUSH
         SDEQ
         THROWANYIFNOT
         56760 PUSHINT
-        s5 PUSH
+        s6 PUSH
         THROWANYIFNOT
         47714 PUSHINT
-        s10 s1 PUSH2
+        s11 s1 PUSH2
         ADD
-        s10 PUSH
+        s11 PUSH
         LEQ
         THROWANYIFNOT
         37727 PUSHINT
-        s4 s1 PUSH2
+        s5 s1 PUSH2
         ADD
-        s4 PUSH
+        s5 PUSH
         LEQ
         THROWANYIFNOT
-        s9 s9 XCPU
+        s10 s10 XCPU
         ADD
-        s3 s9 XCPU
+        s4 s10 XCPU
         ADD
         s0 s11 XCHG
         INC
-        s3 s9 XCHG
-        s3 s11 XCHG
-        s10 s0 s10 XC2PU
+        s4 s10 XCHG
+        s4 s11 XCHG
+        s0 s12 s12 XC2PU
         $GSTDJetton$_fun_getJettonWalletInit INLINECALLDICT
         2DUP
         $global_contractAddress INLINECALLDICT
@@ -464,16 +469,16 @@ PROGRAM{
         s3 s5 XCHG
         s4 21 s() XCHG
         s2 s3 XCHG
-        s2 20 s() XCHG
+        s2 22 s() XCHG
         $InternalTransfer$_constructor_queryId_amount_from_responseAddress_forwardTonAmount_forwardPayload INLINECALLDICT
         NEWC
         $InternalTransfer$_store_cell INLINECALLDICT
         s6 s5 s0 XCHG3
-        s4 s15 XCHG
+        s4 17 s() XCHG
         s3 16 s() XCHG
         s0 s2 XCHG
+        s1 17 s() XCHG
         s0 16 s() XCHG
-        s1 s15 XCHG
         $SendParameters$_constructor_to_value_mode_bounce_body_code_data INLINECALLDICT
             NEWC
             b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
@@ -541,6 +546,7 @@ PROGRAM{
             // Group 5: Sending the message, with `mode` on top
             SWAP
             SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+        s8 s10 XCHG
         2 8 BLKSWAP
         $GSTDJetton$_contract_store INLINECALLDICT
         RETALT
@@ -556,7 +562,7 @@ PROGRAM{
         LDMSGADDR
         LDMSGADDR
         DROP
-        s11 s12 s12 XCHG3
+        s12 s13 s13 XCHG3
         $GSTDJetton$_fun_getJettonWalletInit INLINECALLDICT
         3820 PUSHINT
         __tact_context_get_sender INLINECALLDICT
@@ -564,12 +570,12 @@ PROGRAM{
         $global_contractAddress INLINECALLDICT
         SDEQ
         THROWANYIFNOT
-        s9 s10 XCPU
+        s10 s11 XCPU
         SUB
-        s0 s10 XCHG
+        s2 s11 XCHG2
         ADD
             B{b5ee9c72410101010024000043800000000000000000000000000000000000000000000000000000000000000000104aec829d} B>boc <s PUSHSLICE
-        s11 s(-1) PUXC
+        s12 s(-1) PUXC
         SDEQ
         NOT
         IF:<{
@@ -577,7 +583,7 @@ PROGRAM{
           66 PUSHINT
           FALSE
               B{b5ee9c72410101010015000026000000004275726e207375636365737366756cbbcb89a6} B>boc PUSHREF
-          s4 s14 XCHG
+          s4 s15 XCHG
           $SendParameters$_constructor_to_value_mode_bounce_body INLINECALLDICT
               NEWC
               b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
@@ -646,10 +652,16 @@ PROGRAM{
               SWAP
               SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
         }>ELSE<{
-          s10 POP
+          s11 POP
         }>
-        s8 s9 XCHG
-        2 7 BLKSWAP
+        s9 s10 XCHG
+        s7 s9 XCHG
+        s6 s8 XCHG
+        s5 s7 XCHG
+        s4 s6 XCHG
+        s3 s5 XCHG
+        s4 s0 s3 XCHG3
+        s0 s2 XCHG
         $GSTDJetton$_contract_store INLINECALLDICT
         RETALT
       }>
@@ -658,21 +670,27 @@ PROGRAM{
       EQUAL
       IFJMP:<{
         NIP
-        s5 POP
-        s0 s4 XCHG
+        s6 POP
+        s0 s5 XCHG
         LDMSGADDR
         DROP
         35499 PUSHINT
         __tact_context_get_sender INLINECALLDICT
-        s7 PUSH
+        s8 PUSH
         SDEQ
+        THROWANYIFNOT
+        28612 PUSHINT
+        s0 s11 XCHG
+        NOT
+        s1 s11 XCHG
         THROWANYIFNOT
         s7 s9 XCHG
         s6 s8 XCHG
         s5 s7 XCHG
-        s0 s6 XCHG
+        s5 s6 XCHG
         s3 s5 XCHG
-        s4 s0 s3 XCHG3
+        2 3 BLKSWAP
+        TRUE
         $GSTDJetton$_contract_store INLINECALLDICT
         RETALT
       }>
@@ -681,21 +699,22 @@ PROGRAM{
       EQUAL
       IFJMP:<{
         NIP
-        s4 POP
-        s0 s3 XCHG
+        s5 POP
+        s0 s4 XCHG
         LDREF
         DROP
         35499 PUSHINT
         __tact_context_get_sender INLINECALLDICT
-        s7 PUSH
+        s8 PUSH
         SDEQ
         THROWANYIFNOT
+        s8 s10 XCHG
         s7 s9 XCHG
         s6 s8 XCHG
         s5 s7 XCHG
-        s4 s6 XCHG
-        s4 s3 s5 XCHG3
-        s1 s2 XCHG
+        s0 s6 XCHG
+        s3 s5 XCHG
+        s4 s3 s0 XCHG3
         $GSTDJetton$_contract_store INLINECALLDICT
         RETALT
       }>
@@ -708,6 +727,7 @@ PROGRAM{
         $DeployOk$_constructor_queryId INLINECALLDICT
         NEWC
         $DeployOk$_store_cell INLINECALLDICT
+        s9 s11 XCHG
         s8 s10 XCHG
         s7 s9 XCHG
         s6 s8 XCHG
@@ -715,37 +735,36 @@ PROGRAM{
         s4 s6 XCHG
         s3 s5 XCHG
         s4 s3 s0 XCHG3
-        s1 s2 XCHG
         $GSTDJetton$_fun_notify INLINECALLDICT
         $GSTDJetton$_contract_store INLINECALLDICT
         RETALT
       }>
-      s3 POP
-      s2 s8 XCHG
+      s4 POP
+      s3 s9 XCHG
     }>ELSE<{
-      s3 POP
+      s4 POP
     }>
-    s0 s8 XCHG
+    s0 s9 XCHG
     HASHSU
     23057516169875860724469981668541648600823196402647505890823201095186413006072 PUSHINT
     EQUAL
     IFJMP:<{
       35499 PUSHINT
       __tact_context_get_sender INLINECALLDICT
-      s6 PUSH
+      s7 PUSH
       SDEQ
       THROWANYIFNOT
+      s7 s9 XCHG
       s6 s8 XCHG
       s5 s7 XCHG
       s4 s6 XCHG
       s3 s5 XCHG
-      s2 s4 XCHG
       FALSE
-      s4 s4 s4 XCHG3
-      s0 s3 XCHG
+      s5 s1 s5 XCHG3
+      s3 s4 XCHG2
       $GSTDJetton$_contract_store INLINECALLDICT
     }>
-    9 BLKDROP
+    10 BLKDROP
     130 THROW
   }>
 }END>c

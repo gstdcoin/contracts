@@ -44,6 +44,11 @@
             "name": "EscrowComplete",
             "path": "./escrow_complete.tact",
             "output": "./build/EscrowComplete"
+        },
+        {
+            "name": "GstdBridge",
+            "path": "./bridge/ton/GstdBridge.tact",
+            "output": "./build/GstdBridge"
         }
     ]
 }
