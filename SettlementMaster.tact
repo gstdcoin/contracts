@@ -53,11 +53,16 @@ message EmergencyPause {
     paused: Bool;
 }
 
+message SetGateway {
+    gateway: Address;
+}
+
 // ── Settlement Master Contract ──────────────────────────────────────────────
 
 contract SettlementMaster with Deployable, Ownable {
     // ── Configuration ───────────────────────────────────────────────────
     owner: Address; // DAO governance contract
+    gateway: Address; // Gateway/Orchestrator that initiates settlements
     gstdJetton: Address; // GSTDJetton master contract
     treasury: Address; // TreasuryGold contract
     protocolFee: Address; // Buyback & Burn contract
@@ -84,6 +89,7 @@ contract SettlementMaster with Deployable, Ownable {
         protocolFee: Address,
     ) {
         self.owner = owner;
+        self.gateway = owner; // initially owner is also gateway; set separately later
         self.gstdJetton = gstdJetton;
         self.treasury = treasury;
         self.protocolFee = protocolFee;
@@ -101,10 +107,16 @@ contract SettlementMaster with Deployable, Ownable {
         self.minPayment = ton("0.1"); // minimum 0.1 TON per settlement
     }
 
+    // ── DAO: Set gateway address ─────────────────────────────────────────
+    receive(msg: SetGateway) {
+        require(sender() == self.owner, "Only DAO");
+        self.gateway = msg.gateway;
+    }
+
     // ── Main Settlement Function ────────────────────────────────────────
     // Called by Gateway/Orchestrator with TON payment attached
     receive(msg: SettleTask) {
-        require(sender() == self.owner, "Only Gateway/Orchestrator can settle");
+        require(sender() == self.owner || sender() == self.gateway, "Only DAO or Gateway can settle");
         require(!self.paused, "Settlement paused");
 
         let total: Int = context().value - ton("0.1"); // reserve for gas
@@ -116,9 +128,9 @@ contract SettlementMaster with Deployable, Ownable {
         let protocolAmt: Int = total - workerAmt - treasuryAmt; // remainder
 
         // ── Update statistics BEFORE sends (prevent race conditions) ────
-        self.totalSettled = total + self.totalSettled;
-        self.totalGSTDMinted = msg.gstdBonusAmount + self.totalGSTDMinted;
-        self.taskCount = 1 + self.taskCount;
+        self.totalSettled += total;
+        self.totalGSTDMinted += msg.gstdBonusAmount;
+        self.taskCount += 1;
 
         // ── 1. Pay worker (85% TON) — bounce:true to recover on failure ─
         send(SendParameters {

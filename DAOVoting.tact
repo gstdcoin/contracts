@@ -74,7 +74,9 @@ contract DAOVoting with Deployable, Ownable {
 
     // ── Create new proposal ─────────────────────────────────────────────
     receive(msg: CreateProposal) {
-        // In production: verify sender has minimum GSTD staked
+        // Verify sender attaches enough value as proof of stake commitment
+        require(context().value >= ton("1"), "Must attach min 1 TON as proposal stake");
+
         let proposalId: Int = self.proposalCount;
         self.proposalCount = self.proposalCount + 1;
 
@@ -102,8 +104,16 @@ contract DAOVoting with Deployable, Ownable {
 
     // ── Execute passed proposal (after timelock) ────────────────────────
     receive(msg: ExecuteProposal) {
-        // Verify proposal passed and timelock expired
-        // Forward execution payload to target contract
+        // Forward execution to the specific Proposal contract which validates
+        // voting results and timelock. The proposal contract sends to target.
+        let proposalAddr: Address = self.get_proposal_address(msg.proposalId);
+        send(SendParameters {
+            to: proposalAddr,
+            value: ton("0.15"),
+            mode: SendIgnoreErrors,
+            bounce: false,
+            body: "execute".asComment(),
+        });
         self.executedCount = self.executedCount + 1;
     }
 
@@ -204,6 +214,7 @@ contract Proposal {
     receive(msg: CastVote) {
         require(self.status == 0, "Voting not active");
         require(now() < self.votingEndsAt, "Voting period ended");
+        require(msg.weight > 0, "Vote weight must be positive");
 
         if (msg.support) {
             self.votesFor = self.votesFor + msg.weight;

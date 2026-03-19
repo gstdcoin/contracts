@@ -107,12 +107,12 @@ contract GSTDJetton with Deployable, Ownable {
         require(self.totalSupply + msg.amount <= self.maxSupply, "Max supply reached");
         require(self.workerPoolMinted + msg.amount <= self.workerPoolMax, "Worker pool exhausted");
 
-        self.totalSupply = self.totalSupply + msg.amount;
-        self.workerPoolMinted = self.workerPoolMinted + msg.amount;
-        self.totalMintEvents = self.totalMintEvents + 1;
+        self.totalSupply += msg.amount;
+        self.workerPoolMinted += msg.amount;
+        self.totalMintEvents += 1;
 
         // Deploy or credit JettonWallet for worker
-        let walletInit: StateInit = self.getJettonWalletInit(msg.workerAddr);
+        let walletInit: StateInit = getJettonWalletInit(msg.workerAddr, myAddress());
         send(SendParameters{
             to: contractAddress(walletInit),
             value: ton("0.05"),
@@ -134,11 +134,11 @@ contract GSTDJetton with Deployable, Ownable {
     // ── Burn notification handling ──────────────────────────────────────
     receive(msg: BurnNotification) {
         // Verify sender is a valid JettonWallet
-        let walletInit: StateInit = self.getJettonWalletInit(msg.sender);
+        let walletInit: StateInit = getJettonWalletInit(msg.sender, myAddress());
         require(sender() == contractAddress(walletInit), "Invalid burn notification");
 
-        self.totalSupply = self.totalSupply - msg.amount;
-        self.totalBurned = self.totalBurned + msg.amount;
+        self.totalSupply -= msg.amount;
+        self.totalBurned += msg.amount;
 
         // Send remaining TON to response destination
         if (msg.responseDestination != newAddress(0, 0)) {
@@ -167,7 +167,7 @@ contract GSTDJetton with Deployable, Ownable {
     }
 
     // ── Admin: Permanently disable minting ──────────────────────────────
-    receive("freeze_mint") {
+    receive(msg: FreezeMint) {
         require(sender() == self.owner, "Only owner");
         self.mintable = false;
     }
@@ -179,12 +179,12 @@ contract GSTDJetton with Deployable, Ownable {
             mintable: self.mintable,
             adminAddress: self.owner,
             jettonContent: self.content,
-            jettonWalletCode: self.getJettonWalletInit(myAddress()).code
+            jettonWalletCode: getJettonWalletInit(myAddress(), myAddress()).code
         };
     }
 
     get fun get_wallet_address(ownerAddress: Address): Address {
-        return contractAddress(self.getJettonWalletInit(ownerAddress));
+        return contractAddress(getJettonWalletInit(ownerAddress, myAddress()));
     }
 
     get fun get_max_supply(): Int {
@@ -211,10 +211,13 @@ contract GSTDJetton with Deployable, Ownable {
         return self.mintAuthority;
     }
 
-    // ── Internal helpers ────────────────────────────────────────────────
-    fun getJettonWalletInit(address: Address): StateInit {
-        return initOf GSTDJettonWallet(address, myAddress());
-    }
+}
+// Binary message for freeze_mint (replaces text message for gas efficiency)
+message FreezeMint {}
+
+// ── Standalone helper (does not use contract state) ─────────────────────────
+fun getJettonWalletInit(address: Address, master: Address): StateInit {
+    return initOf GSTDJettonWallet(address, master);
 }
 
 // ── Data structures ─────────────────────────────────────────────────────────
@@ -260,7 +263,7 @@ contract GSTDJettonWallet {
         let validSender: Bool = sender() == contractAddress(senderWalletInit) || sender() == self.jettonMaster;
         require(validSender, "Invalid sender");
 
-        self.balance = self.balance + msg.amount;
+        self.balance += msg.amount;
 
         // Forward notification if needed
         if (msg.forwardTonAmount > 0) {
@@ -284,7 +287,7 @@ contract GSTDJettonWallet {
         require(sender() == self.owner, "Only owner can transfer");
         require(self.balance >= msg.amount, "Insufficient balance");
 
-        self.balance = self.balance - msg.amount;
+        self.balance -= msg.amount;
 
         let receiverInit: StateInit = initOf GSTDJettonWallet(msg.destination, self.jettonMaster);
         send(SendParameters{
@@ -310,7 +313,7 @@ contract GSTDJettonWallet {
         require(sender() == self.owner, "Only owner can burn");
         require(self.balance >= msg.amount, "Insufficient balance");
 
-        self.balance = self.balance - msg.amount;
+        self.balance -= msg.amount;
 
         send(SendParameters{
             to: self.jettonMaster,

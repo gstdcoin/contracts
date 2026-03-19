@@ -159,7 +159,8 @@ contract AgentRegistry with Deployable, Ownable {
     // ── Report Genesis violation ────────────────────────────────────────
     receive(msg: ReportGenesisViolation) {
         // Any verified node can report a violation
-        // Forward to node identity for status update
+        // Forward to node identity for status update + decrement active count
+        self.activeNodes = self.activeNodes - 1;
         let nodeAddr: Address = self.getNodeAddress(msg.nodeId);
         send(SendParameters {
             to: nodeAddr,

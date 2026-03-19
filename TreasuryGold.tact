@@ -99,7 +99,8 @@ contract TreasuryGold with Deployable, Ownable {
 
     // ── Confirmation of gold swap from DEX / oracle ─────────────────────
     receive(msg: GoldSwapConfirmed) {
-        // In production: verify sender is DEX router or oracle
+        require(sender() == self.dexRouter || sender() == self.owner, "Only DEX router or DAO");
+        require(msg.amount > 0, "Amount must be positive");
         self.goldReserveXAUt = self.goldReserveXAUt + msg.amount;
     }
 

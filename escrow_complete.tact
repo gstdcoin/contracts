@@ -1,175 +1,183 @@
-// GSTD Platform - Complete Escrow Smart Contract
-// Handles task compensation distribution via pull-model with full security
+// ============================================================================
+// GSTD Escrow Contract — Task Compensation Distribution
+// ============================================================================
+// Handles task compensation via pull-model with full security:
+// - Owner deposits TON for tasks
+// - Owner authorizes withdrawals to workers
+// - Platform fee is sent to treasury
+// - Replay attack protection via nonce
+// ============================================================================
 
 import "@stdlib/deploy";
 import "@stdlib/ownable";
 
-// Withdraw message with structured payload
+// ── Messages ────────────────────────────────────────────────────────────────
+
 message Withdraw {
     executorAddress: Address;
     platformFee: Int as coins;
     executorReward: Int as coins;
-    taskId: String;
-    nonce: Int; // Replay attack protection
-    signature: Cell?; // Optional signature for additional security
+    taskId: Int as uint64;
+    nonce: Int as uint64;
 }
 
-// Task deposit record
+message DepositTask {
+    taskId: Int as uint64;
+    totalAmount: Int as coins;
+}
+
+message UpdateTreasury {
+    newTreasury: Address;
+}
+
+message EmergencyWithdraw {
+    destination: Address;
+    amount: Int as coins;
+}
+
+// ── Data structures ─────────────────────────────────────────────────────────
+
 struct TaskDeposit {
-    taskId: String;
     totalAmount: Int as coins;
     executorReward: Int as coins;
     platformFee: Int as coins;
     claimed: Bool;
-    createdAt: Int;
+    createdAt: Int as uint64;
 }
 
-// Escrow contract state
+// ── Escrow Contract ─────────────────────────────────────────────────────────
+
 contract Escrow with Deployable, Ownable {
-    // Platform treasury address (receives fees)
+    owner: Address;
     treasury: Address;
-    
+
     // Minimum message value to prevent spam
-    minMessageValue: Int as coins = 10000000; // 0.01 TON
-    
-    // Task deposits mapping: taskId -> TaskDeposit
-    taskDeposits: Map<String, TaskDeposit> = emptyMap();
-    
-    // Nonce tracking for replay attack protection: address -> nonce
-    nonces: Map<Address, Int> = emptyMap();
-    
+    minMessageValue: Int as coins;
+
+    // Global nonce counter (must always increase)
+    lastNonce: Int as uint64;
+
+    // Task tracking counters
+    totalDeposits: Int as uint64;
+    totalWithdrawals: Int as uint64;
+    totalValueLocked: Int as coins;
+
     init(owner: Address, treasuryAddress: Address) {
-        Ownable.init(owner);
+        self.owner = owner;
         self.treasury = treasuryAddress;
+        self.minMessageValue = ton("0.01");
+        self.lastNonce = 0;
+        self.totalDeposits = 0;
+        self.totalWithdrawals = 0;
+        self.totalValueLocked = 0;
     }
-    
-    // Receive TON for task compensation
-    // Message body should contain taskId
-    receive(msg: Cell, forward: Cell?) {
-        // Accept any incoming TON
-        // Funds are locked until withdrawal is authorized
-        // In production, parse message body to extract taskId and create TaskDeposit
+
+    // ── Receive TON deposits (any sender can deposit) ───────────────────
+    receive("deposit") {
+        let amount: Int = context().value - ton("0.01");
+        require(amount > 0, "Deposit too small");
+        self.totalDeposits = self.totalDeposits + 1;
+        self.totalValueLocked = self.totalValueLocked + amount;
     }
-    
-    // Deposit TON for a specific task
-    receive(msg: String, forward: Cell?) {
-        // Parse taskId from message
-        let taskId = msg;
-        let depositAmount = myBalance() - context().bounced;
-        
-        // Create or update task deposit
-        let existing = self.taskDeposits.get(taskId);
-        if (existing != null) {
-            // Update existing deposit
-            let updated = existing!!;
-            updated.totalAmount = depositAmount + updated.totalAmount;
-            self.taskDeposits.set(taskId, updated);
-        } else {
-            // Create new deposit
-            let newDeposit = TaskDeposit{
-                taskId: taskId,
-                totalAmount: depositAmount,
-                executorReward: 0,
-                platformFee: 0,
-                claimed: false,
-                createdAt: now()
-            };
-            self.taskDeposits.set(taskId, newDeposit);
-        }
+
+    // ── Deposit for specific task ───────────────────────────────────────
+    receive(msg: DepositTask) {
+        let amount: Int = context().value - ton("0.01");
+        require(amount > 0, "Deposit too small");
+        require(msg.totalAmount <= amount, "Declared amount exceeds actual deposit");
+        self.totalDeposits = self.totalDeposits + 1;
+        self.totalValueLocked = self.totalValueLocked + amount;
     }
-    
-    // Withdraw funds based on structured message
-    receive(msg: Withdraw, forward: Cell?) {
-        // Verify minimum message value
+
+    // ── Withdraw: Owner authorizes payout to worker ─────────────────────
+    receive(msg: Withdraw) {
+        // Only owner can authorize withdrawals
+        require(sender() == self.owner, "Only owner can authorize payouts");
         require(context().value >= self.minMessageValue, "Message value too low");
-        
-        // Verify sender is authorized
-        let sender = context().sender;
-        require(self.isOwner(sender), "Unauthorized withdrawal: only owner can authorize payouts");
-        
-        // Replay attack protection: check nonce
-        let senderNonce = self.nonces.get(sender);
-        let expectedNonce = if (senderNonce != null) { senderNonce!! } else { 0 };
-        require(msg.nonce > expectedNonce, "Invalid nonce (replay attack)");
-        self.nonces.set(sender, msg.nonce);
-        
-        // Get task deposit
-        let deposit = self.taskDeposits.get(msg.taskId);
-        require(deposit != null, "Task deposit not found");
-        let taskDeposit = deposit!!;
-        require(!taskDeposit.claimed, "Task already claimed");
-        
-        // Verify amounts match deposit
-        let totalAmount = msg.platformFee + msg.executorReward;
-        require(taskDeposit.totalAmount >= totalAmount, "Insufficient deposit");
-        require(myBalance() >= totalAmount, "Insufficient contract balance");
-        
-        // Mark as claimed
-        let updatedDeposit = taskDeposit;
-        updatedDeposit.claimed = true;
-        updatedDeposit.executorReward = msg.executorReward;
-        updatedDeposit.platformFee = msg.platformFee;
-        self.taskDeposits.set(msg.taskId, updatedDeposit);
-        
+
+        // Replay attack protection: nonce must be strictly increasing
+        require(msg.nonce > self.lastNonce, "Invalid nonce — replay attack prevented");
+        self.lastNonce = msg.nonce;
+
+        // Verify amounts
+        let totalPayout: Int = msg.platformFee + msg.executorReward;
+        require(totalPayout > 0, "Payout must be positive");
+        require(myBalance() >= totalPayout + ton("0.1"), "Insufficient contract balance");
+
+        // Update tracking
+        self.totalWithdrawals = self.totalWithdrawals + 1;
+        self.totalValueLocked = self.totalValueLocked - totalPayout;
+
         // Send platform fee to treasury
         if (msg.platformFee > 0) {
             send(SendParameters{
                 to: self.treasury,
                 value: msg.platformFee,
-                mode: SendRemainingValue,
+                mode: SendIgnoreErrors,
                 bounce: false,
-                body: emptyCell()
+                body: "escrow_fee".asComment()
             });
         }
-        
+
         // Send executor reward
         if (msg.executorReward > 0) {
             send(SendParameters{
                 to: msg.executorAddress,
                 value: msg.executorReward,
-                mode: SendRemainingValue,
-                bounce: false,
-                body: emptyCell()
+                mode: SendIgnoreErrors,
+                bounce: true,
+                body: "task_reward".asComment()
             });
         }
-        
-        // Send remaining value back to sender (gas refund)
+    }
+
+    // ── Update treasury address (only owner) ────────────────────────────
+    receive(msg: UpdateTreasury) {
+        require(sender() == self.owner, "Only owner");
+        self.treasury = msg.newTreasury;
+    }
+
+    // ── Emergency withdrawal (only owner, for stuck funds) ──────────────
+    receive(msg: EmergencyWithdraw) {
+        require(sender() == self.owner, "Only owner");
+        require(msg.amount <= myBalance() - ton("0.1"), "Cannot withdraw below minimum reserve");
+
         send(SendParameters{
-            to: sender,
-            value: 0,
-            mode: SendRemainingValue,
+            to: msg.destination,
+            value: msg.amount,
+            mode: SendIgnoreErrors,
             bounce: false,
-            body: emptyCell()
+            body: "emergency_withdrawal".asComment()
         });
     }
-    
-    // Get contract balance
-    get fun balance(): Int as coins {
+
+    // ── Getters ─────────────────────────────────────────────────────────
+
+    get fun balance(): Int {
         return myBalance();
     }
-    
-    // Get task deposit info
-    get fun getTaskDeposit(taskId: String): TaskDeposit? {
-        return self.taskDeposits.get(taskId);
+
+    get fun get_nonce(): Int {
+        return self.lastNonce;
     }
-    
-    // Get nonce for address
-    get fun getNonce(address: Address): Int {
-        let nonce = self.nonces.get(address);
-        return if (nonce != null) { nonce!! } else { 0 };
-    }
-    
-    // Update treasury address (only owner)
-    set fun updateTreasury(newTreasury: Address) {
-        self.requireOwner();
-        self.treasury = newTreasury;
-    }
-    
-    // Emergency withdrawal (only owner, for stuck funds)
-    receive(msg: "emergency_withdraw", forward: Cell?) {
-        self.requireOwner();
-        // Owner can withdraw all funds in emergency
-        // In production, add additional safety checks
+
+    get fun get_escrow_stats(): EscrowStats {
+        return EscrowStats{
+            totalDeposits: self.totalDeposits,
+            totalWithdrawals: self.totalWithdrawals,
+            totalValueLocked: self.totalValueLocked,
+            lastNonce: self.lastNonce,
+            treasury: self.treasury
+        };
     }
 }
 
+// ── Data structures ─────────────────────────────────────────────────────────
+
+struct EscrowStats {
+    totalDeposits: Int as uint64;
+    totalWithdrawals: Int as uint64;
+    totalValueLocked: Int as coins;
+    lastNonce: Int as uint64;
+    treasury: Address;
+}
