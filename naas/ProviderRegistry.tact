@@ -28,7 +28,7 @@ message(0x43685372) ChangeSlashRegistry {
 }
 
 // Internal msg from SlashRegistry
-message SlashEvent {
+message(0x536c4576) SlashEvent {
     provider: Address;
     percentage: Int as uint16; // 1-10000 (0.01% - 100%)
     burnedAmount: Int as coins;
