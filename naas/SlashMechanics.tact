@@ -79,7 +79,7 @@ contract SlashRegistry with Deployable, Ownable {
         }
 
         if (slashPercent > 0) {
-            self.totalSlashedEvents = self.totalSlashedEvents + 1;
+            self.totalSlashedEvents += 1;
             
             // Forward slash command to ProviderRegistry
             send(SendParameters {
@@ -104,7 +104,7 @@ contract SlashRegistry with Deployable, Ownable {
         
         require(msg.expectedHash != msg.receivedHash, "Hashes match, no fraud");
 
-        self.totalSlashedEvents = self.totalSlashedEvents + 1;
+        self.totalSlashedEvents += 1;
 
         // 2% (200 bps) slash for wrong RPC data
         send(SendParameters {
@@ -129,7 +129,7 @@ contract SlashRegistry with Deployable, Ownable {
         require(sender() == self.owner, "Only DAO can unilaterally slash"); // (e.g., 100% jail)
         require(msg.percentage <= 10000, "Max 100%");
         
-        self.totalSlashedEvents = self.totalSlashedEvents + 1;
+        self.totalSlashedEvents += 1;
 
         send(SendParameters {
             to: self.providerRegistry,

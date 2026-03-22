@@ -15,15 +15,15 @@ import "@stdlib/ownable";
 
 // ── Messages ────────────────────────────────────────────────────────────────
 
-message RegisterProvider {
+message(0x4e615352) RegisterProvider {
     chains: Int as uint8; // Number of chains the node wants to serve
 }
 
-message AddStake { } // To top up and upgrade tier
+message(0x41645374) AddStake { } // To top up and upgrade tier
 
-message UnjailProvider { } // Pay penalty or wait time to unjail
+message(0x556e4a61) UnjailProvider { } // Pay penalty or wait time to unjail
 
-message ChangeSlashRegistry {
+message(0x43685372) ChangeSlashRegistry {
     registry: Address;
 }
 
@@ -54,10 +54,10 @@ contract NaaSProviderRegistry with Deployable, Ownable {
     gstdJetton: Address;        // GSTD Jetton Address
     
     // Config
-    minStake_Explorer: Int as coins;  
-    minStake_Provider: Int as coins;
-    minStake_Validator: Int as coins;
-    minStake_Sovereign: Int as coins;
+    minStakeExplorer: Int as coins;  
+    minStakeProvider: Int as coins;
+    minStakeValidator: Int as coins;
+    minStakeSovereign: Int as coins;
     
     // Provider state map
     providers: map<Address, ProviderInfo>;
@@ -70,10 +70,10 @@ contract NaaSProviderRegistry with Deployable, Ownable {
         self.slashRegistry = owner; // Changeable later
         
         // 1 GSTD = 1e9 nanoGSTD
-        self.minStake_Explorer =  1000 * 1000000000;
-        self.minStake_Provider = 10000 * 1000000000;
-        self.minStake_Validator = 50000 * 1000000000;
-        self.minStake_Sovereign = 500000 * 1000000000;
+        self.minStakeExplorer =  1000 * 1000000000;
+        self.minStakeProvider = 10000 * 1000000000;
+        self.minStakeValidator = 50000 * 1000000000;
+        self.minStakeSovereign = 500000 * 1000000000;
         
         self.totalStaked = 0;
         self.totalProviders = 0;
@@ -85,13 +85,13 @@ contract NaaSProviderRegistry with Deployable, Ownable {
     
     receive(msg: RegisterProvider) {
         let amount: Int = context().value - ton("0.05"); // reserve for gas
-        require(amount >= self.minStake_Explorer, "Stake does not meet minimum (Explorer 1K)");
+        require(amount >= self.minStakeExplorer, "Stake does not meet minimum (Explorer 1K)");
         
         // Determine tier
         let tier: Int = 1;
-        if (amount >= self.minStake_Sovereign) { tier = 4; }
-        else if (amount >= self.minStake_Validator) { tier = 3; }
-        else if (amount >= self.minStake_Provider) { tier = 2; }
+        if (amount >= self.minStakeSovereign) { tier = 4; }
+        else if (amount >= self.minStakeValidator) { tier = 3; }
+        else if (amount >= self.minStakeProvider) { tier = 2; }
         
         // Verify chain limits perfectly match the Whitepaper
         if (tier == 1) { require(msg.chains <= 3, "Explorer tier max 3 chains"); }
@@ -109,22 +109,22 @@ contract NaaSProviderRegistry with Deployable, Ownable {
                 jailed: false,
                 registeredAt: now()
             });
-            self.totalProviders = self.totalProviders + 1;
+            self.totalProviders += 1;
         } else {
             // Upgrade Provider
             let e: ProviderInfo = existing!!;
             require(!e.jailed, "Cannot top-up jailed provider");
-            e.stakedGSTD = e.stakedGSTD + amount;
+            e.stakedGSTD += amount;
             
             // Re-evaluate tier
-            if (e.stakedGSTD >= self.minStake_Sovereign) { e.tier = 4; }
-            else if (e.stakedGSTD >= self.minStake_Validator) { e.tier = 3; }
-            else if (e.stakedGSTD >= self.minStake_Provider) { e.tier = 2; }
+            if (e.stakedGSTD >= self.minStakeSovereign) { e.tier = 4; }
+            else if (e.stakedGSTD >= self.minStakeValidator) { e.tier = 3; }
+            else if (e.stakedGSTD >= self.minStakeProvider) { e.tier = 2; }
             
             self.providers.set(sender(), e);
         }
         
-        self.totalStaked = self.totalStaked + amount;
+        self.totalStaked += amount;
     }
 
     // ── Slashing Mechanism (Called by SlashRegistry/ChallengerProtocol) ─────
@@ -137,21 +137,21 @@ contract NaaSProviderRegistry with Deployable, Ownable {
         let p: ProviderInfo = existing!!;
         let slashAmount: Int = (p.stakedGSTD * msg.percentage) / 10000;
         
-        p.stakedGSTD = p.stakedGSTD - slashAmount;
-        self.totalStaked = self.totalStaked - slashAmount;
+        p.stakedGSTD -= slashAmount;
+        self.totalStaked -= slashAmount;
         
         // Reputation loss
-        p.reputation = p.reputation - msg.percentage;
+        p.reputation -= msg.percentage;
         
         // 100% slash (Fraud/Jailed) -> Jailed status
-        if (msg.percentage == 10000 || p.stakedGSTD < self.minStake_Explorer || p.reputation < 5000) {
+        if (msg.percentage == 10000 || p.stakedGSTD < self.minStakeExplorer || p.reputation < 5000) {
             p.jailed = true;
         }
         
         // Downgrade tier if needed
-        if (p.stakedGSTD < self.minStake_Sovereign && p.tier == 4) { p.tier = 3; }
-        if (p.stakedGSTD < self.minStake_Validator && p.tier == 3) { p.tier = 2; }
-        if (p.stakedGSTD < self.minStake_Provider && p.tier == 2) { p.tier = 1; }
+        if (p.stakedGSTD < self.minStakeSovereign && p.tier == 4) { p.tier = 3; }
+        if (p.stakedGSTD < self.minStakeValidator && p.tier == 3) { p.tier = 2; }
+        if (p.stakedGSTD < self.minStakeProvider && p.tier == 2) { p.tier = 1; }
         
         self.providers.set(msg.provider, p);
         
