@@ -518,11 +518,18 @@ _ %owner() method_id(83229) {
         $self'depositCount = ($self'depositCount + 1);
         $self'lastDepositTime = $global_now();
         int $goldAmt = (($amount * $self'goldConvertRatio) / 100);
-        int $operAmt = ($amount - $goldAmt);
-        if (($goldAmt > 500000000)) {
-            $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'dexRouter, $goldAmt, 2, true, __gen_cell_cell_e45e11cc3702e1e31ad0dfad26468927b83862cc71da62bdfea10a73c0f45a7e()));
-            $self'totalTONConvertedToGold = ($self'totalTONConvertedToGold + $goldAmt);
-        }
+        $self'totalTONConvertedToGold = ($self'totalTONConvertedToGold + $goldAmt);
+        $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+        return ();
+    }
+    ;; Receive "swap_gold" message
+    if (text_op == 0x18ad90bbbdc491f892ad61f676bcc7a3cae8e12b36b1d762dab3136918a284fd) {
+        throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+        int $swapAmt = $self'totalTONConvertedToGold;
+        throw_unless(37939, ($swapAmt > 1000000000));
+        throw_unless(55591, ($global_myBalance() >= ($swapAmt + 1000000000)));
+        $self'totalTONConvertedToGold = 0;
+        $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'dexRouter, $swapAmt, 2, true, __gen_cell_cell_e45e11cc3702e1e31ad0dfad26468927b83862cc71da62bdfea10a73c0f45a7e()));
         $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
         return ();
     }

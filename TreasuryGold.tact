@@ -78,23 +78,32 @@ contract TreasuryGold with Deployable, Ownable {
         self.depositCount = self.depositCount + 1;
         self.lastDepositTime = now();
 
-        // Calculate gold allocation
+        // Gold allocation is held in this contract until DAO triggers a DEX swap.
+        // totalTONConvertedToGold tracks funds earmarked for gold, NOT yet swapped.
+        // Actual XAUt swap happens via SwapToGold (DAO-only), confirmed via GoldSwapConfirmed.
         let goldAmt: Int = amount * self.goldConvertRatio / 100;
-        let operAmt: Int = amount - goldAmt;
+        self.totalTONConvertedToGold = self.totalTONConvertedToGold + goldAmt;
+        // Remaining stays as operational reserve in contract balance.
+    }
 
-        // Send TON to DEX router for XAUt swap (off-chain oracle confirms)
-        if (goldAmt > ton("0.5")) { // minimum swap threshold
-            send(SendParameters {
-                to: self.dexRouter,
-                value: goldAmt,
-                mode: SendIgnoreErrors,
-                bounce: true,
-                body: "swap_to_xaut".asComment(),
-            });
-            self.totalTONConvertedToGold = self.totalTONConvertedToGold + goldAmt;
-        }
+    // ── DAO: Trigger actual DEX swap of accumulated gold funds ──────────
+    // Callable by DAO only after amount is verified sufficient.
+    receive("swap_gold") {
+        require(sender() == self.owner, "Only DAO");
+        let swapAmt: Int = self.totalTONConvertedToGold;
+        require(swapAmt > ton("1"), "Insufficient gold fund");
+        require(myBalance() >= swapAmt + ton("1"), "Insufficient contract balance");
 
-        // Operational funds stay in contract
+        self.totalTONConvertedToGold = 0; // reset pending; confirmed via GoldSwapConfirmed
+
+        send(SendParameters {
+            to: self.dexRouter,
+            value: swapAmt,
+            mode: SendIgnoreErrors,
+            bounce: true,
+            // Real STON.fi swap ABI: DAO updates dexRouter to the correct pool address first
+            body: "swap_to_xaut".asComment(),
+        });
     }
 
     // ── Confirmation of gold swap from DEX / oracle ─────────────────────

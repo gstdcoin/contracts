@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: DAOVoting
-BoC Size: 2604 bytes
+BoC Size: 2590 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 24
@@ -90,16 +90,16 @@ TL-B: `_ owner:address gstdJetton:address quorumPercent:uint8 timelockSeconds:ui
 Signature: `DAOVoting{owner:address,gstdJetton:address,quorumPercent:uint8,timelockSeconds:uint32,minProposalStake:coins,totalStakedGSTD:coins,proposalCount:uint64,executedCount:uint64,cancelledCount:uint64}`
 
 ### Proposal$Data
-TL-B: `_ proposalId:uint64 dao:address proposer:address targetContract:address payload:^cell votesFor:coins votesAgainst:coins voterCount:uint32 voters:dict<address, int> createdAt:uint64 votingEndsAt:uint64 executionUnlocksAt:uint64 status:uint8 = Proposal`
-Signature: `Proposal{proposalId:uint64,dao:address,proposer:address,targetContract:address,payload:^cell,votesFor:coins,votesAgainst:coins,voterCount:uint32,voters:dict<address, int>,createdAt:uint64,votingEndsAt:uint64,executionUnlocksAt:uint64,status:uint8}`
+TL-B: `_ proposalId:uint64 dao:address proposer:address targetContract:address payload:^cell votesFor:coins votesAgainst:coins voterCount:uint32 quorumStake:coins voters:dict<address, int> createdAt:uint64 votingEndsAt:uint64 executionUnlocksAt:uint64 status:uint8 = Proposal`
+Signature: `Proposal{proposalId:uint64,dao:address,proposer:address,targetContract:address,payload:^cell,votesFor:coins,votesAgainst:coins,voterCount:uint32,quorumStake:coins,voters:dict<address, int>,createdAt:uint64,votingEndsAt:uint64,executionUnlocksAt:uint64,status:uint8}`
 
 ### GovernanceStats
 TL-B: `_ proposalCount:uint64 executedCount:uint64 cancelledCount:uint64 quorumPercent:uint8 timelockSeconds:uint32 minProposalStake:coins totalStakedGSTD:coins = GovernanceStats`
 Signature: `GovernanceStats{proposalCount:uint64,executedCount:uint64,cancelledCount:uint64,quorumPercent:uint8,timelockSeconds:uint32,minProposalStake:coins,totalStakedGSTD:coins}`
 
 ### ProposalData
-TL-B: `_ proposalId:uint64 proposer:address targetContract:address votesFor:coins votesAgainst:coins voterCount:uint32 totalStaked:coins createdAt:uint64 votingEndsAt:uint64 executionUnlocksAt:uint64 status:uint8 = ProposalData`
-Signature: `ProposalData{proposalId:uint64,proposer:address,targetContract:address,votesFor:coins,votesAgainst:coins,voterCount:uint32,totalStaked:coins,createdAt:uint64,votingEndsAt:uint64,executionUnlocksAt:uint64,status:uint8}`
+TL-B: `_ proposalId:uint64 proposer:address targetContract:address votesFor:coins votesAgainst:coins voterCount:uint32 totalStaked:coins quorumStake:coins createdAt:uint64 votingEndsAt:uint64 executionUnlocksAt:uint64 status:uint8 = ProposalData`
+Signature: `ProposalData{proposalId:uint64,proposer:address,targetContract:address,votesFor:coins,votesAgainst:coins,voterCount:uint32,totalStaked:coins,quorumStake:coins,createdAt:uint64,votingEndsAt:uint64,executionUnlocksAt:uint64,status:uint8}`
 
 ## Get methods
 Total get methods: 3
@@ -160,6 +160,7 @@ No arguments
 * 41880: Voting still active
 * 42435: Not authorized
 * 48241: Vote did not pass
+* 51706: Quorum not reached
 * 56882: Only owner/DAO multisig
 * 57030: Must attach min 1 TON as proposal stake
 * 59363: Must attach TON as voting stake

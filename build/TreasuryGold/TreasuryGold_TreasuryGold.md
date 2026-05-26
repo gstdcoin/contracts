@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: TreasuryGold
-BoC Size: 1395 bytes
+BoC Size: 1509 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 22
@@ -148,6 +148,8 @@ No arguments
 * 7620: Deposit too small
 * 7821: Only DEX router or DAO
 * 15283: Insufficient operational balance
+* 37939: Insufficient gold fund
+* 55591: Insufficient contract balance
 * 60938: Ratio must be 50-95%
 * 61135: Amount must be positive
 * 63399: Only DAO

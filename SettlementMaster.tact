@@ -127,9 +127,14 @@ contract SettlementMaster with Deployable, Ownable {
         let treasuryAmt: Int = total * self.treasuryShare / 100;
         let protocolAmt: Int = total - workerAmt - treasuryAmt; // remainder
 
+        // ── Cap bonus before stats update ───────────────────────────────
+        let maxAllowedBonus: Int = self.baseRate * msg.computeUnits;
+        let actualBonus: Int = msg.gstdBonusAmount;
+        if (actualBonus > maxAllowedBonus) { actualBonus = maxAllowedBonus; }
+
         // ── Update statistics BEFORE sends (prevent race conditions) ────
         self.totalSettled += total;
-        self.totalGSTDMinted += msg.gstdBonusAmount;
+        self.totalGSTDMinted += actualBonus;
         self.taskCount += 1;
 
         // ── 1. Pay worker (85% TON) — bounce:true to recover on failure ─
@@ -163,16 +168,16 @@ contract SettlementMaster with Deployable, Ownable {
             body: "buyback".asComment(),
         });
 
-        // ── 4. Mint GSTD bonus to worker ────────────────────────────────
-        if (msg.gstdBonusAmount > 0) {
+        // ── 4. Mint GSTD bonus to worker (capped by computeUnits × baseRate) ─
+        if (actualBonus > 0) {
             send(SendParameters {
                 to: self.gstdJetton,
-                value: ton("0.08"),
+                value: ton("0.12"),
                 mode: SendIgnoreErrors,
                 bounce: false,
                 body: MintWorkerReward {
                     workerAddr: msg.workerAddr,
-                    amount: msg.gstdBonusAmount,
+                    amount: actualBonus,
                     taskId: msg.taskId,
                 }.toCell(),
             });

@@ -39,6 +39,17 @@ message TokenUpdateContent {
     content: Cell;
 }
 
+// One-time pre-mint for ecosystem allocations (team, IDO, liquidity, advisors).
+// Must be called before SetMintAuthority locks authority to Settlement.
+message MintInitialAllocation {
+    teamAddr: Address;
+    teamAmount: Int as coins;
+    ecosystemAddr: Address;
+    ecosystemAmount: Int as coins;
+    liquidityAddr: Address;
+    liquidityAmount: Int as coins;
+}
+
 // ── Jetton Wallet Messages (TEP-74) ────────────────────────────────────────
 
 message Transfer {
@@ -84,7 +95,8 @@ contract GSTDJetton with Deployable, Ownable {
     // ── Statistics ──────────────────────────────────────────────────────
     totalBurned: Int as coins;
     totalMintEvents: Int as uint64;
-    authorityLocked: Bool;  // One-time lock for mint authority transfer
+    authorityLocked: Bool;        // One-time lock for mint authority transfer
+    initialAllocationDone: Bool;  // Prevents double pre-mint
 
     init(owner: Address, content: Cell) {
         self.owner = owner;
@@ -98,6 +110,7 @@ contract GSTDJetton with Deployable, Ownable {
         self.totalBurned = 0;
         self.totalMintEvents = 0;
         self.authorityLocked = false;
+        self.initialAllocationDone = false;
     }
 
     // ── Worker Reward Mint (from Settlement Contract only) ──────────────
@@ -115,20 +128,67 @@ contract GSTDJetton with Deployable, Ownable {
         let walletInit: StateInit = getJettonWalletInit(msg.workerAddr, myAddress());
         send(SendParameters{
             to: contractAddress(walletInit),
-            value: ton("0.05"),
+            value: ton("0.08"),
             mode: SendIgnoreErrors,
-            bounce: false,
+            bounce: true,
             body: InternalTransfer{
-                queryId: 0,
+                queryId: msg.taskId,
                 amount: msg.amount,
                 from: myAddress(),
                 responseAddress: msg.workerAddr,
-                forwardTonAmount: 1,
+                forwardTonAmount: ton("0.01"),
                 forwardPayload: emptySlice()
             }.toCell(),
             code: walletInit.code,
             data: walletInit.data
         });
+    }
+
+    // ── Rollback mint if worker wallet deployment failed ────────────────
+    bounced(src: bounced<InternalTransfer>) {
+        self.totalSupply -= src.amount;
+        self.workerPoolMinted -= src.amount;
+    }
+
+    // ── Pre-mint ecosystem allocations (ONE-TIME, before authority lock) ─
+    receive(msg: MintInitialAllocation) {
+        require(sender() == self.owner, "Only owner");
+        require(!self.authorityLocked, "Cannot pre-mint after authority locked");
+        require(!self.initialAllocationDone, "Initial allocation already done");
+
+        let total: Int = msg.teamAmount + msg.ecosystemAmount + msg.liquidityAmount;
+        require(self.totalSupply + total <= self.maxSupply, "Exceeds max supply");
+
+        self.initialAllocationDone = true;
+        self.totalSupply += total;
+
+        if (msg.teamAmount > 0) {
+            let w: StateInit = getJettonWalletInit(msg.teamAddr, myAddress());
+            send(SendParameters{
+                to: contractAddress(w), value: ton("0.08"), mode: SendIgnoreErrors, bounce: false,
+                body: InternalTransfer{ queryId: 1, amount: msg.teamAmount, from: myAddress(),
+                    responseAddress: msg.teamAddr, forwardTonAmount: ton("0.01"), forwardPayload: emptySlice() }.toCell(),
+                code: w.code, data: w.data
+            });
+        }
+        if (msg.ecosystemAmount > 0) {
+            let w: StateInit = getJettonWalletInit(msg.ecosystemAddr, myAddress());
+            send(SendParameters{
+                to: contractAddress(w), value: ton("0.08"), mode: SendIgnoreErrors, bounce: false,
+                body: InternalTransfer{ queryId: 2, amount: msg.ecosystemAmount, from: myAddress(),
+                    responseAddress: msg.ecosystemAddr, forwardTonAmount: ton("0.01"), forwardPayload: emptySlice() }.toCell(),
+                code: w.code, data: w.data
+            });
+        }
+        if (msg.liquidityAmount > 0) {
+            let w: StateInit = getJettonWalletInit(msg.liquidityAddr, myAddress());
+            send(SendParameters{
+                to: contractAddress(w), value: ton("0.08"), mode: SendIgnoreErrors, bounce: false,
+                body: InternalTransfer{ queryId: 3, amount: msg.liquidityAmount, from: myAddress(),
+                    responseAddress: msg.liquidityAddr, forwardTonAmount: ton("0.01"), forwardPayload: emptySlice() }.toCell(),
+                code: w.code, data: w.data
+            });
+        }
     }
 
     // ── Burn notification handling ──────────────────────────────────────
@@ -306,6 +366,12 @@ contract GSTDJettonWallet {
             code: receiverInit.code,
             data: receiverInit.data
         });
+    }
+
+    // ── Restore balance if receiver wallet rejected the transfer ────────
+    // Without this, balance is deducted but tokens are permanently lost.
+    bounced(src: bounced<InternalTransfer>) {
+        self.balance += src.amount;
     }
 
     // ── Burn tokens ─────────────────────────────────────────────────────

@@ -90,6 +90,7 @@ contract DAOVoting with Deployable, Ownable {
             msg.payload,
             msg.votingPeriod,
             self.timelockSeconds,
+            self.minProposalStake,
         );
 
         send(SendParameters {
@@ -156,6 +157,7 @@ contract DAOVoting with Deployable, Ownable {
             emptyCell(),
             0,
             0,
+            0,
         );
         return contractAddress(init);
     }
@@ -174,6 +176,9 @@ contract Proposal {
     votesFor: Int as coins;
     votesAgainst: Int as coins;
     voterCount: Int as uint32;
+
+    // Quorum: minimum total TON staked (For + Against) required for execution
+    quorumStake: Int as coins;
 
     // Per-voter stake: prevents double-voting and enables stake reclaim
     voters: map<Address, Int>;
@@ -194,12 +199,14 @@ contract Proposal {
         payload: Cell,
         votingPeriod: Int,
         timelockSeconds: Int,
+        quorumStake: Int,
     ) {
         self.proposalId = proposalId;
         self.dao = dao;
         self.proposer = proposer;
         self.targetContract = targetContract;
         self.payload = payload;
+        self.quorumStake = quorumStake;
 
         self.votesFor = 0;
         self.votesAgainst = 0;
@@ -263,6 +270,8 @@ contract Proposal {
         require(self.status == 0 || self.status == 1, "Cannot execute");
         require(now() >= self.executionUnlocksAt, "Timelock not expired");
         require(self.votesFor > self.votesAgainst, "Vote did not pass");
+        // Quorum: total participation must meet minimum stake threshold
+        require(self.votesFor + self.votesAgainst >= self.quorumStake, "Quorum not reached");
 
         self.status = 3; // Executed
 
@@ -291,6 +300,7 @@ contract Proposal {
             votesAgainst: self.votesAgainst,
             voterCount: self.voterCount,
             totalStaked: self.votesFor + self.votesAgainst,
+            quorumStake: self.quorumStake,
             createdAt: self.createdAt,
             votingEndsAt: self.votingEndsAt,
             executionUnlocksAt: self.executionUnlocksAt,
@@ -325,6 +335,7 @@ struct ProposalData {
     votesAgainst: Int as coins;
     voterCount: Int as uint32;
     totalStaked: Int as coins;
+    quorumStake: Int as coins;
     createdAt: Int as uint64;
     votingEndsAt: Int as uint64;
     executionUnlocksAt: Int as uint64;

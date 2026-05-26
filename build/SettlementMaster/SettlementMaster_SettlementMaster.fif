@@ -467,21 +467,24 @@ PROGRAM{
       64 LDU
       LDMSGADDR
       LDVARUINT16
+      32 LDU
+      NIP
+      64 LDU
       DROP
       50353 PUSHINT
       __tact_context_get_sender INLINECALLDICT
-      16 s() PUSH
+      17 s() PUSH
       SDEQ
       IF:<{
         TRUE
       }>ELSE<{
         __tact_context_get_sender INLINECALLDICT
-        s15 PUSH
+        16 s() PUSH
         SDEQ
       }>
       THROWANYIFNOT
       38610 PUSHINT
-      16 s() PUSH
+      17 s() PUSH
       NOT
       THROWANYIFNOT
       __tact_context_get INLINECALLDICT
@@ -490,14 +493,14 @@ PROGRAM{
       SUB
       8484 PUSHINT
       OVER
-      19 s() PUSH
+      20 s() PUSH
       GEQ
       THROWANYIFNOT
-      s0 s10 PUSH2
+      s0 s11 PUSH2
       MUL
       100 PUSHINT
       DIV
-      s1 s10 PUSH2
+      s1 s11 PUSH2
       MUL
       100 PUSHINT
       DIV
@@ -505,22 +508,32 @@ PROGRAM{
       SUB
       OVER
       SUB
-      s9 s3 XCHG2
+      s11 s4 PUXC
+      MUL
+      s5 s5 s0 PUSH3
+      GREATER
+      IF:<{
+        DROP
+      }>ELSE<{
+        NIP
+      }>
+      s10 s3 XCHG2
       ADD
-      s7 s3 XCPU
+      s8 s2 XCPU
       ADD
-      s0 s6 XCHG
+      s0 s7 XCHG
       INC
       2 PUSHINT
+      s7 s2 PUSH2
       TRUE
-      s7 s3 s5 PUSH3
+      s0 s8 XCHG
       $WorkerPayment$_constructor_taskId_amount_bonusGSTD INLINECALLDICT
       NEWC
       $WorkerPayment$_store_cell INLINECALLDICT
       s7 PUSH
       s0 s4 XCHG
-      s0 s5 XCHG
-      3 -ROLL
+      s0 s3 XCHG
+      s7 s7 XCHG2
       $SendParameters$_constructor_to_value_mode_bounce_body INLINECALLDICT
           NEWC
           b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
@@ -734,19 +747,19 @@ PROGRAM{
           // Group 5: Sending the message, with `mode` on top
           SWAP
           SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
-      DUP
+      s5 PUSH
       0 GTINT
       IF:<{
-        80000000 PUSHINT
+        120000000 PUSHINT
         2 PUSHINT
-        2SWAP
+        s3 s7 XCHG2
         FALSE
         s0 s5 XCHG
         $MintWorkerReward$_constructor_workerAddr_amount_taskId INLINECALLDICT
         NEWC
         $MintWorkerReward$_store_cell INLINECALLDICT
         s13 PUSH
-        s4 s4 XCHG2
+        s7 s4 s4 XCHG3
         $SendParameters$_constructor_to_value_mode_bounce_body INLINECALLDICT
             NEWC
             b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
@@ -815,7 +828,8 @@ PROGRAM{
             SWAP
             SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
       }>ELSE<{
-        3 BLKDROP
+        s5 POP
+        2DROP
       }>
       s11 s13 XCHG
       s10 s12 XCHG

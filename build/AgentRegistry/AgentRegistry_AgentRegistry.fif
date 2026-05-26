@@ -639,6 +639,18 @@ PROGRAM{
       NIP
       256 LDU
       DROP
+      44404 PUSHINT
+      __tact_context_get_sender INLINECALLDICT
+      s11 PUSH
+      SDEQ
+      IF:<{
+        TRUE
+      }>ELSE<{
+        __tact_context_get_sender INLINECALLDICT
+        s10 PUSH
+        SDEQ
+      }>
+      THROWANYIFNOT
       s0 s6 XCHG
       DEC
       s9 s10 XCHG

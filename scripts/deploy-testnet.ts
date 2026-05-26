@@ -179,6 +179,27 @@ async function main() {
         console.log(`   ✓ Already deployed: ${settlementAddr.toString()}`);
     }
 
+    // ── 4b. Pre-mint ecosystem allocations (BEFORE authority lock) ────────
+    // Call this only once, before SetMintAuthority.
+    // Amounts below are examples — update to actual whitepaper allocations.
+    // Team: 100M, Ecosystem: 200M, Liquidity: 100M = 400M total (plus 400M worker pool = 800M, 200M reserve)
+    // Uncomment and fill in actual allocation addresses:
+    /*
+    console.log('\n4b. Pre-minting initial allocations...');
+    const jettonForMint = client.open(new GSTDJetton(jettonAddr));
+    await jettonForMint.send(provider.sender(keyPair.secretKey), { value: toNano('0.5') }, {
+        $$type: 'MintInitialAllocation',
+        teamAddr:         Address.parse('TEAM_WALLET_ADDRESS'),
+        teamAmount:       BigInt('100000000') * BigInt('1000000000'), // 100M GSTD
+        ecosystemAddr:    Address.parse('ECOSYSTEM_WALLET_ADDRESS'),
+        ecosystemAmount:  BigInt('200000000') * BigInt('1000000000'), // 200M GSTD
+        liquidityAddr:    Address.parse('LIQUIDITY_WALLET_ADDRESS'),
+        liquidityAmount:  BigInt('100000000') * BigInt('1000000000'), // 100M GSTD
+    });
+    await waitSeqno(provider, seqno++);
+    console.log('   ✅ Initial allocations minted (600M GSTD total)');
+    */
+
     // ── 5. AgentRegistry ───────────────────────────────────────────────────
     console.log('\n5️⃣  Deploying AgentRegistry...');
     const registryInit = await AgentRegistry.init(adminAddr, settlementAddr);

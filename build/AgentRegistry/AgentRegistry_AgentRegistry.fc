@@ -705,6 +705,7 @@ _ %owner() method_id(83229) {
         var $msg'nodeId = in_msg~load_uint(256);
         var $msg'reporterNodeId = in_msg~load_uint(256);
         var $msg'evidenceHash = in_msg~load_uint(256);
+        throw_unless(44404, ( (( equal_slices_bits(__tact_context_get_sender(), $self'owner) )) ? (true) : (( equal_slices_bits(__tact_context_get_sender(), $self'settlementContract) )) ));
         $self'activeNodes = ($self'activeNodes - 1);
         slice $nodeAddr = ($self'owner, $self'settlementContract, $self'totalNodes, $self'activeNodes, $self'totalTasksCompleted, $self'genesisVersion, $self'genesisManifestHash, $self'edgeCount, $self'cpuCount, $self'gpuCount, $self'headCount)~$AgentRegistry$_fun_getNodeAddress($msg'nodeId);
         $global_send($SendParameters$_constructor_to_value_mode_bounce_body($nodeAddr, 30000000, 2, false, $UpdateNodeStatus$_store_cell($UpdateNodeStatus$_constructor_nodeId_status_reason($msg'nodeId, 2, __gen_slice_string_94eafa65e4200828de66af3ce91b8c83befd2005336a4d2597be71b049d93a2b()), begin_cell())));

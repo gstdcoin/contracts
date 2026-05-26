@@ -158,8 +158,11 @@ contract AgentRegistry with Deployable, Ownable {
 
     // ── Report Genesis violation ────────────────────────────────────────
     receive(msg: ReportGenesisViolation) {
-        // Any verified node can report a violation
-        // Forward to node identity for status update + decrement active count
+        // Only owner (DAO) or Settlement can suspend a node — prevents griefing attacks.
+        require(
+            sender() == self.owner || sender() == self.settlementContract,
+            "Only DAO or Settlement can report violations",
+        );
         self.activeNodes = self.activeNodes - 1;
         let nodeAddr: Address = self.getNodeAddress(msg.nodeId);
         send(SendParameters {

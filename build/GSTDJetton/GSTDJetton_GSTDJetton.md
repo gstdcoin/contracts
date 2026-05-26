@@ -1,9 +1,9 @@
 # Tact compilation report
 Contract: GSTDJetton
-BoC Size: 2699 bytes
+BoC Size: 3555 bytes
 
 ## Structures (Structs and Messages)
-Total structures: 30
+Total structures: 31
 
 ### DataSize
 TL-B: `_ cells:int257 bits:int257 refs:int257 = DataSize`
@@ -85,6 +85,10 @@ Signature: `TransferNotification{queryId:uint64,amount:coins,sender:address,forw
 TL-B: `token_update_content#af1ca26a content:^cell = TokenUpdateContent`
 Signature: `TokenUpdateContent{content:^cell}`
 
+### MintInitialAllocation
+TL-B: `mint_initial_allocation#3fee837a teamAddr:address teamAmount:coins ecosystemAddr:address ecosystemAmount:coins liquidityAddr:address liquidityAmount:coins = MintInitialAllocation`
+Signature: `MintInitialAllocation{teamAddr:address,teamAmount:coins,ecosystemAddr:address,ecosystemAmount:coins,liquidityAddr:address,liquidityAmount:coins}`
+
 ### Transfer
 TL-B: `transfer#558e297b queryId:uint64 amount:coins destination:address responseDestination:address customPayload:Maybe ^cell forwardTonAmount:coins forwardPayload:remainder<slice> = Transfer`
 Signature: `Transfer{queryId:uint64,amount:coins,destination:address,responseDestination:address,customPayload:Maybe ^cell,forwardTonAmount:coins,forwardPayload:remainder<slice>}`
@@ -98,8 +102,8 @@ TL-B: `burn#4056115d queryId:uint64 amount:coins responseDestination:address = B
 Signature: `Burn{queryId:uint64,amount:coins,responseDestination:address}`
 
 ### GSTDJetton$Data
-TL-B: `_ totalSupply:coins maxSupply:coins owner:address mintAuthority:address content:^cell mintable:bool workerPoolMinted:coins workerPoolMax:coins totalBurned:coins totalMintEvents:uint64 authorityLocked:bool = GSTDJetton`
-Signature: `GSTDJetton{totalSupply:coins,maxSupply:coins,owner:address,mintAuthority:address,content:^cell,mintable:bool,workerPoolMinted:coins,workerPoolMax:coins,totalBurned:coins,totalMintEvents:uint64,authorityLocked:bool}`
+TL-B: `_ totalSupply:coins maxSupply:coins owner:address mintAuthority:address content:^cell mintable:bool workerPoolMinted:coins workerPoolMax:coins totalBurned:coins totalMintEvents:uint64 authorityLocked:bool initialAllocationDone:bool = GSTDJetton`
+Signature: `GSTDJetton{totalSupply:coins,maxSupply:coins,owner:address,mintAuthority:address,content:^cell,mintable:bool,workerPoolMinted:coins,workerPoolMax:coins,totalBurned:coins,totalMintEvents:uint64,authorityLocked:bool,initialAllocationDone:bool}`
 
 ### FreezeMint
 TL-B: `freeze_mint#3ceedd0a  = FreezeMint`
@@ -189,14 +193,17 @@ No arguments
 * 3820: Invalid burn notification
 * 4429: Invalid sender
 * 8319: Only Settlement can mint
+* 14796: Exceeds max supply
 * 21543: Only owner can burn
 * 28612: Mint authority already locked
 * 35499: Only owner
+* 36640: Cannot pre-mint after authority locked
 * 36952: Only owner can transfer
 * 37727: Worker pool exhausted
 * 47714: Max supply reached
 * 54615: Insufficient balance
 * 56760: Minting disabled
+* 63852: Initial allocation already done
 
 ## Trait inheritance diagram
 

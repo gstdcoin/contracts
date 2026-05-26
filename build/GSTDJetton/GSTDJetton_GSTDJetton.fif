@@ -6,6 +6,7 @@ PROGRAM{
   DECLPROC $DeployOk$_store_cell
   DECLPROC $InternalTransfer$_store
   DECLPROC $InternalTransfer$_store_cell
+  DECLPROC $InternalTransfer$_load_bounced
   DECLPROC $GSTDJetton$_store
   DECLPROC $GSTDJetton$_load
   DECLPROC $StateInit$_get_code
@@ -89,16 +90,21 @@ PROGRAM{
     $InternalTransfer$_store INLINECALLDICT
     ENDC
   }>
+  $InternalTransfer$_load_bounced PROCINLINE:<{
+    64 LDU
+    LDVARUINT16
+    -ROT
+  }>
   $GSTDJetton$_store PROCINLINE:<{
-    s11 s10 XCHG2
+    s12 s11 XCHG2
     STVARUINT16
-    s0 s8 XCHG2
+    s0 s9 XCHG2
     STVARUINT16
-    s1 s6 XCHG
+    s1 s7 XCHG
     STSLICE
-    s1 s4 XCHG
+    s1 s5 XCHG
     STSLICE
-    s1 s2 XCHG
+    s1 s3 XCHG
     STREF
     1 STI
     SWAP
@@ -108,8 +114,10 @@ PROGRAM{
     STVARUINT16
     ROT
     STVARUINT16
-    s1 s3 XCHG
+    s1 s2 XCHG
     64 STU
+    s1 s3 XCHG
+    1 STI
     1 STI
     STBREFR
   }>
@@ -128,14 +136,15 @@ PROGRAM{
     LDVARUINT16
     64 LDU
     1 LDI
+    1 LDI
     DROP
-    s4 s11 XCHG
-    s4 s10 XCHG
-    s4 s9 XCHG
-    s4 s8 XCHG
-    s4 s7 XCHG
-    s4 s6 XCHG
-    s4 s5 XCHG
+    s5 s12 XCHG
+    s5 s11 XCHG
+    s5 s10 XCHG
+    s5 s9 XCHG
+    s5 s8 XCHG
+    s5 s7 XCHG
+    s5 s6 XCHG
   }>
   $StateInit$_get_code PROCINLINE:<{
     DROP
@@ -171,6 +180,7 @@ PROGRAM{
     s6 s9 XCHG
     s5 s8 XCHG
     FALSE
+    FALSE
   }>
   $GSTDJetton$_contract_load PROCINLINE:<{
     c4 PUSH
@@ -179,7 +189,7 @@ PROGRAM{
     SWAP
     IF:<{
       $GSTDJetton$_load INLINECALLDICT
-      1 11 BLKDROP2
+      1 12 BLKDROP2
     }>ELSE<{
       $GSTDJetton$init$_load INLINECALLDICT
       s0 s2 XCHG
@@ -193,7 +203,7 @@ PROGRAM{
     TRUE
     SWAP
     1 STI
-    11 -ROLL
+    12 -ROLL
     $GSTDJetton$_store INLINECALLDICT
     ENDC
     c4 POP
@@ -237,7 +247,7 @@ PROGRAM{
     $global_contractAddressExt INLINECALLDICT
   }>
   $GSTDJettonWallet$_init_child PROCREF:<{
-        B{b5ee9c7201020c010002e6000114ff00f4a413f4bcf2c80b01020162020303c8d001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200019afa00fa40fa4055206c139afa40fa405902d1017059e204925f04e002d70d1ff2e082218210ac130557bae302218210558e297bbae3020182104056115dbae3025f04f2c0820405060147a0f605da89a1a4000335f401f481f480aa40d82735f481f480b205a202e0b3c5b678d8690a02da31d33ffa00fa40fa4031fa005327db3cf84259705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0c705917f95f84228c705e281114d01f2f45153a021c200926c51e30d02c87f01ca0055205afa0212cecec9ed540b0702fe31d33ffa00fa40fa40f40431fa0082009058f84229c705f2f48200d5575375bef2f45164a15138db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d050767080407f2c4813507cc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec910560b0801f2d33ffa00fa4030815427f84226c705f2f48200d5575342bef2f45131a17080405414367f07c8553082106377b77f5005cb1f13cb3f01fa02cecec926044313505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00020900b0147250437007c855308210f4e4f5915005cb1f13cb3f01fa02cecec9250403505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0000981057103440130710465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002c87f01ca0055205afa0212cecec9ed540020c87f01ca0055205afa0212cecec9ed5401125cdb3c3054633052300b0018f82ac87001ca005a02cecec9} B>boc PUSHREF
+        B{b5ee9c7201020d0100031f000114ff00f4a413f4bcf2c80b01020162020301eed001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200019afa00fa40fa4055206c139afa40fa405902d1017059e2048e36028020d7217021d749c21f9430d31f01de8210ac130557ba8e19d33ffa00596c21a002c87f01ca0055205afa0212cecec9ed54e05f04e002d70d1ff2e08221040147a0f605da89a1a4000335f401f481f480aa40d82735f481f480b205a202e0b3c5b678d8690b03fe8210ac130557ba8f6d31d33ffa00fa40fa4031fa005327db3cf84259705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0c705917f95f84228c705e281114d01f2f45153a021c200926c51e30d02c87f01ca0055205afa0212cecec9ed54e0218210558e297bba0c050600b0147250437007c855308210f4e4f5915005cb1f13cb3f01fa02cecec9250403505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb000222e3020182104056115dbae3025f04f2c082070802fe31d33ffa00fa40fa40f40431fa0082009058f84229c705f2f48200d5575375bef2f45164a15138db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d050767080407f2c4813507cc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec910560c0901f2d33ffa00fa4030815427f84226c705f2f48200d5575342bef2f45131a17080405414367f07c8553082106377b77f5005cb1f13cb3f01fa02cecec926044313505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00020a00981057103440130710465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002c87f01ca0055205afa0212cecec9ed540020c87f01ca0055205afa0212cecec9ed5401125cdb3c3054633052300c0018f82ac87001ca005a02cecec9} B>boc PUSHREF
     NEWC
     FALSE
     SWAP
@@ -256,8 +266,8 @@ PROGRAM{
         MYADDR
     $global_getJettonWalletInit INLINECALLDICT
     $StateInit$_get_code INLINECALLDICT
-    s11 s6 s(-2) PU2XC
-    s11 s9 s(-2) PU2XC
+    s12 s7 s(-2) PU2XC
+    s12 s10 s(-2) PU2XC
     $JettonData$_constructor_totalSupply_mintable_adminAddress_jettonContent_jettonWalletCode INLINECALLDICT
   }>
   $GSTDJetton$_fun_get_wallet_address PROCREF:<{
@@ -266,24 +276,24 @@ PROGRAM{
     $global_contractAddress INLINECALLDICT
   }>
   $GSTDJetton$_fun_get_max_supply PROCREF:<{
-    s9 PUSH
+    s10 PUSH
   }>
   $WorkerPoolStats$_constructor_minted_max_remaining PROCINLINE:<{
   }>
   $GSTDJetton$_fun_get_worker_pool_stats PROCREF:<{
-    s3 s4 PUSH2
+    s4 s5 PUSH2
     SUB
-    s5 s4 s(-2) PU2XC
+    s6 s5 s(-2) PU2XC
     $WorkerPoolStats$_constructor_minted_max_remaining INLINECALLDICT
   }>
   $BurnStats$_constructor_totalBurned_circulatingSupply_totalMintEvents PROCINLINE:<{
   }>
   $GSTDJetton$_fun_get_burn_stats PROCREF:<{
-    s2 s10 s1 PUSH3
+    s3 s11 s2 PUSH3
     $BurnStats$_constructor_totalBurned_circulatingSupply_totalMintEvents INLINECALLDICT
   }>
   $GSTDJetton$_fun_get_mint_authority PROCREF:<{
-    s7 PUSH
+    s8 PUSH
   }>
   $MessageParameters$_constructor_bounce_to_value_mode_body PROCINLINE:<{
     s3 s3 XCHG2
@@ -316,7 +326,7 @@ PROGRAM{
         SENDRAWMSG
   }>
   $GSTDJetton$_fun_owner PROCREF:<{
-    s8 PUSH
+    s9 PUSH
   }>
   $SendParameters$_constructor_to_value_mode_bounce_body_code_data PROCINLINE:<{
     s4 s6 XCHG
@@ -336,41 +346,41 @@ PROGRAM{
   %get_jetton_data PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
     $GSTDJetton$_fun_get_jetton_data INLINECALLDICT
-    11 5 BLKDROP2
+    12 5 BLKDROP2
     $JettonData$_to_external INLINECALLDICT
   }>
   %get_wallet_address PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
-    11 ROLL
+    12 ROLL
     $GSTDJetton$_fun_get_wallet_address INLINECALLDICT
-    11 1 BLKDROP2
+    12 1 BLKDROP2
   }>
   %get_max_supply PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
     $GSTDJetton$_fun_get_max_supply INLINECALLDICT
-    11 1 BLKDROP2
+    12 1 BLKDROP2
   }>
   %get_worker_pool_stats PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
     $GSTDJetton$_fun_get_worker_pool_stats INLINECALLDICT
-    11 3 BLKDROP2
+    12 3 BLKDROP2
     $WorkerPoolStats$_to_external INLINECALLDICT
   }>
   %get_burn_stats PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
     $GSTDJetton$_fun_get_burn_stats INLINECALLDICT
-    11 3 BLKDROP2
+    12 3 BLKDROP2
     $BurnStats$_to_external INLINECALLDICT
   }>
   %get_mint_authority PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
     $GSTDJetton$_fun_get_mint_authority INLINECALLDICT
-    11 1 BLKDROP2
+    12 1 BLKDROP2
   }>
   %owner PROC:<{
     $GSTDJetton$_contract_load INLINECALLDICT
     $GSTDJetton$_fun_owner INLINECALLDICT
-    11 1 BLKDROP2
+    12 1 BLKDROP2
   }>
   recv_internal PROC:<{
     SWAP
@@ -388,11 +398,42 @@ PROGRAM{
     s0 s2 XCHG
     __tact_context_sender SETGLOB
     $GSTDJetton$_contract_load INLINECALLDICT
-    s0 s12 XCHG
+    s0 s13 XCHG
     IFJMP:<{
-      12 BLKDROP
+      s0 s11 XCHG
+      32 PUSHINT
+      SDSKIPFIRST
+      0 PUSHINT
+      OVER
+      SBITS
+      31 GTINT
+      IF:<{
+        DROP
+        32 LDU
+        SWAP
+      }>
+      2886927703 PUSHINT
+      EQUAL
+      IFJMP:<{
+        $InternalTransfer$_load_bounced INLINECALLDICT
+        2 1 BLKDROP2
+        s10 s10 XCPU
+        SUB
+        s4 s10 XCHG2
+        SUB
+        s9 s11 XCHG
+        s8 s10 XCHG
+        s7 s9 XCHG
+        s6 s8 XCHG
+        s5 s7 XCHG
+        s4 s6 XCHG
+        s4 s3 s5 XCHG3
+        s1 s2 XCHG
+        $GSTDJetton$_contract_store INLINECALLDICT
+      }>
+      13 BLKDROP
     }>
-    s0 s10 XCHG
+    s0 s11 XCHG
     32 LDUQ 130 THROWIFNOT
     OVER
     3145374392 PUSHINT
@@ -401,56 +442,56 @@ PROGRAM{
       NIP
       LDMSGADDR
       LDVARUINT16
+      64 LDU
       DROP
       8319 PUSHINT
       __tact_context_get_sender INLINECALLDICT
-      s9 PUSH
+      s11 PUSH
       SDEQ
       THROWANYIFNOT
       56760 PUSHINT
-      s6 PUSH
+      s8 PUSH
       THROWANYIFNOT
       47714 PUSHINT
-      s11 s1 PUSH2
+      s13 s2 PUSH2
       ADD
-      s11 PUSH
+      s13 PUSH
       LEQ
       THROWANYIFNOT
       37727 PUSHINT
-      s5 s1 PUSH2
+      s7 s2 PUSH2
       ADD
-      s5 PUSH
+      s7 PUSH
       LEQ
       THROWANYIFNOT
-      s10 s10 XCPU
+      s12 s1 XCPU
       ADD
-      s4 s10 XCPU
+      s6 s1 XCPU
       ADD
-      s0 s11 XCHG
+      s0 s3 XCHG
       INC
           MYADDR
-      s2 s(-1) PUXC
+      s3 s(-1) PUXC
       $global_getJettonWalletInit INLINECALLDICT
       2DUP
       $global_contractAddress INLINECALLDICT
-      50000000 PUSHINT
+      80000000 PUSHINT
       2 PUSHINT
-      FALSE
-      0 PUSHINT
+      TRUE
           MYADDR
-      1 PUSHINT
+      10000000 PUSHINT
           b{} PUSHSLICE
-      s3 s5 XCHG
-      s4 20 s() XCHG
+      s5 21 s() XCHG
+      s4 s10 XCHG
       s2 s3 XCHG
       s2 s11 XCHG
       $InternalTransfer$_constructor_queryId_amount_from_responseAddress_forwardTonAmount_forwardPayload INLINECALLDICT
       NEWC
       $InternalTransfer$_store_cell INLINECALLDICT
-      s6 s5 s0 XCHG3
-      s2 s4 XCHG
-      s3 s15 XCHG
-      s0 s0 s15 XCHG3
+      s1 s6 XCHG
+      s5 16 s() XCHG
+      s4 16 s() XCHG
+      2SWAP
       $SendParameters$_constructor_to_value_mode_bounce_body_code_data INLINECALLDICT
           NEWC
           b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
@@ -518,14 +559,354 @@ PROGRAM{
           // Group 5: Sending the message, with `mode` on top
           SWAP
           SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
-      s2 s10 XCHG
+      s3 s11 XCHG
+      s8 s10 XCHG
       s7 s9 XCHG
       s6 s8 XCHG
       s5 s7 XCHG
       s4 s6 XCHG
-      2SWAP
-      s1 s5 XCHG
-      s1 s4 XCHG
+      s5 s1 s5 XCHG3
+      s4 s4 XCHG2
+      s0 s3 XCHG
+      $GSTDJetton$_contract_store INLINECALLDICT
+    }>
+    OVER
+    1072595834 PUSHINT
+    EQUAL
+    IFJMP:<{
+      NIP
+      LDMSGADDR
+      LDVARUINT16
+      LDMSGADDR
+      LDVARUINT16
+      LDREF
+      DROP
+      CTOS
+      LDMSGADDR
+      LDVARUINT16
+      DROP
+      35499 PUSHINT
+      __tact_context_get_sender INLINECALLDICT
+      s15 PUSH
+      SDEQ
+      THROWANYIFNOT
+      36640 PUSHINT
+      17 s() PUSH
+      NOT
+      THROWANYIFNOT
+      63852 PUSHINT
+      s0 18 s() XCHG
+      NOT
+      s1 18 s() XCHG
+      THROWANYIFNOT
+      s3 s1 PUSH2
+      ADD
+      17 s() PUSH
+      ADD
+      14796 PUSHINT
+      16 s() PUSH
+      s2 PUSH
+      ADD
+      16 s() PUSH
+      LEQ
+      THROWANYIFNOT
+      s0 s15 XCHG
+      TRUE
+      s0 16 s() XCHG
+      ADD
+      s4 PUSH
+      0 GTINT
+      IF:<{
+            MYADDR
+        s6 s(-1) PUXC
+        $global_getJettonWalletInit INLINECALLDICT
+        2DUP
+        $global_contractAddress INLINECALLDICT
+        80000000 PUSHINT
+        2 PUSHINT
+        FALSE
+        1 PUSHINT
+            MYADDR
+        10000000 PUSHINT
+            b{} PUSHSLICE
+        s3 s5 XCHG
+        s4 s14 XCHG
+        s2 s3 XCHG
+        s2 s15 XCHG
+        $InternalTransfer$_constructor_queryId_amount_from_responseAddress_forwardTonAmount_forwardPayload INLINECALLDICT
+        NEWC
+        $InternalTransfer$_store_cell INLINECALLDICT
+        s6 s5 s0 XCHG3
+        s4 s10 XCHG
+        s3 s9 XCHG
+        s0 s10 s9 XCHG3
+        $SendParameters$_constructor_to_value_mode_bounce_body_code_data INLINECALLDICT
+            NEWC
+            b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+            1 STI               // store `bounce`
+            b{000} STSLICECONST // store bounced = false and src = addr_none
+            STSLICE             // store `to`
+            SWAP
+            STGRAMS             // store `value`
+            105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+            STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+            // → Stack state
+            // s0: Builder
+            // s1: `data`
+            // s2: `code`
+            // s3: `body`
+            // s4: `mode`
+            // Group 2: Placing the Builder after code and data, then checking those for nullability
+            s2 XCHG0
+            DUP2
+            ISNULL
+            SWAP
+            ISNULL
+            AND
+            // → Stack state
+            // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+            // s1: `code`
+            // s2: `data`
+            // s3: Builder
+            // s4: `body`
+            // s5: `mode`
+            // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+            <{
+                DROP2 // drop `data` and `code`, since either of those is null
+                b{0} STSLICECONST
+            }> PUSHCONT
+            // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+            <{
+                // _ split_depth:(Maybe (## 5))
+                //   special:(Maybe TickTock)
+                //   code:(Maybe ^Cell)
+                //   data:(Maybe ^Cell)
+                //   library:(Maybe ^Cell)
+                // = StateInit;
+                ROT                // place message Builder on top
+                b{10} STSLICECONST // store Maybe = true, Either = false
+                // Start composing inlined StateInit
+                b{00} STSLICECONST // store split_depth and special first
+                STDICT             // store code
+                STDICT             // store data
+                b{0} STSLICECONST  // store library
+            }> PUSHCONT
+            // Group 3: IFELSE that does the branching shown above
+            IFELSE
+            // → Stack state
+            // s0: Builder
+            // s1: null or StateInit
+            // s2: `body`
+            // s3: `mode`
+            // Group 4: Finalizing the message
+            STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+            ENDC
+            // → Stack state
+            // s0: Cell
+            // s1: `mode`
+            // Group 5: Sending the message, with `mode` on top
+            SWAP
+            SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+        s2 s3 XCHG
+      }>ELSE<{
+        s4 POP
+        s4 POP
+      }>
+      DUP
+      0 GTINT
+      IF:<{
+            MYADDR
+        s2 s(-1) PUXC
+        $global_getJettonWalletInit INLINECALLDICT
+        2DUP
+        $global_contractAddress INLINECALLDICT
+        80000000 PUSHINT
+        2 PUSHINT
+        FALSE
+        OVER
+            MYADDR
+        10000000 PUSHINT
+            b{} PUSHSLICE
+        s3 s5 XCHG
+        s4 s10 XCHG
+        s2 s3 XCHG
+        s2 s11 XCHG
+        $InternalTransfer$_constructor_queryId_amount_from_responseAddress_forwardTonAmount_forwardPayload INLINECALLDICT
+        NEWC
+        $InternalTransfer$_store_cell INLINECALLDICT
+        s0 s1 s6 XCHG3
+        s4 s4 XCHG2
+        s0 s5 XCHG
+        s0 s3 XCHG
+        $SendParameters$_constructor_to_value_mode_bounce_body_code_data INLINECALLDICT
+            NEWC
+            b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+            1 STI               // store `bounce`
+            b{000} STSLICECONST // store bounced = false and src = addr_none
+            STSLICE             // store `to`
+            SWAP
+            STGRAMS             // store `value`
+            105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+            STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+            // → Stack state
+            // s0: Builder
+            // s1: `data`
+            // s2: `code`
+            // s3: `body`
+            // s4: `mode`
+            // Group 2: Placing the Builder after code and data, then checking those for nullability
+            s2 XCHG0
+            DUP2
+            ISNULL
+            SWAP
+            ISNULL
+            AND
+            // → Stack state
+            // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+            // s1: `code`
+            // s2: `data`
+            // s3: Builder
+            // s4: `body`
+            // s5: `mode`
+            // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+            <{
+                DROP2 // drop `data` and `code`, since either of those is null
+                b{0} STSLICECONST
+            }> PUSHCONT
+            // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+            <{
+                // _ split_depth:(Maybe (## 5))
+                //   special:(Maybe TickTock)
+                //   code:(Maybe ^Cell)
+                //   data:(Maybe ^Cell)
+                //   library:(Maybe ^Cell)
+                // = StateInit;
+                ROT                // place message Builder on top
+                b{10} STSLICECONST // store Maybe = true, Either = false
+                // Start composing inlined StateInit
+                b{00} STSLICECONST // store split_depth and special first
+                STDICT             // store code
+                STDICT             // store data
+                b{0} STSLICECONST  // store library
+            }> PUSHCONT
+            // Group 3: IFELSE that does the branching shown above
+            IFELSE
+            // → Stack state
+            // s0: Builder
+            // s1: null or StateInit
+            // s2: `body`
+            // s3: `mode`
+            // Group 4: Finalizing the message
+            STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+            ENDC
+            // → Stack state
+            // s0: Cell
+            // s1: `mode`
+            // Group 5: Sending the message, with `mode` on top
+            SWAP
+            SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+      }>ELSE<{
+        2DROP
+      }>
+      s13 PUSH
+      0 GTINT
+      IF:<{
+            MYADDR
+        s2 s(-1) PUXC
+        $global_getJettonWalletInit INLINECALLDICT
+        2DUP
+        $global_contractAddress INLINECALLDICT
+        80000000 PUSHINT
+        2 PUSHINT
+        FALSE
+        3 PUSHINT
+            MYADDR
+        10000000 PUSHINT
+            b{} PUSHSLICE
+        s3 s5 XCHG
+        s4 23 s() XCHG
+        s2 s3 XCHG
+        s2 s11 XCHG
+        $InternalTransfer$_constructor_queryId_amount_from_responseAddress_forwardTonAmount_forwardPayload INLINECALLDICT
+        NEWC
+        $InternalTransfer$_store_cell INLINECALLDICT
+        s6 s5 s0 XCHG3
+        s2 s4 XCHG
+        s3 18 s() XCHG
+        -ROT
+        s0 18 s() XCHG
+        $SendParameters$_constructor_to_value_mode_bounce_body_code_data INLINECALLDICT
+            NEWC
+            b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+            1 STI               // store `bounce`
+            b{000} STSLICECONST // store bounced = false and src = addr_none
+            STSLICE             // store `to`
+            SWAP
+            STGRAMS             // store `value`
+            105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+            STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+            // → Stack state
+            // s0: Builder
+            // s1: `data`
+            // s2: `code`
+            // s3: `body`
+            // s4: `mode`
+            // Group 2: Placing the Builder after code and data, then checking those for nullability
+            s2 XCHG0
+            DUP2
+            ISNULL
+            SWAP
+            ISNULL
+            AND
+            // → Stack state
+            // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+            // s1: `code`
+            // s2: `data`
+            // s3: Builder
+            // s4: `body`
+            // s5: `mode`
+            // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+            <{
+                DROP2 // drop `data` and `code`, since either of those is null
+                b{0} STSLICECONST
+            }> PUSHCONT
+            // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+            <{
+                // _ split_depth:(Maybe (## 5))
+                //   special:(Maybe TickTock)
+                //   code:(Maybe ^Cell)
+                //   data:(Maybe ^Cell)
+                //   library:(Maybe ^Cell)
+                // = StateInit;
+                ROT                // place message Builder on top
+                b{10} STSLICECONST // store Maybe = true, Either = false
+                // Start composing inlined StateInit
+                b{00} STSLICECONST // store split_depth and special first
+                STDICT             // store code
+                STDICT             // store data
+                b{0} STSLICECONST  // store library
+            }> PUSHCONT
+            // Group 3: IFELSE that does the branching shown above
+            IFELSE
+            // → Stack state
+            // s0: Builder
+            // s1: null or StateInit
+            // s2: `body`
+            // s3: `mode`
+            // Group 4: Finalizing the message
+            STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+            ENDC
+            // → Stack state
+            // s0: Cell
+            // s1: `mode`
+            // Group 5: Sending the message, with `mode` on top
+            SWAP
+            SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+      }>ELSE<{
+        s13 POP
+        DROP
+      }>
+      2 9 BLKSWAP
       $GSTDJetton$_contract_store INLINECALLDICT
     }>
     OVER
@@ -548,12 +929,12 @@ PROGRAM{
       $global_contractAddress INLINECALLDICT
       SDEQ
       THROWANYIFNOT
-      s10 s1 XCPU
+      s11 s1 XCPU
       SUB
-      -ROT
+      s3 s3 XCHG2
       ADD
           B{b5ee9c72410101010024000043800000000000000000000000000000000000000000000000000000000000000000104aec829d} B>boc <s PUSHSLICE
-      s10 s(-1) PUXC
+      s11 s(-1) PUXC
       SDEQ
       NOT
       IF:<{
@@ -561,7 +942,7 @@ PROGRAM{
         66 PUSHINT
         FALSE
             B{b5ee9c72410101010015000026000000004275726e207375636365737366756cbbcb89a6} B>boc PUSHREF
-        s4 s13 XCHG
+        s4 s14 XCHG
         $SendParameters$_constructor_to_value_mode_bounce_body INLINECALLDICT
             NEWC
             b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
@@ -630,15 +1011,16 @@ PROGRAM{
             SWAP
             SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
       }>ELSE<{
-        s9 POP
+        s10 POP
       }>
-      s0 s10 XCHG
+      s1 s11 XCHG
+      s8 s10 XCHG
       s7 s9 XCHG
       s6 s8 XCHG
       s5 s7 XCHG
       s4 s6 XCHG
       s3 s5 XCHG
-      s4 s3 s0 XCHG3
+      s0 s4 s4 XCHG3
       $GSTDJetton$_contract_store INLINECALLDICT
     }>
     OVER
@@ -646,13 +1028,13 @@ PROGRAM{
     EQUAL
     IFJMP:<{
       NIP
-      s6 POP
-      s0 s5 XCHG
+      s7 POP
+      s0 s6 XCHG
       LDMSGADDR
       DROP
       35499 PUSHINT
       __tact_context_get_sender INLINECALLDICT
-      s8 PUSH
+      s9 PUSH
       SDEQ
       THROWANYIFNOT
       28612 PUSHINT
@@ -660,13 +1042,13 @@ PROGRAM{
       NOT
       s1 s11 XCHG
       THROWANYIFNOT
+      s8 s10 XCHG
       s7 s9 XCHG
       s6 s8 XCHG
-      s5 s7 XCHG
-      s5 s6 XCHG
-      s3 s5 XCHG
-      2 3 BLKSWAP
+      s4 s6 XCHG
+      2 4 BLKSWAP
       TRUE
+      SWAP
       $GSTDJetton$_contract_store INLINECALLDICT
     }>
     OVER
@@ -674,10 +1056,32 @@ PROGRAM{
     EQUAL
     IFJMP:<{
       NIP
-      s5 POP
-      s0 s4 XCHG
+      s6 POP
+      s0 s5 XCHG
       LDREF
       DROP
+      35499 PUSHINT
+      __tact_context_get_sender INLINECALLDICT
+      s9 PUSH
+      SDEQ
+      THROWANYIFNOT
+      s9 s11 XCHG
+      s8 s10 XCHG
+      s7 s9 XCHG
+      s6 s8 XCHG
+      s0 s7 XCHG
+      s4 s6 XCHG
+      s3 s5 XCHG
+      s4 s3 s0 XCHG3
+      s1 s2 XCHG
+      $GSTDJetton$_contract_store INLINECALLDICT
+    }>
+    OVER
+    1022287114 PUSHINT
+    EQUAL
+    IFJMP:<{
+      2DROP
+      s4 POP
       35499 PUSHINT
       __tact_context_get_sender INLINECALLDICT
       s8 PUSH
@@ -687,30 +1091,11 @@ PROGRAM{
       s7 s9 XCHG
       s6 s8 XCHG
       s5 s7 XCHG
+      s4 s6 XCHG
+      FALSE
       s0 s6 XCHG
       s3 s5 XCHG
-      s4 s3 s0 XCHG3
-      $GSTDJetton$_contract_store INLINECALLDICT
-    }>
-    OVER
-    1022287114 PUSHINT
-    EQUAL
-    IFJMP:<{
-      2DROP
-      s3 POP
-      35499 PUSHINT
-      __tact_context_get_sender INLINECALLDICT
-      s7 PUSH
-      SDEQ
-      THROWANYIFNOT
-      s7 s9 XCHG
-      s6 s8 XCHG
-      s5 s7 XCHG
-      s4 s6 XCHG
-      s3 s5 XCHG
-      FALSE
-      s4 s5 s5 XCHG3
-      s3 s1 s3 XCHG3
+      s4 s0 s3 XCHG3
       $GSTDJetton$_contract_store INLINECALLDICT
     }>
     SWAP
@@ -722,6 +1107,7 @@ PROGRAM{
       $DeployOk$_constructor_queryId INLINECALLDICT
       NEWC
       $DeployOk$_store_cell INLINECALLDICT
+      s10 s12 XCHG
       s9 s11 XCHG
       s8 s10 XCHG
       s7 s9 XCHG
@@ -730,10 +1116,11 @@ PROGRAM{
       s4 s6 XCHG
       s3 s5 XCHG
       s4 s3 s0 XCHG3
+      s1 s2 XCHG
       $GSTDJetton$_fun_notify INLINECALLDICT
       $GSTDJetton$_contract_store INLINECALLDICT
     }>
-    12 BLKDROP
+    13 BLKDROP
     130 THROW
   }>
 }END>c

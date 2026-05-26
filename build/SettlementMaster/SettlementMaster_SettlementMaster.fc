@@ -630,14 +630,19 @@ _ %owner() method_id(83229) {
         int $workerAmt = (($total * $self'workerShare) / 100);
         int $treasuryAmt = (($total * $self'treasuryShare) / 100);
         int $protocolAmt = (($total - $workerAmt) - $treasuryAmt);
+        int $maxAllowedBonus = ($self'baseRate * $msg'computeUnits);
+        int $actualBonus = $msg'gstdBonusAmount;
+        if (($actualBonus > $maxAllowedBonus)) {
+            $actualBonus = $maxAllowedBonus;
+        }
         $self'totalSettled = $self'totalSettled + $total;
-        $self'totalGSTDMinted = $self'totalGSTDMinted + $msg'gstdBonusAmount;
+        $self'totalGSTDMinted = $self'totalGSTDMinted + $actualBonus;
         $self'taskCount = $self'taskCount + 1;
         $global_send($SendParameters$_constructor_to_value_mode_bounce_body($msg'workerAddr, $workerAmt, 2, true, $WorkerPayment$_store_cell($WorkerPayment$_constructor_taskId_amount_bonusGSTD($msg'taskId, $workerAmt, $msg'gstdBonusAmount), begin_cell())));
         $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'treasury, $treasuryAmt, 2, false, __gen_cell_cell_6c7f095b2834dcd10181b530fba875659e91af767b1d084243958c07bfe40df5()));
         $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'protocolFee, $protocolAmt, 2, false, __gen_cell_cell_a537636aa5fc3c2d44d23d8823f0a46ea660ebe768ba768596c3046cd297304b()));
-        if (($msg'gstdBonusAmount > 0)) {
-            $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'gstdJetton, 80000000, 2, false, $MintWorkerReward$_store_cell($MintWorkerReward$_constructor_workerAddr_amount_taskId($msg'workerAddr, $msg'gstdBonusAmount, $msg'taskId), begin_cell())));
+        if (($actualBonus > 0)) {
+            $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'gstdJetton, 120000000, 2, false, $MintWorkerReward$_store_cell($MintWorkerReward$_constructor_workerAddr_amount_taskId($msg'workerAddr, $actualBonus, $msg'taskId), begin_cell())));
         }
         $SettlementMaster$_contract_store(($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'paused, $self'minPayment));
         return ();

@@ -1145,6 +1145,86 @@ export function dictValueParserTokenUpdateContent(): DictionaryValue<TokenUpdate
     }
 }
 
+export type MintInitialAllocation = {
+    $$type: 'MintInitialAllocation';
+    teamAddr: Address;
+    teamAmount: bigint;
+    ecosystemAddr: Address;
+    ecosystemAmount: bigint;
+    liquidityAddr: Address;
+    liquidityAmount: bigint;
+}
+
+export function storeMintInitialAllocation(src: MintInitialAllocation) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeUint(1072595834, 32);
+        b_0.storeAddress(src.teamAddr);
+        b_0.storeCoins(src.teamAmount);
+        b_0.storeAddress(src.ecosystemAddr);
+        b_0.storeCoins(src.ecosystemAmount);
+        const b_1 = new Builder();
+        b_1.storeAddress(src.liquidityAddr);
+        b_1.storeCoins(src.liquidityAmount);
+        b_0.storeRef(b_1.endCell());
+    };
+}
+
+export function loadMintInitialAllocation(slice: Slice) {
+    const sc_0 = slice;
+    if (sc_0.loadUint(32) !== 1072595834) { throw Error('Invalid prefix'); }
+    const _teamAddr = sc_0.loadAddress();
+    const _teamAmount = sc_0.loadCoins();
+    const _ecosystemAddr = sc_0.loadAddress();
+    const _ecosystemAmount = sc_0.loadCoins();
+    const sc_1 = sc_0.loadRef().beginParse();
+    const _liquidityAddr = sc_1.loadAddress();
+    const _liquidityAmount = sc_1.loadCoins();
+    return { $$type: 'MintInitialAllocation' as const, teamAddr: _teamAddr, teamAmount: _teamAmount, ecosystemAddr: _ecosystemAddr, ecosystemAmount: _ecosystemAmount, liquidityAddr: _liquidityAddr, liquidityAmount: _liquidityAmount };
+}
+
+export function loadTupleMintInitialAllocation(source: TupleReader) {
+    const _teamAddr = source.readAddress();
+    const _teamAmount = source.readBigNumber();
+    const _ecosystemAddr = source.readAddress();
+    const _ecosystemAmount = source.readBigNumber();
+    const _liquidityAddr = source.readAddress();
+    const _liquidityAmount = source.readBigNumber();
+    return { $$type: 'MintInitialAllocation' as const, teamAddr: _teamAddr, teamAmount: _teamAmount, ecosystemAddr: _ecosystemAddr, ecosystemAmount: _ecosystemAmount, liquidityAddr: _liquidityAddr, liquidityAmount: _liquidityAmount };
+}
+
+export function loadGetterTupleMintInitialAllocation(source: TupleReader) {
+    const _teamAddr = source.readAddress();
+    const _teamAmount = source.readBigNumber();
+    const _ecosystemAddr = source.readAddress();
+    const _ecosystemAmount = source.readBigNumber();
+    const _liquidityAddr = source.readAddress();
+    const _liquidityAmount = source.readBigNumber();
+    return { $$type: 'MintInitialAllocation' as const, teamAddr: _teamAddr, teamAmount: _teamAmount, ecosystemAddr: _ecosystemAddr, ecosystemAmount: _ecosystemAmount, liquidityAddr: _liquidityAddr, liquidityAmount: _liquidityAmount };
+}
+
+export function storeTupleMintInitialAllocation(source: MintInitialAllocation) {
+    const builder = new TupleBuilder();
+    builder.writeAddress(source.teamAddr);
+    builder.writeNumber(source.teamAmount);
+    builder.writeAddress(source.ecosystemAddr);
+    builder.writeNumber(source.ecosystemAmount);
+    builder.writeAddress(source.liquidityAddr);
+    builder.writeNumber(source.liquidityAmount);
+    return builder.build();
+}
+
+export function dictValueParserMintInitialAllocation(): DictionaryValue<MintInitialAllocation> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeMintInitialAllocation(src)).endCell());
+        },
+        parse: (src) => {
+            return loadMintInitialAllocation(src.loadRef().beginParse());
+        }
+    }
+}
+
 export type Transfer = {
     $$type: 'Transfer';
     queryId: bigint;
@@ -1377,6 +1457,7 @@ export type GSTDJetton$Data = {
     totalBurned: bigint;
     totalMintEvents: bigint;
     authorityLocked: boolean;
+    initialAllocationDone: boolean;
 }
 
 export function storeGSTDJetton$Data(src: GSTDJetton$Data) {
@@ -1394,6 +1475,7 @@ export function storeGSTDJetton$Data(src: GSTDJetton$Data) {
         b_1.storeCoins(src.totalBurned);
         b_1.storeUint(src.totalMintEvents, 64);
         b_1.storeBit(src.authorityLocked);
+        b_1.storeBit(src.initialAllocationDone);
         b_0.storeRef(b_1.endCell());
     };
 }
@@ -1412,7 +1494,8 @@ export function loadGSTDJetton$Data(slice: Slice) {
     const _totalBurned = sc_1.loadCoins();
     const _totalMintEvents = sc_1.loadUintBig(64);
     const _authorityLocked = sc_1.loadBit();
-    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked };
+    const _initialAllocationDone = sc_1.loadBit();
+    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked, initialAllocationDone: _initialAllocationDone };
 }
 
 export function loadTupleGSTDJetton$Data(source: TupleReader) {
@@ -1427,7 +1510,8 @@ export function loadTupleGSTDJetton$Data(source: TupleReader) {
     const _totalBurned = source.readBigNumber();
     const _totalMintEvents = source.readBigNumber();
     const _authorityLocked = source.readBoolean();
-    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked };
+    const _initialAllocationDone = source.readBoolean();
+    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked, initialAllocationDone: _initialAllocationDone };
 }
 
 export function loadGetterTupleGSTDJetton$Data(source: TupleReader) {
@@ -1442,7 +1526,8 @@ export function loadGetterTupleGSTDJetton$Data(source: TupleReader) {
     const _totalBurned = source.readBigNumber();
     const _totalMintEvents = source.readBigNumber();
     const _authorityLocked = source.readBoolean();
-    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked };
+    const _initialAllocationDone = source.readBoolean();
+    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked, initialAllocationDone: _initialAllocationDone };
 }
 
 export function storeTupleGSTDJetton$Data(source: GSTDJetton$Data) {
@@ -1458,6 +1543,7 @@ export function storeTupleGSTDJetton$Data(source: GSTDJetton$Data) {
     builder.writeNumber(source.totalBurned);
     builder.writeNumber(source.totalMintEvents);
     builder.writeBoolean(source.authorityLocked);
+    builder.writeBoolean(source.initialAllocationDone);
     return builder.build();
 }
 
@@ -1831,7 +1917,7 @@ function initGSTDJettonWallet_init_args(src: GSTDJettonWallet_init_args) {
 }
 
 async function GSTDJettonWallet_init(owner: Address, jettonMaster: Address) {
-    const __code = Cell.fromHex('b5ee9c7241020c010002e6000114ff00f4a413f4bcf2c80b01020162020903c8d001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200019afa00fa40fa4055206c139afa40fa405902d1017059e204925f04e002d70d1ff2e082218210ac130557bae302218210558e297bbae3020182104056115dbae3025f04f2c08203050702da31d33ffa00fa40fa4031fa005327db3cf84259705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0c705917f95f84228c705e281114d01f2f45153a021c200926c51e30d02c87f01ca0055205afa0212cecec9ed540b0400b0147250437007c855308210f4e4f5915005cb1f13cb3f01fa02cecec9250403505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002fe31d33ffa00fa40fa40f40431fa0082009058f84229c705f2f48200d5575375bef2f45164a15138db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d050767080407f2c4813507cc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec910560b0600981057103440130710465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002c87f01ca0055205afa0212cecec9ed5401f2d33ffa00fa4030815427f84226c705f2f48200d5575342bef2f45131a17080405414367f07c8553082106377b77f5005cb1f13cb3f01fa02cecec926044313505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002080020c87f01ca0055205afa0212cecec9ed540147a0f605da89a1a4000335f401f481f480aa40d82735f481f480b205a202e0b3c5b678d8690a01125cdb3c3054633052300b0018f82ac87001ca005a02cecec9b1355a99');
+    const __code = Cell.fromHex('b5ee9c7241020d0100031f000114ff00f4a413f4bcf2c80b01020162020a01eed001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200019afa00fa40fa4055206c139afa40fa405902d1017059e2048e36028020d7217021d749c21f9430d31f01de8210ac130557ba8e19d33ffa00596c21a002c87f01ca0055205afa0212cecec9ed54e05f04e002d70d1ff2e082210303fe8210ac130557ba8f6d31d33ffa00fa40fa4031fa005327db3cf84259705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0c705917f95f84228c705e281114d01f2f45153a021c200926c51e30d02c87f01ca0055205afa0212cecec9ed54e0218210558e297bba0c040500b0147250437007c855308210f4e4f5915005cb1f13cb3f01fa02cecec9250403505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb000222e3020182104056115dbae3025f04f2c082060802fe31d33ffa00fa40fa40f40431fa0082009058f84229c705f2f48200d5575375bef2f45164a15138db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d050767080407f2c4813507cc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec910560c0700981057103440130710465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002c87f01ca0055205afa0212cecec9ed5401f2d33ffa00fa4030815427f84226c705f2f48200d5575342bef2f45131a17080405414367f07c8553082106377b77f5005cb1f13cb3f01fa02cecec926044313505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002090020c87f01ca0055205afa0212cecec9ed540147a0f605da89a1a4000335f401f481f480aa40d82735f481f480b205a202e0b3c5b678d8690b01125cdb3c3054633052300c0018f82ac87001ca005a02cecec92928299d');
     const builder = beginCell();
     builder.storeUint(0, 1);
     initGSTDJettonWallet_init_args({ $$type: 'GSTDJettonWallet_init_args', owner, jettonMaster })(builder);
@@ -1879,14 +1965,17 @@ export const GSTDJettonWallet_errors = {
     3820: { message: "Invalid burn notification" },
     4429: { message: "Invalid sender" },
     8319: { message: "Only Settlement can mint" },
+    14796: { message: "Exceeds max supply" },
     21543: { message: "Only owner can burn" },
     28612: { message: "Mint authority already locked" },
     35499: { message: "Only owner" },
+    36640: { message: "Cannot pre-mint after authority locked" },
     36952: { message: "Only owner can transfer" },
     37727: { message: "Worker pool exhausted" },
     47714: { message: "Max supply reached" },
     54615: { message: "Insufficient balance" },
     56760: { message: "Minting disabled" },
+    63852: { message: "Initial allocation already done" },
 } as const
 
 export const GSTDJettonWallet_errors_backward = {
@@ -1929,14 +2018,17 @@ export const GSTDJettonWallet_errors_backward = {
     "Invalid burn notification": 3820,
     "Invalid sender": 4429,
     "Only Settlement can mint": 8319,
+    "Exceeds max supply": 14796,
     "Only owner can burn": 21543,
     "Mint authority already locked": 28612,
     "Only owner": 35499,
+    "Cannot pre-mint after authority locked": 36640,
     "Only owner can transfer": 36952,
     "Worker pool exhausted": 37727,
     "Max supply reached": 47714,
     "Insufficient balance": 54615,
     "Minting disabled": 56760,
+    "Initial allocation already done": 63852,
 } as const
 
 const GSTDJettonWallet_types: ABIType[] = [
@@ -1960,10 +2052,11 @@ const GSTDJettonWallet_types: ABIType[] = [
     {"name":"BurnNotification","header":1668790143,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"sender","type":{"kind":"simple","type":"address","optional":false}},{"name":"responseDestination","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"TransferNotification","header":4108645777,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"sender","type":{"kind":"simple","type":"address","optional":false}},{"name":"forwardPayload","type":{"kind":"simple","type":"slice","optional":false,"format":"remainder"}}]},
     {"name":"TokenUpdateContent","header":2937889386,"fields":[{"name":"content","type":{"kind":"simple","type":"cell","optional":false}}]},
+    {"name":"MintInitialAllocation","header":1072595834,"fields":[{"name":"teamAddr","type":{"kind":"simple","type":"address","optional":false}},{"name":"teamAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"ecosystemAddr","type":{"kind":"simple","type":"address","optional":false}},{"name":"ecosystemAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"liquidityAddr","type":{"kind":"simple","type":"address","optional":false}},{"name":"liquidityAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
     {"name":"Transfer","header":1435380091,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"destination","type":{"kind":"simple","type":"address","optional":false}},{"name":"responseDestination","type":{"kind":"simple","type":"address","optional":false}},{"name":"customPayload","type":{"kind":"simple","type":"cell","optional":true}},{"name":"forwardTonAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"forwardPayload","type":{"kind":"simple","type":"slice","optional":false,"format":"remainder"}}]},
     {"name":"InternalTransfer","header":2886927703,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"from","type":{"kind":"simple","type":"address","optional":false}},{"name":"responseAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"forwardTonAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"forwardPayload","type":{"kind":"simple","type":"slice","optional":false,"format":"remainder"}}]},
     {"name":"Burn","header":1079382365,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"responseDestination","type":{"kind":"simple","type":"address","optional":false}}]},
-    {"name":"GSTDJetton$Data","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"maxSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"mintAuthority","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"workerPoolMinted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"workerPoolMax","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalBurned","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalMintEvents","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"authorityLocked","type":{"kind":"simple","type":"bool","optional":false}}]},
+    {"name":"GSTDJetton$Data","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"maxSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"mintAuthority","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"workerPoolMinted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"workerPoolMax","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalBurned","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalMintEvents","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"authorityLocked","type":{"kind":"simple","type":"bool","optional":false}},{"name":"initialAllocationDone","type":{"kind":"simple","type":"bool","optional":false}}]},
     {"name":"FreezeMint","header":1022287114,"fields":[]},
     {"name":"JettonData","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"adminAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"jettonContent","type":{"kind":"simple","type":"cell","optional":false}},{"name":"jettonWalletCode","type":{"kind":"simple","type":"cell","optional":false}}]},
     {"name":"WorkerPoolStats","header":null,"fields":[{"name":"minted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"max","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"remaining","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
@@ -1983,6 +2076,7 @@ const GSTDJettonWallet_opcodes = {
     "BurnNotification": 1668790143,
     "TransferNotification": 4108645777,
     "TokenUpdateContent": 2937889386,
+    "MintInitialAllocation": 1072595834,
     "Transfer": 1435380091,
     "InternalTransfer": 2886927703,
     "Burn": 1079382365,

@@ -1145,6 +1145,86 @@ export function dictValueParserTokenUpdateContent(): DictionaryValue<TokenUpdate
     }
 }
 
+export type MintInitialAllocation = {
+    $$type: 'MintInitialAllocation';
+    teamAddr: Address;
+    teamAmount: bigint;
+    ecosystemAddr: Address;
+    ecosystemAmount: bigint;
+    liquidityAddr: Address;
+    liquidityAmount: bigint;
+}
+
+export function storeMintInitialAllocation(src: MintInitialAllocation) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeUint(1072595834, 32);
+        b_0.storeAddress(src.teamAddr);
+        b_0.storeCoins(src.teamAmount);
+        b_0.storeAddress(src.ecosystemAddr);
+        b_0.storeCoins(src.ecosystemAmount);
+        const b_1 = new Builder();
+        b_1.storeAddress(src.liquidityAddr);
+        b_1.storeCoins(src.liquidityAmount);
+        b_0.storeRef(b_1.endCell());
+    };
+}
+
+export function loadMintInitialAllocation(slice: Slice) {
+    const sc_0 = slice;
+    if (sc_0.loadUint(32) !== 1072595834) { throw Error('Invalid prefix'); }
+    const _teamAddr = sc_0.loadAddress();
+    const _teamAmount = sc_0.loadCoins();
+    const _ecosystemAddr = sc_0.loadAddress();
+    const _ecosystemAmount = sc_0.loadCoins();
+    const sc_1 = sc_0.loadRef().beginParse();
+    const _liquidityAddr = sc_1.loadAddress();
+    const _liquidityAmount = sc_1.loadCoins();
+    return { $$type: 'MintInitialAllocation' as const, teamAddr: _teamAddr, teamAmount: _teamAmount, ecosystemAddr: _ecosystemAddr, ecosystemAmount: _ecosystemAmount, liquidityAddr: _liquidityAddr, liquidityAmount: _liquidityAmount };
+}
+
+export function loadTupleMintInitialAllocation(source: TupleReader) {
+    const _teamAddr = source.readAddress();
+    const _teamAmount = source.readBigNumber();
+    const _ecosystemAddr = source.readAddress();
+    const _ecosystemAmount = source.readBigNumber();
+    const _liquidityAddr = source.readAddress();
+    const _liquidityAmount = source.readBigNumber();
+    return { $$type: 'MintInitialAllocation' as const, teamAddr: _teamAddr, teamAmount: _teamAmount, ecosystemAddr: _ecosystemAddr, ecosystemAmount: _ecosystemAmount, liquidityAddr: _liquidityAddr, liquidityAmount: _liquidityAmount };
+}
+
+export function loadGetterTupleMintInitialAllocation(source: TupleReader) {
+    const _teamAddr = source.readAddress();
+    const _teamAmount = source.readBigNumber();
+    const _ecosystemAddr = source.readAddress();
+    const _ecosystemAmount = source.readBigNumber();
+    const _liquidityAddr = source.readAddress();
+    const _liquidityAmount = source.readBigNumber();
+    return { $$type: 'MintInitialAllocation' as const, teamAddr: _teamAddr, teamAmount: _teamAmount, ecosystemAddr: _ecosystemAddr, ecosystemAmount: _ecosystemAmount, liquidityAddr: _liquidityAddr, liquidityAmount: _liquidityAmount };
+}
+
+export function storeTupleMintInitialAllocation(source: MintInitialAllocation) {
+    const builder = new TupleBuilder();
+    builder.writeAddress(source.teamAddr);
+    builder.writeNumber(source.teamAmount);
+    builder.writeAddress(source.ecosystemAddr);
+    builder.writeNumber(source.ecosystemAmount);
+    builder.writeAddress(source.liquidityAddr);
+    builder.writeNumber(source.liquidityAmount);
+    return builder.build();
+}
+
+export function dictValueParserMintInitialAllocation(): DictionaryValue<MintInitialAllocation> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeMintInitialAllocation(src)).endCell());
+        },
+        parse: (src) => {
+            return loadMintInitialAllocation(src.loadRef().beginParse());
+        }
+    }
+}
+
 export type Transfer = {
     $$type: 'Transfer';
     queryId: bigint;
@@ -1377,6 +1457,7 @@ export type GSTDJetton$Data = {
     totalBurned: bigint;
     totalMintEvents: bigint;
     authorityLocked: boolean;
+    initialAllocationDone: boolean;
 }
 
 export function storeGSTDJetton$Data(src: GSTDJetton$Data) {
@@ -1394,6 +1475,7 @@ export function storeGSTDJetton$Data(src: GSTDJetton$Data) {
         b_1.storeCoins(src.totalBurned);
         b_1.storeUint(src.totalMintEvents, 64);
         b_1.storeBit(src.authorityLocked);
+        b_1.storeBit(src.initialAllocationDone);
         b_0.storeRef(b_1.endCell());
     };
 }
@@ -1412,7 +1494,8 @@ export function loadGSTDJetton$Data(slice: Slice) {
     const _totalBurned = sc_1.loadCoins();
     const _totalMintEvents = sc_1.loadUintBig(64);
     const _authorityLocked = sc_1.loadBit();
-    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked };
+    const _initialAllocationDone = sc_1.loadBit();
+    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked, initialAllocationDone: _initialAllocationDone };
 }
 
 export function loadTupleGSTDJetton$Data(source: TupleReader) {
@@ -1427,7 +1510,8 @@ export function loadTupleGSTDJetton$Data(source: TupleReader) {
     const _totalBurned = source.readBigNumber();
     const _totalMintEvents = source.readBigNumber();
     const _authorityLocked = source.readBoolean();
-    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked };
+    const _initialAllocationDone = source.readBoolean();
+    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked, initialAllocationDone: _initialAllocationDone };
 }
 
 export function loadGetterTupleGSTDJetton$Data(source: TupleReader) {
@@ -1442,7 +1526,8 @@ export function loadGetterTupleGSTDJetton$Data(source: TupleReader) {
     const _totalBurned = source.readBigNumber();
     const _totalMintEvents = source.readBigNumber();
     const _authorityLocked = source.readBoolean();
-    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked };
+    const _initialAllocationDone = source.readBoolean();
+    return { $$type: 'GSTDJetton$Data' as const, totalSupply: _totalSupply, maxSupply: _maxSupply, owner: _owner, mintAuthority: _mintAuthority, content: _content, mintable: _mintable, workerPoolMinted: _workerPoolMinted, workerPoolMax: _workerPoolMax, totalBurned: _totalBurned, totalMintEvents: _totalMintEvents, authorityLocked: _authorityLocked, initialAllocationDone: _initialAllocationDone };
 }
 
 export function storeTupleGSTDJetton$Data(source: GSTDJetton$Data) {
@@ -1458,6 +1543,7 @@ export function storeTupleGSTDJetton$Data(source: GSTDJetton$Data) {
     builder.writeNumber(source.totalBurned);
     builder.writeNumber(source.totalMintEvents);
     builder.writeBoolean(source.authorityLocked);
+    builder.writeBoolean(source.initialAllocationDone);
     return builder.build();
 }
 
@@ -1831,7 +1917,7 @@ function initGSTDJetton_init_args(src: GSTDJetton_init_args) {
 }
 
 async function GSTDJetton_init(owner: Address, content: Cell) {
-    const __code = Cell.fromHex('b5ee9c7241023001000a7f000114ff00f4a413f4bcf2c80b01020162020e01f6d001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200018e29fa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd20030104b104a104910481047104610456c1b8e26fa40d45902d101217082300de0b6b3a76400007f228230058d15e17628000053111069105870e20c925f0ce00ad70d1f0304faf2e082218210bb7a9ab8bae3022182106377b77fbae3022182106cbd4f45ba8e50313605fa403082008aabf84228c705f2f4816fc40bb31bf2f41079106810571056103555127fc87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed54e0218210af1ca26abae3022104070b0c02fc31fa40fa003081207ff84229c705f2f48200ddb826f2f48200ba6253b1a02bbbf2f48200935f5351a025bbf2f451aaa0514aa00ba4f8285220db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0820afaf080727070f828718b0810350411140410231e0501cc102bc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec946501024103f400f10465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00102a10791068105710465a1514060054c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed5403fc31d33f31fa00fa40fa4030f82812db3c810eecf8425a705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0c705f2f451a1a159a08d086000000000000000000000000000000000000000000000000000000000000000000452a0c705b39139e30d0a107910681e080a017c7080427088104d10246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00090026000000004275726e207375636365737366756c00641057104610354430c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed54008e313504d43082008aabf84228c705f2f4108a1079106810570610354430c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed5401be82103ceedd0aba8e465b3382008aabf84227c705f2f4107910681057104610357044554313c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed54e0018210946a98b6bae3025f0cf2c0820d00dcd33f30c8018210aff90f5758cb1fcb3fc9109b108a107910681057104610354430f84270705003804201503304c8cf8580ca00cf8440ce01fa02806acf40f400c901fb00c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed540201200f17020158101201c1b4a3bda89a1a400031c53f401f401f481f481a9a401f401a803a1f401f401a67fa400602096209420922090208e208c208ad8371c4df481a8b205a20242e104601bc16d674ec80000fe4504600b1a2bc2ec500000a62220d220b0e1c5b678d96301100022802016a131501c0aa14ed44d0d200018e29fa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd20030104b104a104910481047104610456c1b8e26fa40d45902d101217082300de0b6b3a76400007f228230058d15e17628000053111069105870e2db3c6cb11400022901c0a8afed44d0d200018e29fa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd20030104b104a104910481047104610456c1b8e26fa40d45902d101217082300de0b6b3a76400007f228230058d15e17628000053111069105870e2db3c6cb316000c5334a1546550020120182e020120192c0201581a1c01c5adbcf6a268690000c714fd007d007d207d206a69007d006a00e87d007d00699fe900180825882508248824082388230822b60dc7137d206a2c81688090b8411806f05b59d3b200003f91411802c68af0bb14000029888834882c38712a856d9e3658c01b0162f828db3c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d01e01c1af16f6a268690000c714fd007d007d207d206a69007d006a00e87d007d00699fe900180825882508248824082388230822b60dc7137d206a2c81688090b8411806f05b59d3b200003f91411802c68af0bb14000029888834882c38716d9e365ac01d011af828f828db3c30546b70546ba01e0104db3c1f011688c87001ca005a02cecec9200114ff00f4a413f4bcf2c80b21020162222903c8d001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200019afa00fa40fa4055206c139afa40fa405902d1017059e204925f04e002d70d1ff2e082218210ac130557bae302218210558e297bbae3020182104056115dbae3025f04f2c08223252702da31d33ffa00fa40fa4031fa005327db3cf84259705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0c705917f95f84228c705e281114d01f2f45153a021c200926c51e30d02c87f01ca0055205afa0212cecec9ed542b2400b0147250437007c855308210f4e4f5915005cb1f13cb3f01fa02cecec9250403505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002fe31d33ffa00fa40fa40f40431fa0082009058f84229c705f2f48200d5575375bef2f45164a15138db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d050767080407f2c4813507cc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec910562b2600981057103440130710465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002c87f01ca0055205afa0212cecec9ed5401f2d33ffa00fa4030815427f84226c705f2f48200d5575342bef2f45131a17080405414367f07c8553082106377b77f5005cb1f13cb3f01fa02cecec926044313505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002280020c87f01ca0055205afa0212cecec9ed540147a0f605da89a1a4000335f401f481f480aa40d82735f481f480b205a202e0b3c5b678d8692a01125cdb3c3054633052302b0018f82ac87001ca005a02cecec901c1b4249da89a1a400031c53f401f401f481f481a9a401f401a803a1f401f401a67fa400602096209420922090208e208c208ad8371c4df481a8b205a20242e104601bc16d674ec80000fe4504600b1a2bc2ec500000a62220d220b0e1c5b678d96302d00022701c1bbd78ed44d0d200018e29fa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd20030104b104a104910481047104610456c1b8e26fa40d45902d101217082300de0b6b3a76400007f228230058d15e17628000053111069105870e2db3c6cb382f00065472a11d72fe0d');
+    const __code = Cell.fromHex('b5ee9c7241023901000dd7000114ff00f4a413f4bcf2c80b01020162021602f8d001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200018e2bfa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd200d20030105c105b105a10591058105710566c1c8e27fa40d45902d101217082300de0b6b3a76400007f228230058d15e1762800005311106910587070e20de3020bd70d1f030400cc0b8020d7217021d749c21f9430d31f01de8210ac130557ba8e49d33ffa00596c2151aaa1504aa1109b108a1079106810571046443512c87f01ca0055b050cbfa025009fa0217ce15ce13ccca0001fa02c858fa0258fa0212cb3f13ca00ca00cdc9ed54e05f0d04fef2e082218210bb7a9ab8bae3022182103fee837abae3022182106377b77fbae3022182106cbd4f45ba8e52313706fa403082008aabf84229c705f2f4816fc40bb31bf2f4108a10791068104655137f01c87f01ca0055b050cbfa025009fa0217ce15ce13ccca0001fa02c858fa0258fa0212cb3f13ca00ca00cdc9ed54e02105070f1302f831fa40fa00d33f3081207ff8422bc705f2f48200ddb828f2f48200ba6253d2a02dbbf2f48200935f5372a027bbf2f451c1a05161a003a4f8285230db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0821004c4b400727ff82882089896808b08260601e805111505104a1023102bc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec91605111005041110045a10465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00103b108a107910681057104645155044030e04c431fa40fa00fa40fa00d430d0fa40fa003082008aabf8422fc705f2f482008f205611b3f2f48200f96c1112b301111201f2f45331a05611a08139cc561022a05610bbf2f40f7f1110a024c200923434e30d20c200915be30d2dc200923d30e30d5518080a0c0e02fef8285260db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0821004c4b400727071f82882089896808b081035104e1023102fc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec94650104a103940a910465522c8cf8580ca00cf8440ce2609005001fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00102302fcf8285220db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0821004c4b400727021f82882089896808b081035104a1023102bc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec940165044050310465522c8cf8580ca00cf8440ce01260b004afa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002fcf8285220db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0821004c4b400727073f82882089896808b081035041117041023102bc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec9465010240311120359111210465522c8cf8580260d0058ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00005ac87f01ca0055b050cbfa025009fa0217ce15ce13ccca0001fa02c858fa0258fa0212cb3f13ca00ca00cdc9ed5403fe31d33f31fa00fa40fa4030f82812db3c810eecf8425a705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0c705f2f451b1a15033a08d086000000000000000000000000000000000000000000000000000000000000000000452b0c705b3913ae30d1b108a1079261012017c7080427088104e10246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00110026000000004275726e207375636365737366756c006e10681057104610354044c87f01ca0055b050cbfa025009fa0217ce15ce13ccca0001fa02c858fa0258fa0212cb3f13ca00ca00cdc9ed5402e08210af1ca26aba8e4d313605d43082008aabf84229c705f2f4109b108a107910680710461035443012c87f01ca0055b050cbfa025009fa0217ce15ce13ccca0001fa02c858fa0258fa0212cb3f13ca00ca00cdc9ed54e02182103ceedd0abae302018210946a98b6bae3025f0df2c082141500945b3482008aabf84228c705f2f4108a1079106810571046700610354403c87f01ca0055b050cbfa025009fa0217ce15ce13ccca0001fa02c858fa0258fa0212cb3f13ca00ca00cdc9ed5400e8d33f30c8018210aff90f5758cb1fcb3fc910ac109b108a10791068105710461035443012f84270705003804201503304c8cf8580ca00cf8440ce01fa02806acf40f400c901fb00c87f01ca0055b050cbfa025009fa0217ce15ce13ccca0001fa02c858fa0258fa0212cb3f13ca00ca00cdc9ed54020120171f020158181a01c7b4a3bda89a1a400031c57f401f401f481f481a9a401f401a803a1f401f401a67fa401a4006020b820b620b420b220b020ae20acd8391c4ff481a8b205a20242e104601bc16d674ec80000fe4504600b1a2bc2ec500000a62220d220b0e0e1c5b678d98301900022902016a1b1d01c6aa14ed44d0d200018e2bfa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd200d20030105c105b105a10591058105710566c1c8e27fa40d45902d101217082300de0b6b3a76400007f228230058d15e1762800005311106910587070e2db3c6cc11c00022a01c6a8afed44d0d200018e2bfa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd200d20030105c105b105a10591058105710566c1c8e27fa40d45902d101217082300de0b6b3a76400007f228230058d15e1762800005311106910587070e2db3c6cc31e000c5345a154666002012020370201202135020158222401cbadbcf6a268690000c715fd007d007d207d206a69007d006a00e87d007d00699fe900690018082e082d882d082c882c082b882b360e4713fd206a2c81688090b8411806f05b59d3b200003f91411802c68af0bb14000029888834882c3838712a85ed9e3660c0230162f828db3c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d02601c7af16f6a268690000c715fd007d007d207d206a69007d006a00e87d007d00699fe900690018082e082d882d082c882c082b882b360e4713fd206a2c81688090b8411806f05b59d3b200003f91411802c68af0bb14000029888834882c3838716d9e3662c025011af828f828db3c30546c80546cb0260104db3c27011688c87001ca005a02cecec9280114ff00f4a413f4bcf2c80b290201622a3201eed001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200019afa00fa40fa4055206c139afa40fa405902d1017059e2048e36028020d7217021d749c21f9430d31f01de8210ac130557ba8e19d33ffa00596c21a002c87f01ca0055205afa0212cecec9ed54e05f04e002d70d1ff2e082212b03fe8210ac130557ba8f6d31d33ffa00fa40fa4031fa005327db3cf84259705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0c705917f95f84228c705e281114d01f2f45153a021c200926c51e30d02c87f01ca0055205afa0212cecec9ed54e0218210558e297bba342c2d00b0147250437007c855308210f4e4f5915005cb1f13cb3f01fa02cecec9250403505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb000222e3020182104056115dbae3025f04f2c0822e3002fe31d33ffa00fa40fa40f40431fa0082009058f84229c705f2f48200d5575375bef2f45164a15138db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d050767080407f2c4813507cc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec91056342f00981057103440130710465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002c87f01ca0055205afa0212cecec9ed5401f2d33ffa00fa4030815427f84226c705f2f48200d5575342bef2f45131a17080405414367f07c8553082106377b77f5005cb1f13cb3f01fa02cecec926044313505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002310020c87f01ca0055205afa0212cecec9ed540147a0f605da89a1a4000335f401f481f480aa40d82735f481f480b205a202e0b3c5b678d8693301125cdb3c305463305230340018f82ac87001ca005a02cecec901c7b4249da89a1a400031c57f401f401f481f481a9a401f401a803a1f401f401a67fa401a4006020b820b620b420b220b020ae20acd8391c4ff481a8b205a20242e104601bc16d674ec80000fe4504600b1a2bc2ec500000a62220d220b0e0e1c5b678d98303600022801c7bbd78ed44d0d200018e2bfa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd200d20030105c105b105a10591058105710566c1c8e27fa40d45902d101217082300de0b6b3a76400007f228230058d15e1762800005311106910587070e2db3c6cc383800065473b29c9f78b9');
     const builder = beginCell();
     builder.storeUint(0, 1);
     initGSTDJetton_init_args({ $$type: 'GSTDJetton_init_args', owner, content })(builder);
@@ -1879,14 +1965,17 @@ export const GSTDJetton_errors = {
     3820: { message: "Invalid burn notification" },
     4429: { message: "Invalid sender" },
     8319: { message: "Only Settlement can mint" },
+    14796: { message: "Exceeds max supply" },
     21543: { message: "Only owner can burn" },
     28612: { message: "Mint authority already locked" },
     35499: { message: "Only owner" },
+    36640: { message: "Cannot pre-mint after authority locked" },
     36952: { message: "Only owner can transfer" },
     37727: { message: "Worker pool exhausted" },
     47714: { message: "Max supply reached" },
     54615: { message: "Insufficient balance" },
     56760: { message: "Minting disabled" },
+    63852: { message: "Initial allocation already done" },
 } as const
 
 export const GSTDJetton_errors_backward = {
@@ -1929,14 +2018,17 @@ export const GSTDJetton_errors_backward = {
     "Invalid burn notification": 3820,
     "Invalid sender": 4429,
     "Only Settlement can mint": 8319,
+    "Exceeds max supply": 14796,
     "Only owner can burn": 21543,
     "Mint authority already locked": 28612,
     "Only owner": 35499,
+    "Cannot pre-mint after authority locked": 36640,
     "Only owner can transfer": 36952,
     "Worker pool exhausted": 37727,
     "Max supply reached": 47714,
     "Insufficient balance": 54615,
     "Minting disabled": 56760,
+    "Initial allocation already done": 63852,
 } as const
 
 const GSTDJetton_types: ABIType[] = [
@@ -1960,10 +2052,11 @@ const GSTDJetton_types: ABIType[] = [
     {"name":"BurnNotification","header":1668790143,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"sender","type":{"kind":"simple","type":"address","optional":false}},{"name":"responseDestination","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"TransferNotification","header":4108645777,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"sender","type":{"kind":"simple","type":"address","optional":false}},{"name":"forwardPayload","type":{"kind":"simple","type":"slice","optional":false,"format":"remainder"}}]},
     {"name":"TokenUpdateContent","header":2937889386,"fields":[{"name":"content","type":{"kind":"simple","type":"cell","optional":false}}]},
+    {"name":"MintInitialAllocation","header":1072595834,"fields":[{"name":"teamAddr","type":{"kind":"simple","type":"address","optional":false}},{"name":"teamAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"ecosystemAddr","type":{"kind":"simple","type":"address","optional":false}},{"name":"ecosystemAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"liquidityAddr","type":{"kind":"simple","type":"address","optional":false}},{"name":"liquidityAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
     {"name":"Transfer","header":1435380091,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"destination","type":{"kind":"simple","type":"address","optional":false}},{"name":"responseDestination","type":{"kind":"simple","type":"address","optional":false}},{"name":"customPayload","type":{"kind":"simple","type":"cell","optional":true}},{"name":"forwardTonAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"forwardPayload","type":{"kind":"simple","type":"slice","optional":false,"format":"remainder"}}]},
     {"name":"InternalTransfer","header":2886927703,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"from","type":{"kind":"simple","type":"address","optional":false}},{"name":"responseAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"forwardTonAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"forwardPayload","type":{"kind":"simple","type":"slice","optional":false,"format":"remainder"}}]},
     {"name":"Burn","header":1079382365,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"responseDestination","type":{"kind":"simple","type":"address","optional":false}}]},
-    {"name":"GSTDJetton$Data","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"maxSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"mintAuthority","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"workerPoolMinted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"workerPoolMax","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalBurned","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalMintEvents","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"authorityLocked","type":{"kind":"simple","type":"bool","optional":false}}]},
+    {"name":"GSTDJetton$Data","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"maxSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"mintAuthority","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"workerPoolMinted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"workerPoolMax","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalBurned","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalMintEvents","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"authorityLocked","type":{"kind":"simple","type":"bool","optional":false}},{"name":"initialAllocationDone","type":{"kind":"simple","type":"bool","optional":false}}]},
     {"name":"FreezeMint","header":1022287114,"fields":[]},
     {"name":"JettonData","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"adminAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"jettonContent","type":{"kind":"simple","type":"cell","optional":false}},{"name":"jettonWalletCode","type":{"kind":"simple","type":"cell","optional":false}}]},
     {"name":"WorkerPoolStats","header":null,"fields":[{"name":"minted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"max","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"remaining","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
@@ -1983,6 +2076,7 @@ const GSTDJetton_opcodes = {
     "BurnNotification": 1668790143,
     "TransferNotification": 4108645777,
     "TokenUpdateContent": 2937889386,
+    "MintInitialAllocation": 1072595834,
     "Transfer": 1435380091,
     "InternalTransfer": 2886927703,
     "Burn": 1079382365,
@@ -2011,6 +2105,7 @@ export const GSTDJetton_getterMapping: { [key: string]: string } = {
 
 const GSTDJetton_receivers: ABIReceiver[] = [
     {"receiver":"internal","message":{"kind":"typed","type":"MintWorkerReward"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"MintInitialAllocation"}},
     {"receiver":"internal","message":{"kind":"typed","type":"BurnNotification"}},
     {"receiver":"internal","message":{"kind":"typed","type":"SetMintAuthority"}},
     {"receiver":"internal","message":{"kind":"typed","type":"TokenUpdateContent"}},
@@ -2053,11 +2148,14 @@ export class GSTDJetton implements Contract {
         this.init = init;
     }
     
-    async send(provider: ContractProvider, via: Sender, args: { value: bigint, bounce?: boolean| null | undefined }, message: MintWorkerReward | BurnNotification | SetMintAuthority | TokenUpdateContent | FreezeMint | Deploy) {
+    async send(provider: ContractProvider, via: Sender, args: { value: bigint, bounce?: boolean| null | undefined }, message: MintWorkerReward | MintInitialAllocation | BurnNotification | SetMintAuthority | TokenUpdateContent | FreezeMint | Deploy) {
         
         let body: Cell | null = null;
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'MintWorkerReward') {
             body = beginCell().store(storeMintWorkerReward(message)).endCell();
+        }
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'MintInitialAllocation') {
+            body = beginCell().store(storeMintInitialAllocation(message)).endCell();
         }
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'BurnNotification') {
             body = beginCell().store(storeBurnNotification(message)).endCell();

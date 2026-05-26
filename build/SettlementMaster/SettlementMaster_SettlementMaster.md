@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: SettlementMaster
-BoC Size: 2121 bytes
+BoC Size: 2142 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 27

@@ -29,6 +29,9 @@ builder $InternalTransfer$_store(builder build_0, (int, int, slice, slice, int, 
 ;; $InternalTransfer$_store_cell
 cell $InternalTransfer$_store_cell((int, int, slice, slice, int, slice) v, builder b) inline;
 
+;; $InternalTransfer$_load_bounced
+(slice, ((int, int))) $InternalTransfer$_load_bounced(slice sc_0) inline;
+
 ;; $GSTDJettonWallet$_store
 builder $GSTDJettonWallet$_store(builder build_0, (int, slice, slice) v) inline;
 
@@ -326,6 +329,12 @@ cell $InternalTransfer$_store_cell((int, int, slice, slice, int, slice) v, build
     return $InternalTransfer$_store(b, v).end_cell();
 }
 
+(slice, ((int, int))) $InternalTransfer$_load_bounced(slice sc_0) inline {
+    var v'queryId = sc_0~load_uint(64);
+    var v'amount = sc_0~load_varuint16();
+    return (sc_0, (v'queryId, v'amount));
+}
+
 ((int, int, slice, slice, int, slice)) $InternalTransfer$_constructor_queryId_amount_from_responseAddress_forwardTonAmount_forwardPayload(int $queryId, int $amount, slice $from, slice $responseAddress, int $forwardTonAmount, slice $forwardPayload) inline {
     return ($queryId, $amount, $from, $responseAddress, $forwardTonAmount, $forwardPayload);
 }
@@ -462,7 +471,23 @@ _ %get_wallet_data() method_id(97026) {
     var ($self'balance, $self'owner, $self'jettonMaster) = $GSTDJettonWallet$_contract_load();
     
     ;; Handle bounced messages
-    if (msg_bounced) { return (); }
+    if (msg_bounced) {
+        ;; Skip 0xFFFFFFFF prefix of a bounced message
+        in_msg~skip_bits(32);
+        int op = 0;
+        if (slice_bits(in_msg) >= 32) {
+            op = in_msg~load_uint(32);
+        }
+        ;; Bounced handler for InternalTransfer message
+        if (op == 2886927703) {
+            var ($src'queryId, $src'amount) = in_msg~$InternalTransfer$_load_bounced();
+            $self'balance = $self'balance + $src'amount;
+            $GSTDJettonWallet$_contract_store(($self'balance, $self'owner, $self'jettonMaster));
+            return ();
+        }
+        
+        return ();
+    }
     var op = in_msg~load_opcode_internal();
     ;; Receive InternalTransfer message
     if (op == 2886927703) {

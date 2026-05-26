@@ -468,16 +468,16 @@ PROGRAM{
         $TreasuryGold$_contract_store INLINECALLDICT
         RETALT
       }>
-      s10 POP
-      s8 s9 XCHG
-    }>ELSE<{
-      s10 POP
+      s0 s9 XCHG
     }>
-    s0 s8 XCHG
+    s0 s9 XCHG
     HASHSU
+    DUP
     46507379562785834456420742240601270667861570636961160522936642252294995687967 PUSHINT
     EQUAL
     IFJMP:<{
+      DROP
+      s9 POP
       __tact_context_get INLINECALLDICT
       $Context$_get_value INLINECALLDICT
       50000000 PUSHINT
@@ -488,106 +488,124 @@ PROGRAM{
       THROWANYIFNOT
       s3 s3 XCPU
       ADD
-      s0 s9 XCHG
+      s0 s8 XCHG
       INC
           NOW
-      s4 s9 PUSH2
+      s4 s10 XCPU
       MUL
-      s5 POP
-      s0 s4 XCHG
       100 PUSHINT
       DIV
-      DUP
-      500000000 PUSHINT
-      GREATER
-      IF:<{
-        2 PUSHINT
-        TRUE
-            B{b5ee9c7241010101001200002000000000737761705f746f5f7861757471124bde} B>boc PUSHREF
-        s9 PUSH
-        s3 s4 XCPU
-        s1 s3 s3 XCHG3
-        $SendParameters$_constructor_to_value_mode_bounce_body INLINECALLDICT
-            NEWC
-            b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
-            1 STI               // store `bounce`
-            b{000} STSLICECONST // store bounced = false and src = addr_none
-            STSLICE             // store `to`
-            SWAP
-            STGRAMS             // store `value`
-            105 PUSHINT         // 1 + 4 + 4 + 64 + 32
-            STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
-            // → Stack state
-            // s0: Builder
-            // s1: `data`
-            // s2: `code`
-            // s3: `body`
-            // s4: `mode`
-            // Group 2: Placing the Builder after code and data, then checking those for nullability
-            s2 XCHG0
-            DUP2
-            ISNULL
-            SWAP
-            ISNULL
-            AND
-            // → Stack state
-            // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
-            // s1: `code`
-            // s2: `data`
-            // s3: Builder
-            // s4: `body`
-            // s5: `mode`
-            // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
-            <{
-                DROP2 // drop `data` and `code`, since either of those is null
-                b{0} STSLICECONST
-            }> PUSHCONT
-            // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
-            <{
-                // _ split_depth:(Maybe (## 5))
-                //   special:(Maybe TickTock)
-                //   code:(Maybe ^Cell)
-                //   data:(Maybe ^Cell)
-                //   library:(Maybe ^Cell)
-                // = StateInit;
-                ROT                // place message Builder on top
-                b{10} STSLICECONST // store Maybe = true, Either = false
-                // Start composing inlined StateInit
-                b{00} STSLICECONST // store split_depth and special first
-                STDICT             // store code
-                STDICT             // store data
-                b{0} STSLICECONST  // store library
-            }> PUSHCONT
-            // Group 3: IFELSE that does the branching shown above
-            IFELSE
-            // → Stack state
-            // s0: Builder
-            // s1: null or StateInit
-            // s2: `body`
-            // s3: `mode`
-            // Group 4: Finalizing the message
-            STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
-            ENDC
-            // → Stack state
-            // s0: Cell
-            // s1: `mode`
-            // Group 5: Sending the message, with `mode` on top
-            SWAP
-            SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
-        s1 s3 XCHG
-        ADD
-        s0 s2 XCHG
-      }>ELSE<{
-        DROP
-      }>
+      s1 s3 XCHG
+      ADD
       s7 s9 XCHG
       s6 s8 XCHG
       s5 s7 XCHG
-      s4 s6 XCHG
-      s4 s0 s3 XCHG3
+      s0 s4 XCHG
+      s0 s6 XCHG
+      s5 s5 s5 XCHG3
+      s0 s3 XCHG
       $TreasuryGold$_contract_store INLINECALLDICT
     }>
-    9 BLKDROP
+    11162171821173905823332934174942149789681150292555472338979918791323399914749 PUSHINT
+    EQUAL
+    IFJMP:<{
+      63399 PUSHINT
+      __tact_context_get_sender INLINECALLDICT
+      s9 PUSH
+      SDEQ
+      THROWANYIFNOT
+      37939 PUSHINT
+      s3 PUSH
+      1000000000 PUSHINT
+      GREATER
+      THROWANYIFNOT
+      55591 PUSHINT
+          BALANCE FIRST
+      s4 PUSH
+      1000000000 PUSHINT
+      ADD
+      GEQ
+      THROWANYIFNOT
+      0 PUSHINT
+      2 PUSHINT
+      TRUE
+          B{b5ee9c7241010101001200002000000000737761705f746f5f7861757471124bde} B>boc PUSHREF
+      s9 PUSH
+      s0 s4 XCHG
+      s0 s7 XCHG
+      3 -ROLL
+      $SendParameters$_constructor_to_value_mode_bounce_body INLINECALLDICT
+          NEWC
+          b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
+          1 STI               // store `bounce`
+          b{000} STSLICECONST // store bounced = false and src = addr_none
+          STSLICE             // store `to`
+          SWAP
+          STGRAMS             // store `value`
+          105 PUSHINT         // 1 + 4 + 4 + 64 + 32
+          STZEROES            // store currency_collection, ihr_fee, fwd_fee, created_lt and created_at
+          // → Stack state
+          // s0: Builder
+          // s1: `data`
+          // s2: `code`
+          // s3: `body`
+          // s4: `mode`
+          // Group 2: Placing the Builder after code and data, then checking those for nullability
+          s2 XCHG0
+          DUP2
+          ISNULL
+          SWAP
+          ISNULL
+          AND
+          // → Stack state
+          // s0: -1 (true) if `data` and `code` are both null, 0 (false) otherwise
+          // s1: `code`
+          // s2: `data`
+          // s3: Builder
+          // s4: `body`
+          // s5: `mode`
+          // Group 3: Left branch of the IFELSE, executed if s0 is -1 (true)
+          <{
+              DROP2 // drop `data` and `code`, since either of those is null
+              b{0} STSLICECONST
+          }> PUSHCONT
+          // Group 3: Right branch of the IFELSE, executed if s0 is 0 (false)
+          <{
+              // _ split_depth:(Maybe (## 5))
+              //   special:(Maybe TickTock)
+              //   code:(Maybe ^Cell)
+              //   data:(Maybe ^Cell)
+              //   library:(Maybe ^Cell)
+              // = StateInit;
+              ROT                // place message Builder on top
+              b{10} STSLICECONST // store Maybe = true, Either = false
+              // Start composing inlined StateInit
+              b{00} STSLICECONST // store split_depth and special first
+              STDICT             // store code
+              STDICT             // store data
+              b{0} STSLICECONST  // store library
+          }> PUSHCONT
+          // Group 3: IFELSE that does the branching shown above
+          IFELSE
+          // → Stack state
+          // s0: Builder
+          // s1: null or StateInit
+          // s2: `body`
+          // s3: `mode`
+          // Group 4: Finalizing the message
+          STDICT // store `body` as ref with an extra Maybe bit, since `body` might be null
+          ENDC
+          // → Stack state
+          // s0: Cell
+          // s1: `mode`
+          // Group 5: Sending the message, with `mode` on top
+          SWAP
+          SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
+      s7 s9 XCHG
+      2 7 BLKSWAP
+      $TreasuryGold$_contract_store INLINECALLDICT
+    }>
+    10 BLKDROP
     130 THROW
   }>
 }END>c

@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: AgentRegistry
-BoC Size: 2099 bytes
+BoC Size: 2131 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 26
@@ -162,6 +162,7 @@ No arguments
 * 136: Invalid standard address
 * 138: Not a basechain address
 * 27658: Only owner or Settlement
+* 44404: Only DAO or Settlement can report violations
 * 48099: Genesis manifest mismatch — update your node software
 * 51748: Only registry
 * 63399: Only DAO

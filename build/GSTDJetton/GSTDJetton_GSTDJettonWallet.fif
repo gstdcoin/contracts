@@ -7,6 +7,7 @@ PROGRAM{
   DECLPROC $TransferNotification$_store_cell
   DECLPROC $InternalTransfer$_store
   DECLPROC $InternalTransfer$_store_cell
+  DECLPROC $InternalTransfer$_load_bounced
   DECLPROC $GSTDJettonWallet$_store
   DECLPROC $GSTDJettonWallet$_load
   DECLPROC $StateInit$_get_code
@@ -87,6 +88,11 @@ PROGRAM{
     6 -ROLL
     $InternalTransfer$_store INLINECALLDICT
     ENDC
+  }>
+  $InternalTransfer$_load_bounced PROCINLINE:<{
+    64 LDU
+    LDVARUINT16
+    -ROT
   }>
   $GSTDJettonWallet$_store PROCINLINE:<{
     2SWAP
@@ -245,6 +251,27 @@ PROGRAM{
     $GSTDJettonWallet$_contract_load INLINECALLDICT
     s0 s4 XCHG
     IFJMP:<{
+      s0 s2 XCHG
+      32 PUSHINT
+      SDSKIPFIRST
+      0 PUSHINT
+      OVER
+      SBITS
+      31 GTINT
+      IF:<{
+        DROP
+        32 LDU
+        SWAP
+      }>
+      2886927703 PUSHINT
+      EQUAL
+      IFJMP:<{
+        $InternalTransfer$_load_bounced INLINECALLDICT
+        2 1 BLKDROP2
+        ADD
+        s0 s2 XCHG
+        $GSTDJettonWallet$_contract_store INLINECALLDICT
+      }>
       4 BLKDROP
     }>
     s0 s2 XCHG
