@@ -937,47 +937,41 @@ export type CastVote = {
     $$type: 'CastVote';
     proposalId: bigint;
     support: boolean;
-    weight: bigint;
 }
 
 export function storeCastVote(src: CastVote) {
     return (builder: Builder) => {
         const b_0 = builder;
-        b_0.storeUint(2427161456, 32);
+        b_0.storeUint(1086625183, 32);
         b_0.storeUint(src.proposalId, 64);
         b_0.storeBit(src.support);
-        b_0.storeCoins(src.weight);
     };
 }
 
 export function loadCastVote(slice: Slice) {
     const sc_0 = slice;
-    if (sc_0.loadUint(32) !== 2427161456) { throw Error('Invalid prefix'); }
+    if (sc_0.loadUint(32) !== 1086625183) { throw Error('Invalid prefix'); }
     const _proposalId = sc_0.loadUintBig(64);
     const _support = sc_0.loadBit();
-    const _weight = sc_0.loadCoins();
-    return { $$type: 'CastVote' as const, proposalId: _proposalId, support: _support, weight: _weight };
+    return { $$type: 'CastVote' as const, proposalId: _proposalId, support: _support };
 }
 
 export function loadTupleCastVote(source: TupleReader) {
     const _proposalId = source.readBigNumber();
     const _support = source.readBoolean();
-    const _weight = source.readBigNumber();
-    return { $$type: 'CastVote' as const, proposalId: _proposalId, support: _support, weight: _weight };
+    return { $$type: 'CastVote' as const, proposalId: _proposalId, support: _support };
 }
 
 export function loadGetterTupleCastVote(source: TupleReader) {
     const _proposalId = source.readBigNumber();
     const _support = source.readBoolean();
-    const _weight = source.readBigNumber();
-    return { $$type: 'CastVote' as const, proposalId: _proposalId, support: _support, weight: _weight };
+    return { $$type: 'CastVote' as const, proposalId: _proposalId, support: _support };
 }
 
 export function storeTupleCastVote(source: CastVote) {
     const builder = new TupleBuilder();
     builder.writeNumber(source.proposalId);
     builder.writeBoolean(source.support);
-    builder.writeNumber(source.weight);
     return builder.build();
 }
 
@@ -1254,6 +1248,7 @@ export type Proposal$Data = {
     votesFor: bigint;
     votesAgainst: bigint;
     voterCount: bigint;
+    voters: Dictionary<Address, bigint>;
     createdAt: bigint;
     votingEndsAt: bigint;
     executionUnlocksAt: bigint;
@@ -1272,6 +1267,7 @@ export function storeProposal$Data(src: Proposal$Data) {
         const b_1 = new Builder();
         b_1.storeCoins(src.votesAgainst);
         b_1.storeUint(src.voterCount, 32);
+        b_1.storeDict(src.voters, Dictionary.Keys.Address(), Dictionary.Values.BigInt(257));
         b_1.storeUint(src.createdAt, 64);
         b_1.storeUint(src.votingEndsAt, 64);
         b_1.storeUint(src.executionUnlocksAt, 64);
@@ -1291,11 +1287,12 @@ export function loadProposal$Data(slice: Slice) {
     const sc_1 = sc_0.loadRef().beginParse();
     const _votesAgainst = sc_1.loadCoins();
     const _voterCount = sc_1.loadUintBig(32);
+    const _voters = Dictionary.load(Dictionary.Keys.Address(), Dictionary.Values.BigInt(257), sc_1);
     const _createdAt = sc_1.loadUintBig(64);
     const _votingEndsAt = sc_1.loadUintBig(64);
     const _executionUnlocksAt = sc_1.loadUintBig(64);
     const _status = sc_1.loadUintBig(8);
-    return { $$type: 'Proposal$Data' as const, proposalId: _proposalId, dao: _dao, proposer: _proposer, targetContract: _targetContract, payload: _payload, votesFor: _votesFor, votesAgainst: _votesAgainst, voterCount: _voterCount, createdAt: _createdAt, votingEndsAt: _votingEndsAt, executionUnlocksAt: _executionUnlocksAt, status: _status };
+    return { $$type: 'Proposal$Data' as const, proposalId: _proposalId, dao: _dao, proposer: _proposer, targetContract: _targetContract, payload: _payload, votesFor: _votesFor, votesAgainst: _votesAgainst, voterCount: _voterCount, voters: _voters, createdAt: _createdAt, votingEndsAt: _votingEndsAt, executionUnlocksAt: _executionUnlocksAt, status: _status };
 }
 
 export function loadTupleProposal$Data(source: TupleReader) {
@@ -1307,11 +1304,12 @@ export function loadTupleProposal$Data(source: TupleReader) {
     const _votesFor = source.readBigNumber();
     const _votesAgainst = source.readBigNumber();
     const _voterCount = source.readBigNumber();
+    const _voters = Dictionary.loadDirect(Dictionary.Keys.Address(), Dictionary.Values.BigInt(257), source.readCellOpt());
     const _createdAt = source.readBigNumber();
     const _votingEndsAt = source.readBigNumber();
     const _executionUnlocksAt = source.readBigNumber();
     const _status = source.readBigNumber();
-    return { $$type: 'Proposal$Data' as const, proposalId: _proposalId, dao: _dao, proposer: _proposer, targetContract: _targetContract, payload: _payload, votesFor: _votesFor, votesAgainst: _votesAgainst, voterCount: _voterCount, createdAt: _createdAt, votingEndsAt: _votingEndsAt, executionUnlocksAt: _executionUnlocksAt, status: _status };
+    return { $$type: 'Proposal$Data' as const, proposalId: _proposalId, dao: _dao, proposer: _proposer, targetContract: _targetContract, payload: _payload, votesFor: _votesFor, votesAgainst: _votesAgainst, voterCount: _voterCount, voters: _voters, createdAt: _createdAt, votingEndsAt: _votingEndsAt, executionUnlocksAt: _executionUnlocksAt, status: _status };
 }
 
 export function loadGetterTupleProposal$Data(source: TupleReader) {
@@ -1323,11 +1321,12 @@ export function loadGetterTupleProposal$Data(source: TupleReader) {
     const _votesFor = source.readBigNumber();
     const _votesAgainst = source.readBigNumber();
     const _voterCount = source.readBigNumber();
+    const _voters = Dictionary.loadDirect(Dictionary.Keys.Address(), Dictionary.Values.BigInt(257), source.readCellOpt());
     const _createdAt = source.readBigNumber();
     const _votingEndsAt = source.readBigNumber();
     const _executionUnlocksAt = source.readBigNumber();
     const _status = source.readBigNumber();
-    return { $$type: 'Proposal$Data' as const, proposalId: _proposalId, dao: _dao, proposer: _proposer, targetContract: _targetContract, payload: _payload, votesFor: _votesFor, votesAgainst: _votesAgainst, voterCount: _voterCount, createdAt: _createdAt, votingEndsAt: _votingEndsAt, executionUnlocksAt: _executionUnlocksAt, status: _status };
+    return { $$type: 'Proposal$Data' as const, proposalId: _proposalId, dao: _dao, proposer: _proposer, targetContract: _targetContract, payload: _payload, votesFor: _votesFor, votesAgainst: _votesAgainst, voterCount: _voterCount, voters: _voters, createdAt: _createdAt, votingEndsAt: _votingEndsAt, executionUnlocksAt: _executionUnlocksAt, status: _status };
 }
 
 export function storeTupleProposal$Data(source: Proposal$Data) {
@@ -1340,6 +1339,7 @@ export function storeTupleProposal$Data(source: Proposal$Data) {
     builder.writeNumber(source.votesFor);
     builder.writeNumber(source.votesAgainst);
     builder.writeNumber(source.voterCount);
+    builder.writeCell(source.voters.size > 0 ? beginCell().storeDictDirect(source.voters, Dictionary.Keys.Address(), Dictionary.Values.BigInt(257)).endCell() : null);
     builder.writeNumber(source.createdAt);
     builder.writeNumber(source.votingEndsAt);
     builder.writeNumber(source.executionUnlocksAt);
@@ -1447,6 +1447,7 @@ export type ProposalData = {
     votesFor: bigint;
     votesAgainst: bigint;
     voterCount: bigint;
+    totalStaked: bigint;
     createdAt: bigint;
     votingEndsAt: bigint;
     executionUnlocksAt: bigint;
@@ -1462,9 +1463,10 @@ export function storeProposalData(src: ProposalData) {
         b_0.storeCoins(src.votesFor);
         b_0.storeCoins(src.votesAgainst);
         b_0.storeUint(src.voterCount, 32);
-        b_0.storeUint(src.createdAt, 64);
-        b_0.storeUint(src.votingEndsAt, 64);
+        b_0.storeCoins(src.totalStaked);
         const b_1 = new Builder();
+        b_1.storeUint(src.createdAt, 64);
+        b_1.storeUint(src.votingEndsAt, 64);
         b_1.storeUint(src.executionUnlocksAt, 64);
         b_1.storeUint(src.status, 8);
         b_0.storeRef(b_1.endCell());
@@ -1479,12 +1481,13 @@ export function loadProposalData(slice: Slice) {
     const _votesFor = sc_0.loadCoins();
     const _votesAgainst = sc_0.loadCoins();
     const _voterCount = sc_0.loadUintBig(32);
-    const _createdAt = sc_0.loadUintBig(64);
-    const _votingEndsAt = sc_0.loadUintBig(64);
+    const _totalStaked = sc_0.loadCoins();
     const sc_1 = sc_0.loadRef().beginParse();
+    const _createdAt = sc_1.loadUintBig(64);
+    const _votingEndsAt = sc_1.loadUintBig(64);
     const _executionUnlocksAt = sc_1.loadUintBig(64);
     const _status = sc_1.loadUintBig(8);
-    return { $$type: 'ProposalData' as const, proposalId: _proposalId, proposer: _proposer, targetContract: _targetContract, votesFor: _votesFor, votesAgainst: _votesAgainst, voterCount: _voterCount, createdAt: _createdAt, votingEndsAt: _votingEndsAt, executionUnlocksAt: _executionUnlocksAt, status: _status };
+    return { $$type: 'ProposalData' as const, proposalId: _proposalId, proposer: _proposer, targetContract: _targetContract, votesFor: _votesFor, votesAgainst: _votesAgainst, voterCount: _voterCount, totalStaked: _totalStaked, createdAt: _createdAt, votingEndsAt: _votingEndsAt, executionUnlocksAt: _executionUnlocksAt, status: _status };
 }
 
 export function loadTupleProposalData(source: TupleReader) {
@@ -1494,11 +1497,12 @@ export function loadTupleProposalData(source: TupleReader) {
     const _votesFor = source.readBigNumber();
     const _votesAgainst = source.readBigNumber();
     const _voterCount = source.readBigNumber();
+    const _totalStaked = source.readBigNumber();
     const _createdAt = source.readBigNumber();
     const _votingEndsAt = source.readBigNumber();
     const _executionUnlocksAt = source.readBigNumber();
     const _status = source.readBigNumber();
-    return { $$type: 'ProposalData' as const, proposalId: _proposalId, proposer: _proposer, targetContract: _targetContract, votesFor: _votesFor, votesAgainst: _votesAgainst, voterCount: _voterCount, createdAt: _createdAt, votingEndsAt: _votingEndsAt, executionUnlocksAt: _executionUnlocksAt, status: _status };
+    return { $$type: 'ProposalData' as const, proposalId: _proposalId, proposer: _proposer, targetContract: _targetContract, votesFor: _votesFor, votesAgainst: _votesAgainst, voterCount: _voterCount, totalStaked: _totalStaked, createdAt: _createdAt, votingEndsAt: _votingEndsAt, executionUnlocksAt: _executionUnlocksAt, status: _status };
 }
 
 export function loadGetterTupleProposalData(source: TupleReader) {
@@ -1508,11 +1512,12 @@ export function loadGetterTupleProposalData(source: TupleReader) {
     const _votesFor = source.readBigNumber();
     const _votesAgainst = source.readBigNumber();
     const _voterCount = source.readBigNumber();
+    const _totalStaked = source.readBigNumber();
     const _createdAt = source.readBigNumber();
     const _votingEndsAt = source.readBigNumber();
     const _executionUnlocksAt = source.readBigNumber();
     const _status = source.readBigNumber();
-    return { $$type: 'ProposalData' as const, proposalId: _proposalId, proposer: _proposer, targetContract: _targetContract, votesFor: _votesFor, votesAgainst: _votesAgainst, voterCount: _voterCount, createdAt: _createdAt, votingEndsAt: _votingEndsAt, executionUnlocksAt: _executionUnlocksAt, status: _status };
+    return { $$type: 'ProposalData' as const, proposalId: _proposalId, proposer: _proposer, targetContract: _targetContract, votesFor: _votesFor, votesAgainst: _votesAgainst, voterCount: _voterCount, totalStaked: _totalStaked, createdAt: _createdAt, votingEndsAt: _votingEndsAt, executionUnlocksAt: _executionUnlocksAt, status: _status };
 }
 
 export function storeTupleProposalData(source: ProposalData) {
@@ -1523,6 +1528,7 @@ export function storeTupleProposalData(source: ProposalData) {
     builder.writeNumber(source.votesFor);
     builder.writeNumber(source.votesAgainst);
     builder.writeNumber(source.voterCount);
+    builder.writeNumber(source.totalStaked);
     builder.writeNumber(source.createdAt);
     builder.writeNumber(source.votingEndsAt);
     builder.writeNumber(source.executionUnlocksAt);
@@ -1556,7 +1562,7 @@ function initDAOVoting_init_args(src: DAOVoting_init_args) {
 }
 
 async function DAOVoting_init(owner: Address, gstdJetton: Address) {
-    const __code = Cell.fromHex('b5ee9c724102220100078b000114ff00f4a413f4bcf2c80b01020162020b02cad0eda2edfb01d072d721d200d200fa4021103450666f04f86102f862ed44d0d200018e16fa40fa40d307d31ffa00fa00d33fd33fd33f55806c198e19fa40fa405902d1017a8202a300822009184e72a00070547000e20a925f0ae028d749c21fe30008f901030a03bc08d31f218210d47e9bc8bae3022182109340b747ba8e315b07a41068105710461035440302c87f01ca0055805089ce16ce14cb0712cb1f01fa0201fa02cb3fcb3fcb3fc9ed54db31e02182107ed96f81bae302018210946a98b6bae3020804080904fa31d431d3ff31fa40d4d31f3023a4f828f8421056464329db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0821005f5e100727088551410465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf818ae2f400c901fb001068551512050607001000000000696e6974001a58cf8680cf8480f400f400cf810046c87f01ca0055805089ce16ce14cb0712cb1f01fa0201fa02cb3fcb3fcb3fc9ed54db31009e316c33d307d31ffa00308200de32f84228c705f2f48139ef23c2049323c1349170e2f2f41068105746144353c87f01ca0055805089ce16ce14cb0712cb1f01fa0201fa02cb3fcb3fcb3fc9ed54db3100c6d33f30c8018210aff90f5758cb1fcb3fc9107910681057104610354430f84270705003804201503304c8cf8580ca00cf8440ce01fa02806acf40f400c901fb00c87f01ca0055805089ce16ce14cb0712cb1f01fa0201fa02cb3fcb3fcb3fc9ed54db3100c882f05240c307401835ee4ec0137f373534d474d56ddc78888246070a7b12c2ef6a39ba8e3982008aabf8425008c70517f2f4f828081057104610354430c87f01ca0055805089ce16ce14cb0712cb1f01fa0201fa02cb3fcb3fcb3fc9ed54e05f09f2c0820201200c200202740d0f0181ae8ef6a268690000c70b7d207d206983e98ffd007d00699fe99fe99faac0360cc70cfd207d202c816880bd410151804110048c27395000382a3800716d9e3648c00e0002280185ae0e76a268690000c70b7d207d206983e98ffd007d00699fe99fe99faac0360cc70cfd207d202c816880bd410151804110048c27395000382a3800712a846d9e3648c010039ef8288d08600000000000000000000000000000000000000000000000000000000000000000048d0860000000000000000000000000000000000000000000000000000000000000000004887020db3c11121f0000014c88c87001ca0055615067810101cf0014ce12ce01c8ce12cc12810101cf0012810101cf00cdc9130114ff00f4a413f4bcf2c80b14020162151d0138d0eda2edfb01d072d721d200d200fa4021103450666f04f86102f8621602feed44d0d200018e29d33ffa40fa40fa40d4fa00d401d0fa00d31fd33fd33fd33fd30730106c106b106a1069106810676c1c8e3c810101d700fa40fa40d401d0fa40d4810101d700810101d7003010471046104507d15505705300f823f82326a0f8235007a05005a021104610351024e20d925f0de02bd749c21fe3000bf901171901fa0bd31f21821090ab8b70ba8e6431d33f31d200fa00308120362ec000f2f4813c8df82324b9f2f4019215a09414a00304e202a4109b108a1079106810575e32444403c87f01ca0055b050bccb3f19ce17ce15ce13cc01fa02c858fa0212cb1f12cb3f12cb3f12cb3f12cb07cdc9ed54db31e00182106a693742bae3020b1800a0308200a5c3f84229c705917f95f8422ac705e2f2f48178350cc0001cf2f4551874c87f01ca0055b050bccb3f19ce17ce15ce13cc01fa02c858fa0212cb1f12cb3f12cb3f12cb3f12cb07cdc9ed54db3102fc2082f09f31fb7c139e4f1313022f5187d632af397344874ad3c3abb365f301d9d7ab67ba8e3230109b5518c87f01ca0055b050bccb3f19ce17ce15ce13cc01fa02c858fa0212cb1f12cb3f12cb3f12cb3f12cb07cdc9ed54e082f0b14fdeec46f0654aee9d76d3e481c5026f579fad38ebfd74a2bb463891c05838bae3021a1c01ee813bfa2cc000923c7f930cc001e21cf2f48200f5fbf8232bbef2f48200bc715343bcf2f47326821005f5e10072702910246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00109b108a107910681057104610354430121b005ac87f01ca0055b050bccb3f19ce17ce15ce13cc01fa02c858fa0212cb1f12cb3f12cb3f12cb3f12cb07cdc9ed54000a5f0cf2c08201eda05211da89a1a400031c53a67ff481f481f481a9f401a803a1f401a63fa67fa67fa67fa60e6020d820d620d420d220d020ced8391c79020203ae01f481f481a803a1f481a9020203ae01020203ae0060208e208c208a0fa2aa0ae0a601f047f0464d41f046a00f40a00b4042208c206a2049c5b678d9951e0014547b9854798754798729005a705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d00181bdd67f6a268690000c70b7d207d206983e98ffd007d00699fe99fe99faac0360cc70cfd207d202c816880bd410151804110048c27395000382a3800716d9e364bc21000e547210547987293ca2afa8');
+    const __code = Cell.fromHex('b5ee9c7241022c01000a20000114ff00f4a413f4bcf2c80b01020162020b02cad0eda2edfb01d072d721d200d200fa4021103450666f04f86102f862ed44d0d200018e16fa40fa40d307d31ffa00fa00d33fd33fd33f55806c198e19fa40fa405902d1017a8202a300822009184e72a00070547000e20a925f0ae028d749c21fe30008f901030a03f808d31f218210d47e9bc8bae3022182109340b747bae3022182107ed96f81ba8e4f316c33d307d31ffa00308200de32f84228c705f2f48139ef23c2049323c1349170e2f2f41068105746144353c87f01ca0055805089ce16ce14cb0712cb1f01fa0201fa02cb3fcb3fcb3fc9ed54db31e0018210946a98b6bae3020804070903fe31d431d3ff31fa40d4d31f308200dec6f8416f24135f0382103b9aca00bef2f423a4f828f8421056464329db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0821005f5e100727088551410465522c8cf8580ca00cf8440ce01fa028069cf40025c6e01120506001000000000696e697400846eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0010685515c87f01ca0055805089ce16ce14cb0712cb1f01fa0201fa02cb3fcb3fcb3fc9ed54db3102f031d33f30107910681057104610354430db3c821008f0d18072708810246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0001a401c87f01ca0055805089ce16ce14cb0712cb1f01fa0201fa02cb3fcb3fcb3fc9ed54db3110080016000000006578656375746500c6d33f30c8018210aff90f5758cb1fcb3fc9107910681057104610354430f84270705003804201503304c8cf8580ca00cf8440ce01fa02806acf40f400c901fb00c87f01ca0055805089ce16ce14cb0712cb1f01fa0201fa02cb3fcb3fcb3fc9ed54db3100c882f05240c307401835ee4ec0137f373534d474d56ddc78888246070a7b12c2ef6a39ba8e3982008aabf8425008c70517f2f4f828081057104610354430c87f01ca0055805089ce16ce14cb0712cb1f01fa0201fa02cb3fcb3fcb3fc9ed54e05f09f2c0820201200c2a0202740d0f0181ae8ef6a268690000c70b7d207d206983e98ffd007d00699fe99fe99faac0360cc70cfd207d202c816880bd410151804110048c27395000382a3800716d9e3648c00e0002280185ae0e76a268690000c70b7d207d206983e98ffd007d00699fe99fe99faac0360cc70cfd207d202c816880bd410151804110048c27395000382a3800712a846d9e3648c010039ef8288d08600000000000000000000000000000000000000000000000000000000000000000048d0860000000000000000000000000000000000000000000000000000000000000000004887020db3c1112290000014c88c87001ca0055615067810101cf0014ce12ce01c8ce12cc12810101cf0012810101cf00cdc9130114ff00f4a413f4bcf2c80b1402016215220138d0eda2edfb01d072d721d200d200fa4021103450666f04f86102f8621601feed44d0d200018e2bd33ffa40fa40fa40d4fa00d401d0fa00d31ff404d33fd33fd33fd30730107d107c107b107a107910786c1d8e41810101d700fa40fa40d401d0fa40d4810101d700810101d7003010471046104507d155057053006df823f82327a0f8235008a05006a02210571046103510241023e20e925f0ee02cd7491702eac21f8eec0cd31f21821040c4959fbae3020182106a693742ba8e53308200a5c3f8422ac705917f95f8422bc705e2f2f48178350dc0001df2f4551974c87f01ca0055c050cdcb3f1ace18ce16ce14cc58fa02c858fa0212cb1f12f40012cb3f12cb3f12cb3f12cb07cdc9ed54db31e00cde0cf90120181a01fe31d33f31d200308120362ec000f2f4813c8df82323b9f2f48200e7e981010bf84226598101014133f40a6fa19401d70030925b6de26ef2f4f8416f24135f038208989680a18200e7e321c200f2f481010bf842221037810101216e955b59f4593098c801cf004133f441e201935063a0955053a00405e203a410ac109b108a190078107910685e3345155034c87f01ca0055c050cdcb3f1ace18ce16ce14cc58fa02c858fa0212cb1f12f40012cb3f12cb3f12cb3f12cb07cdc9ed54db3101fe82f09f31fb7c139e4f1313022f5187d632af397344874ad3c3abb365f301d9d7ab67ba8e353010ac5519c87f01ca0055c050cdcb3f1ace18ce16ce14cc58fa02c858fa0212cb1f12f40012cb3f12cb3f12cb3f12cb07cdc9ed54e02082f09d09533a67be67e7f87e13c2cd8818a33e932240c2520de0f75654af191ae74dba1b0258e30282f0b14fdeec46f0654aee9d76d3e481c5026f579fad38ebfd74a2bb463891c05838bae3025f0df2c0821c2003fc308200a398f82322bef2f481010bf84224598101014133f40a6fa19401d70030925b6de2817f58216eb3f2f481010bf84210256d810101216e955b59f4593098c801cf004133f441e2f8427270881034103710246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf818ae2f400c901fb0010ac1d1e1f002e00000000766f74655f7374616b655f72657475726e6564001a58cf8680cf8480f400f400cf8100645519c87f01ca0055c050cdcb3f1ace18ce16ce14cc58fa02c858fa0212cb1f12f40012cb3f12cb3f12cb3f12cb07cdc9ed5401f0813bfa2dc000923d7f930dc001e21df2f48200f5fbf8232cbef2f48200bc715354bcf2f47327821005f5e10072702a10246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0010ac109b108a107910681057104610354430210060c87f01ca0055c050cdcb3f1ace18ce16ce14cc58fa02c858fa0212cb1f12f40012cb3f12cb3f12cb3f12cb07cdc9ed54020120232602fbbd48476a268690000c715e99ffd207d207d206a7d006a00e87d00698ffa02699fe99fe99fe98398083e883e083d883d083c883c360ec720c08080eb807d207d206a00e87d206a408080eb80408080eb801808238823082283e8aa82b8298036fc11fc1193d07c11a8045028035011082b8823081a88120811f16d9e365dc242500205376a0546dc0546cb0546bb0547a982a00046c2b02fbbd569f6a268690000c715e99ffd207d207d206a7d006a00e87d00698ffa02699fe99fe99fe98398083e883e083d883d083c883c360ec720c08080eb807d207d206a00e87d206a408080eb80408080eb801808238823082283e8aa82b8298036fc11fc1193d07c11a8045028035011082b8823081a88120811f12a866d9e42728003a81010b26028101014133f40a6fa19401d70030925b6de2206e923070e000046cd1005a705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d00181bdd67f6a268690000c70b7d207d206983e98ffd007d00699fe99fe99faac0360cc70cfd207d202c816880bd410151804110048c27395000382a3800716d9e364bc2b000e547210547987297deab8c9');
     const builder = beginCell();
     builder.storeUint(0, 1);
     initDAOVoting_init_args({ $$type: 'DAOVoting_init_args', owner, gstdJetton })(builder);
@@ -1606,10 +1612,15 @@ export const DAOVoting_errors = {
     15354: { message: "Cannot execute" },
     15501: { message: "Voting period ended" },
     30773: { message: "Cannot cancel" },
+    32600: { message: "No stake to claim" },
     35499: { message: "Only owner" },
+    41880: { message: "Voting still active" },
     42435: { message: "Not authorized" },
     48241: { message: "Vote did not pass" },
     56882: { message: "Only owner/DAO multisig" },
+    57030: { message: "Must attach min 1 TON as proposal stake" },
+    59363: { message: "Must attach TON as voting stake" },
+    59369: { message: "Already voted" },
     62971: { message: "Timelock not expired" },
 } as const
 
@@ -1655,10 +1666,15 @@ export const DAOVoting_errors_backward = {
     "Cannot execute": 15354,
     "Voting period ended": 15501,
     "Cannot cancel": 30773,
+    "No stake to claim": 32600,
     "Only owner": 35499,
+    "Voting still active": 41880,
     "Not authorized": 42435,
     "Vote did not pass": 48241,
     "Only owner/DAO multisig": 56882,
+    "Must attach min 1 TON as proposal stake": 57030,
+    "Must attach TON as voting stake": 59363,
+    "Already voted": 59369,
     "Timelock not expired": 62971,
 } as const
 
@@ -1679,14 +1695,14 @@ const DAOVoting_types: ABIType[] = [
     {"name":"ChangeOwner","header":2174598809,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"newOwner","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"ChangeOwnerOk","header":846932810,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"newOwner","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"CreateProposal","header":3565067208,"fields":[{"name":"title","type":{"kind":"simple","type":"string","optional":false}},{"name":"descriptionHash","type":{"kind":"simple","type":"uint","optional":false,"format":256}},{"name":"targetContract","type":{"kind":"simple","type":"address","optional":false}},{"name":"payload","type":{"kind":"simple","type":"cell","optional":false}},{"name":"votingPeriod","type":{"kind":"simple","type":"uint","optional":false,"format":32}}]},
-    {"name":"CastVote","header":2427161456,"fields":[{"name":"proposalId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"support","type":{"kind":"simple","type":"bool","optional":false}},{"name":"weight","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
+    {"name":"CastVote","header":1086625183,"fields":[{"name":"proposalId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"support","type":{"kind":"simple","type":"bool","optional":false}}]},
     {"name":"ExecuteProposal","header":2470491975,"fields":[{"name":"proposalId","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
     {"name":"CancelProposal","header":1785280322,"fields":[{"name":"proposalId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"reason","type":{"kind":"simple","type":"string","optional":false}}]},
     {"name":"UpdateGovernanceParams","header":2128179073,"fields":[{"name":"quorumPercent","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"timelockSeconds","type":{"kind":"simple","type":"uint","optional":false,"format":32}},{"name":"minProposalStake","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
     {"name":"DAOVoting$Data","header":null,"fields":[{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"gstdJetton","type":{"kind":"simple","type":"address","optional":false}},{"name":"quorumPercent","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"timelockSeconds","type":{"kind":"simple","type":"uint","optional":false,"format":32}},{"name":"minProposalStake","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalStakedGSTD","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"proposalCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"executedCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"cancelledCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
-    {"name":"Proposal$Data","header":null,"fields":[{"name":"proposalId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"dao","type":{"kind":"simple","type":"address","optional":false}},{"name":"proposer","type":{"kind":"simple","type":"address","optional":false}},{"name":"targetContract","type":{"kind":"simple","type":"address","optional":false}},{"name":"payload","type":{"kind":"simple","type":"cell","optional":false}},{"name":"votesFor","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"votesAgainst","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"voterCount","type":{"kind":"simple","type":"uint","optional":false,"format":32}},{"name":"createdAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"votingEndsAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"executionUnlocksAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"status","type":{"kind":"simple","type":"uint","optional":false,"format":8}}]},
+    {"name":"Proposal$Data","header":null,"fields":[{"name":"proposalId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"dao","type":{"kind":"simple","type":"address","optional":false}},{"name":"proposer","type":{"kind":"simple","type":"address","optional":false}},{"name":"targetContract","type":{"kind":"simple","type":"address","optional":false}},{"name":"payload","type":{"kind":"simple","type":"cell","optional":false}},{"name":"votesFor","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"votesAgainst","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"voterCount","type":{"kind":"simple","type":"uint","optional":false,"format":32}},{"name":"voters","type":{"kind":"dict","key":"address","value":"int"}},{"name":"createdAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"votingEndsAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"executionUnlocksAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"status","type":{"kind":"simple","type":"uint","optional":false,"format":8}}]},
     {"name":"GovernanceStats","header":null,"fields":[{"name":"proposalCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"executedCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"cancelledCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"quorumPercent","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"timelockSeconds","type":{"kind":"simple","type":"uint","optional":false,"format":32}},{"name":"minProposalStake","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalStakedGSTD","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
-    {"name":"ProposalData","header":null,"fields":[{"name":"proposalId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"proposer","type":{"kind":"simple","type":"address","optional":false}},{"name":"targetContract","type":{"kind":"simple","type":"address","optional":false}},{"name":"votesFor","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"votesAgainst","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"voterCount","type":{"kind":"simple","type":"uint","optional":false,"format":32}},{"name":"createdAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"votingEndsAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"executionUnlocksAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"status","type":{"kind":"simple","type":"uint","optional":false,"format":8}}]},
+    {"name":"ProposalData","header":null,"fields":[{"name":"proposalId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"proposer","type":{"kind":"simple","type":"address","optional":false}},{"name":"targetContract","type":{"kind":"simple","type":"address","optional":false}},{"name":"votesFor","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"votesAgainst","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"voterCount","type":{"kind":"simple","type":"uint","optional":false,"format":32}},{"name":"totalStaked","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"createdAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"votingEndsAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"executionUnlocksAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"status","type":{"kind":"simple","type":"uint","optional":false,"format":8}}]},
 ]
 
 const DAOVoting_opcodes = {
@@ -1696,7 +1712,7 @@ const DAOVoting_opcodes = {
     "ChangeOwner": 2174598809,
     "ChangeOwnerOk": 846932810,
     "CreateProposal": 3565067208,
-    "CastVote": 2427161456,
+    "CastVote": 1086625183,
     "ExecuteProposal": 2470491975,
     "CancelProposal": 1785280322,
     "UpdateGovernanceParams": 2128179073,

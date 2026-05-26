@@ -3,7 +3,7 @@ Contract: GSTDJettonWallet
 BoC Size: 754 bytes
 
 ## Structures (Structs and Messages)
-Total structures: 29
+Total structures: 30
 
 ### DataSize
 TL-B: `_ cells:int257 bits:int257 refs:int257 = DataSize`
@@ -100,6 +100,10 @@ Signature: `Burn{queryId:uint64,amount:coins,responseDestination:address}`
 ### GSTDJetton$Data
 TL-B: `_ totalSupply:coins maxSupply:coins owner:address mintAuthority:address content:^cell mintable:bool workerPoolMinted:coins workerPoolMax:coins totalBurned:coins totalMintEvents:uint64 authorityLocked:bool = GSTDJetton`
 Signature: `GSTDJetton{totalSupply:coins,maxSupply:coins,owner:address,mintAuthority:address,content:^cell,mintable:bool,workerPoolMinted:coins,workerPoolMax:coins,totalBurned:coins,totalMintEvents:uint64,authorityLocked:bool}`
+
+### FreezeMint
+TL-B: `freeze_mint#3ceedd0a  = FreezeMint`
+Signature: `FreezeMint{}`
 
 ### JettonData
 TL-B: `_ totalSupply:coins mintable:bool adminAddress:address jettonContent:^cell jettonWalletCode:^cell = JettonData`

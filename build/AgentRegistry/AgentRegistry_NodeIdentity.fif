@@ -1,4 +1,4 @@
-// automatically generated from `@stdlib/std/stdlib.fc` `/home/ubuntu/contracts/build/AgentRegistry/AgentRegistry_NodeIdentity.fc` 
+// automatically generated from `@stdlib/std/stdlib.fc` `/home/bot/gstdcontracts/build/AgentRegistry/AgentRegistry_NodeIdentity.fc` 
 PROGRAM{
   DECLPROC __tact_context_get_sender
   DECLPROC $NodeIdentity$_store

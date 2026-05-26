@@ -1,9 +1,9 @@
 # Tact compilation report
 Contract: SettlementMaster
-BoC Size: 1916 bytes
+BoC Size: 2121 bytes
 
 ## Structures (Structs and Messages)
-Total structures: 26
+Total structures: 27
 
 ### DataSize
 TL-B: `_ cells:int257 bits:int257 refs:int257 = DataSize`
@@ -93,9 +93,13 @@ Signature: `SetBaseRate{rate:coins}`
 TL-B: `emergency_pause#3f7082c1 paused:bool = EmergencyPause`
 Signature: `EmergencyPause{paused:bool}`
 
+### SetGateway
+TL-B: `set_gateway#a85e4bb4 gateway:address = SetGateway`
+Signature: `SetGateway{gateway:address}`
+
 ### SettlementMaster$Data
-TL-B: `_ owner:address gstdJetton:address treasury:address protocolFee:address workerShare:uint8 treasuryShare:uint8 protocolShare:uint8 baseRate:coins totalSettled:coins totalGSTDMinted:coins taskCount:uint64 paused:bool minPayment:coins = SettlementMaster`
-Signature: `SettlementMaster{owner:address,gstdJetton:address,treasury:address,protocolFee:address,workerShare:uint8,treasuryShare:uint8,protocolShare:uint8,baseRate:coins,totalSettled:coins,totalGSTDMinted:coins,taskCount:uint64,paused:bool,minPayment:coins}`
+TL-B: `_ owner:address gateway:address gstdJetton:address treasury:address protocolFee:address workerShare:uint8 treasuryShare:uint8 protocolShare:uint8 baseRate:coins totalSettled:coins totalGSTDMinted:coins taskCount:uint64 paused:bool minPayment:coins = SettlementMaster`
+Signature: `SettlementMaster{owner:address,gateway:address,gstdJetton:address,treasury:address,protocolFee:address,workerShare:uint8,treasuryShare:uint8,protocolShare:uint8,baseRate:coins,totalSettled:coins,totalGSTDMinted:coins,taskCount:uint64,paused:bool,minPayment:coins}`
 
 ### SettlementStats
 TL-B: `_ totalSettled:coins totalGSTDMinted:coins taskCount:uint64 baseRate:coins = SettlementStats`
@@ -164,12 +168,12 @@ No arguments
 * 135: Code of a contract was not found
 * 136: Invalid standard address
 * 138: Not a basechain address
-* 1730: Only Gateway/Orchestrator can settle
 * 8484: Payment below minimum
 * 22722: Must sum to 100
 * 27818: Rate must be positive
 * 38610: Settlement paused
 * 45933: Worker share minimum 50%
+* 50353: Only DAO or Gateway can settle
 * 63399: Only DAO
 
 ## Trait inheritance diagram

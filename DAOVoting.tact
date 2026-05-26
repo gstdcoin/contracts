@@ -19,10 +19,11 @@ message CreateProposal {
     votingPeriod: Int as uint32; // seconds (default: 7 days)
 }
 
+// weight is NOT a field — it's derived from the TON attached to prevent arbitrary inflation.
+// V2 will use Jetton TransferNotification for GSTD-weighted voting once staking is live.
 message CastVote {
     proposalId: Int as uint64;
     support: Bool; // true = For, false = Against
-    weight: Int as coins; // GSTD tokens staked for vote
 }
 
 message ExecuteProposal {
@@ -174,6 +175,9 @@ contract Proposal {
     votesAgainst: Int as coins;
     voterCount: Int as uint32;
 
+    // Per-voter stake: prevents double-voting and enables stake reclaim
+    voters: map<Address, Int>;
+
     // Timeline
     createdAt: Int as uint64;
     votingEndsAt: Int as uint64;
@@ -200,6 +204,7 @@ contract Proposal {
         self.votesFor = 0;
         self.votesAgainst = 0;
         self.voterCount = 0;
+        self.voters = emptyMap();
 
         self.createdAt = now();
         self.votingEndsAt = now() + votingPeriod;
@@ -211,17 +216,46 @@ contract Proposal {
         // Marker
     }
 
+    // Weight = TON attached by the sender. Prevents arbitrary inflation attack.
+    // Voters must send real TON; it is locked here and reclaimable after voting ends.
     receive(msg: CastVote) {
         require(self.status == 0, "Voting not active");
         require(now() < self.votingEndsAt, "Voting period ended");
-        require(msg.weight > 0, "Vote weight must be positive");
+
+        // One vote per address
+        require(self.voters.get(sender()) == null, "Already voted");
+
+        let weight: Int = context().value - ton("0.01"); // reserve gas
+        require(weight > 0, "Must attach TON as voting stake");
+
+        // Lock stake and record vote
+        self.voters.set(sender(), weight);
 
         if (msg.support) {
-            self.votesFor = self.votesFor + msg.weight;
+            self.votesFor = self.votesFor + weight;
         } else {
-            self.votesAgainst = self.votesAgainst + msg.weight;
+            self.votesAgainst = self.votesAgainst + weight;
         }
         self.voterCount = self.voterCount + 1;
+    }
+
+    // Reclaim staked TON after voting period ends
+    receive("claim_vote_stake") {
+        require(now() >= self.votingEndsAt, "Voting still active");
+
+        let locked: Int? = self.voters.get(sender());
+        require(locked != null, "No stake to claim");
+
+        let amount: Int = locked!!;
+        self.voters.set(sender(), null);
+
+        send(SendParameters {
+            to: sender(),
+            value: amount,
+            mode: SendIgnoreErrors,
+            bounce: false,
+            body: "vote_stake_returned".asComment(),
+        });
     }
 
     // ── Execute if passed and timelock expired ──────────────────────────
@@ -256,11 +290,18 @@ contract Proposal {
             votesFor: self.votesFor,
             votesAgainst: self.votesAgainst,
             voterCount: self.voterCount,
+            totalStaked: self.votesFor + self.votesAgainst,
             createdAt: self.createdAt,
             votingEndsAt: self.votingEndsAt,
             executionUnlocksAt: self.executionUnlocksAt,
             status: self.status,
         };
+    }
+
+    get fun get_voter_stake(voter: Address): Int {
+        let stake: Int? = self.voters.get(voter);
+        if (stake == null) { return 0; }
+        return stake!!;
     }
 }
 
@@ -283,6 +324,7 @@ struct ProposalData {
     votesFor: Int as coins;
     votesAgainst: Int as coins;
     voterCount: Int as uint32;
+    totalStaked: Int as coins;
     createdAt: Int as uint64;
     votingEndsAt: Int as uint64;
     executionUnlocksAt: Int as uint64;

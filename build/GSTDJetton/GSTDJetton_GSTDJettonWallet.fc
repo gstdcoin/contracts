@@ -425,8 +425,8 @@ builder $GSTDJettonWallet$init$_store(builder build_0, (slice, slice) v) inline 
 
 ((int, slice, slice), (int, slice, slice, cell)) $GSTDJettonWallet$_fun_get_wallet_data((int, slice, slice) $self) impure inline_ref {
     var (($self'balance, $self'owner, $self'jettonMaster)) = $self;
-    var $fresh$ret_8 = $WalletData$_constructor_balance_owner_jettonMaster_jettonWalletCode($self'balance, $self'owner, $self'jettonMaster, $StateInit$_get_code($GSTDJettonWallet$_init_child($self'owner, $self'jettonMaster)));
-    return (($self'balance, $self'owner, $self'jettonMaster), $fresh$ret_8);
+    var $fresh$ret_7 = $WalletData$_constructor_balance_owner_jettonMaster_jettonWalletCode($self'balance, $self'owner, $self'jettonMaster, $StateInit$_get_code($GSTDJettonWallet$_init_child($self'owner, $self'jettonMaster)));
+    return (($self'balance, $self'owner, $self'jettonMaster), $fresh$ret_7);
 }
 
 ;;
@@ -475,7 +475,7 @@ _ %get_wallet_data() method_id(97026) {
         var ($senderWalletInit'code, $senderWalletInit'data) = $GSTDJettonWallet$_init_child($msg'from, $self'jettonMaster);
         int $validSender = ( (( equal_slices_bits(__tact_context_get_sender(), $global_contractAddress(($senderWalletInit'code, $senderWalletInit'data))) )) ? (true) : (( equal_slices_bits(__tact_context_get_sender(), $self'jettonMaster) )) );
         throw_unless(4429, $validSender);
-        $self'balance = ($self'balance + $msg'amount);
+        $self'balance = $self'balance + $msg'amount;
         if (($msg'forwardTonAmount > 0)) {
             $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'owner, $msg'forwardTonAmount, 2, false, $TransferNotification$_store_cell($TransferNotification$_constructor_queryId_amount_sender_forwardPayload($msg'queryId, $msg'amount, $msg'from, $msg'forwardPayload), begin_cell())));
         }
@@ -494,7 +494,7 @@ _ %get_wallet_data() method_id(97026) {
         var $msg'forwardPayload = in_msg;
         throw_unless(36952, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
         throw_unless(54615, ($self'balance >= $msg'amount));
-        $self'balance = ($self'balance - $msg'amount);
+        $self'balance = $self'balance - $msg'amount;
         var ($receiverInit'code, $receiverInit'data) = $GSTDJettonWallet$_init_child($msg'destination, $self'jettonMaster);
         $global_send($SendParameters$_constructor_to_value_mode_bounce_body_code_data($global_contractAddress(($receiverInit'code, $receiverInit'data)), 0, 64, true, $InternalTransfer$_store_cell($InternalTransfer$_constructor_queryId_amount_from_responseAddress_forwardTonAmount_forwardPayload($msg'queryId, $msg'amount, $self'owner, $msg'responseDestination, $msg'forwardTonAmount, $msg'forwardPayload), begin_cell()), $receiverInit'code, $receiverInit'data));
         $GSTDJettonWallet$_contract_store(($self'balance, $self'owner, $self'jettonMaster));
@@ -508,7 +508,7 @@ _ %get_wallet_data() method_id(97026) {
         var $msg'responseDestination = in_msg~load_msg_addr();
         throw_unless(21543, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
         throw_unless(54615, ($self'balance >= $msg'amount));
-        $self'balance = ($self'balance - $msg'amount);
+        $self'balance = $self'balance - $msg'amount;
         $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'jettonMaster, 0, 64, true, $BurnNotification$_store_cell($BurnNotification$_constructor_queryId_amount_sender_responseDestination($msg'queryId, $msg'amount, $self'owner, $msg'responseDestination), begin_cell())));
         $GSTDJettonWallet$_contract_store(($self'balance, $self'owner, $self'jettonMaster));
         return ();

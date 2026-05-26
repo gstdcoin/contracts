@@ -49,9 +49,10 @@ contract GstdBridgeRouter with Deployable, Ownable {
     
     totalBridgedOut: Int = 0;
     
-    init(owner: Address, stonfiRouter: Address, gstdJettonWallet: Address) {
+    init(owner: Address, stonfiRouter: Address, stonfiPtongstdPool: Address, gstdJettonWallet: Address) {
         self.owner = owner;
         self.stonfiRouter = stonfiRouter;
+        self.stonfiPtongstdPool = stonfiPtongstdPool;
         self.gstdJettonWallet = gstdJettonWallet;
     }
 

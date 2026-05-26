@@ -163,8 +163,8 @@ builder $NodeIdentity$_store(builder build_0, (int, slice, slice, int, int, int,
 
 ((int, slice, slice, int, int, int, int, int, int, int, int, int), (int, slice, int, int, int, int, int, int, int, int, int)) $NodeIdentity$_fun_get_node_info((int, slice, slice, int, int, int, int, int, int, int, int, int) $self) impure inline_ref {
     var (($self'nodeId, $self'registry, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt)) = $self;
-    var $fresh$ret_32 = $NodeInfo$_constructor_nodeId_owner_nodeType_capabilities_region_qualityScore_uptimeScore_tasksCompleted_status_registeredAt_lastActiveAt($self'nodeId, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt);
-    return (($self'nodeId, $self'registry, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt), $fresh$ret_32);
+    var $fresh$ret_30 = $NodeInfo$_constructor_nodeId_owner_nodeType_capabilities_region_qualityScore_uptimeScore_tasksCompleted_status_registeredAt_lastActiveAt($self'nodeId, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt);
+    return (($self'nodeId, $self'registry, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt), $fresh$ret_30);
 }
 
 ;;

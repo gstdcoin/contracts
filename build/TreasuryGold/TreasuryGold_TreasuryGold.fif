@@ -1,4 +1,4 @@
-// automatically generated from `@stdlib/std/stdlib.fc` `/home/ubuntu/contracts/build/TreasuryGold/TreasuryGold_TreasuryGold.fc` 
+// automatically generated from `@stdlib/std/stdlib.fc` `/home/bot/gstdcontracts/build/TreasuryGold/TreasuryGold_TreasuryGold.fc` 
 PROGRAM{
   DECLPROC __tact_context_get
   DECLPROC __tact_context_get_sender
@@ -247,6 +247,22 @@ PROGRAM{
         NIP
         LDVARUINT16
         DROP
+        7821 PUSHINT
+        __tact_context_get_sender INLINECALLDICT
+        s8 PUSH
+        SDEQ
+        IF:<{
+          TRUE
+        }>ELSE<{
+          __tact_context_get_sender INLINECALLDICT
+          s10 PUSH
+          SDEQ
+        }>
+        THROWANYIFNOT
+        61135 PUSHINT
+        OVER
+        0 GTINT
+        THROWANYIFNOT
         s1 s5 XCHG
         ADD
         s7 s9 XCHG

@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: TreasuryGold
-BoC Size: 1367 bytes
+BoC Size: 1395 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 22
@@ -146,8 +146,10 @@ No arguments
 * 136: Invalid standard address
 * 138: Not a basechain address
 * 7620: Deposit too small
+* 7821: Only DEX router or DAO
 * 15283: Insufficient operational balance
 * 60938: Ratio must be 50-95%
+* 61135: Amount must be positive
 * 63399: Only DAO
 
 ## Trait inheritance diagram

@@ -74,14 +74,14 @@ slice $global_contractAddressExt(int $chain, cell $code, cell $data) impure inli
 ;; $global_contractAddress
 slice $global_contractAddress((cell, cell) $s) impure inline;
 
-;; $JettonData$_constructor_totalSupply_mintable_adminAddress_jettonContent_jettonWalletCode
-((int, int, slice, cell, cell)) $JettonData$_constructor_totalSupply_mintable_adminAddress_jettonContent_jettonWalletCode(int $totalSupply, int $mintable, slice $adminAddress, cell $jettonContent, cell $jettonWalletCode) inline;
-
 ;; $GSTDJettonWallet$_init_child
 (cell, cell) $GSTDJettonWallet$_init_child(slice $owner, slice $jettonMaster) inline_ref;
 
-;; $GSTDJetton$_fun_getJettonWalletInit
-((int, int, slice, slice, cell, int, int, int, int, int, int), (cell, cell)) $GSTDJetton$_fun_getJettonWalletInit((int, int, slice, slice, cell, int, int, int, int, int, int) $self, slice $address) impure inline_ref;
+;; $global_getJettonWalletInit
+(cell, cell) $global_getJettonWalletInit(slice $address, slice $master) impure inline_ref;
+
+;; $JettonData$_constructor_totalSupply_mintable_adminAddress_jettonContent_jettonWalletCode
+((int, int, slice, cell, cell)) $JettonData$_constructor_totalSupply_mintable_adminAddress_jettonContent_jettonWalletCode(int $totalSupply, int $mintable, slice $adminAddress, cell $jettonContent, cell $jettonWalletCode) inline;
 
 ;; $GSTDJetton$_fun_get_jetton_data
 ((int, int, slice, slice, cell, int, int, int, int, int, int), (int, int, slice, cell, cell)) $GSTDJetton$_fun_get_jetton_data((int, int, slice, slice, cell, int, int, int, int, int, int) $self) impure inline_ref;
@@ -327,8 +327,8 @@ int $global_myBalance() impure asm """
 
 ((int, int, slice, slice, cell, int, int, int, int, int, int), slice) $GSTDJetton$_fun_owner((int, int, slice, slice, cell, int, int, int, int, int, int) $self) impure inline_ref {
     var (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)) = $self;
-    var $fresh$ret_16 = $self'owner;
-    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_16);
+    var $fresh$ret_14 = $self'owner;
+    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_14);
 }
 
 ;; GSTDJetton_GSTDJetton.constants.fc
@@ -588,46 +588,44 @@ cell $GSTDJettonWallet$_child_get_code() impure asm """
     return ($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked);
 }
 
-((int, int, slice, slice, cell, int, int, int, int, int, int), (cell, cell)) $GSTDJetton$_fun_getJettonWalletInit((int, int, slice, slice, cell, int, int, int, int, int, int) $self, slice $address) impure inline_ref {
-    var (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)) = $self;
-    var $fresh$ret_15 = $GSTDJettonWallet$_init_child($address, $global_myAddress());
-    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_15);
+(cell, cell) $global_getJettonWalletInit(slice $address, slice $master) impure inline_ref {
+    return $GSTDJettonWallet$_init_child($address, $master);
 }
 
 ((int, int, slice, slice, cell, int, int, int, int, int, int), (int, int, slice, cell, cell)) $GSTDJetton$_fun_get_jetton_data((int, int, slice, slice, cell, int, int, int, int, int, int) $self) impure inline_ref {
     var (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)) = $self;
-    var $fresh$ret_9 = $JettonData$_constructor_totalSupply_mintable_adminAddress_jettonContent_jettonWalletCode($self'totalSupply, $self'mintable, $self'owner, $self'content, $StateInit$_get_code(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)~$GSTDJetton$_fun_getJettonWalletInit($global_myAddress())));
-    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_9);
+    var $fresh$ret_8 = $JettonData$_constructor_totalSupply_mintable_adminAddress_jettonContent_jettonWalletCode($self'totalSupply, $self'mintable, $self'owner, $self'content, $StateInit$_get_code($global_getJettonWalletInit($global_myAddress(), $global_myAddress())));
+    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_8);
 }
 
 ((int, int, slice, slice, cell, int, int, int, int, int, int), slice) $GSTDJetton$_fun_get_wallet_address((int, int, slice, slice, cell, int, int, int, int, int, int) $self, slice $ownerAddress) impure inline_ref {
     var (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)) = $self;
-    var $fresh$ret_10 = $global_contractAddress(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)~$GSTDJetton$_fun_getJettonWalletInit($ownerAddress));
-    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_10);
+    var $fresh$ret_9 = $global_contractAddress($global_getJettonWalletInit($ownerAddress, $global_myAddress()));
+    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_9);
 }
 
 ((int, int, slice, slice, cell, int, int, int, int, int, int), int) $GSTDJetton$_fun_get_max_supply((int, int, slice, slice, cell, int, int, int, int, int, int) $self) impure inline_ref {
     var (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)) = $self;
-    var $fresh$ret_11 = $self'maxSupply;
-    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_11);
+    var $fresh$ret_10 = $self'maxSupply;
+    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_10);
 }
 
 ((int, int, slice, slice, cell, int, int, int, int, int, int), (int, int, int)) $GSTDJetton$_fun_get_worker_pool_stats((int, int, slice, slice, cell, int, int, int, int, int, int) $self) impure inline_ref {
     var (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)) = $self;
-    var $fresh$ret_12 = $WorkerPoolStats$_constructor_minted_max_remaining($self'workerPoolMinted, $self'workerPoolMax, ($self'workerPoolMax - $self'workerPoolMinted));
-    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_12);
+    var $fresh$ret_11 = $WorkerPoolStats$_constructor_minted_max_remaining($self'workerPoolMinted, $self'workerPoolMax, ($self'workerPoolMax - $self'workerPoolMinted));
+    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_11);
 }
 
 ((int, int, slice, slice, cell, int, int, int, int, int, int), (int, int, int)) $GSTDJetton$_fun_get_burn_stats((int, int, slice, slice, cell, int, int, int, int, int, int) $self) impure inline_ref {
     var (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)) = $self;
-    var $fresh$ret_13 = $BurnStats$_constructor_totalBurned_circulatingSupply_totalMintEvents($self'totalBurned, $self'totalSupply, $self'totalMintEvents);
-    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_13);
+    var $fresh$ret_12 = $BurnStats$_constructor_totalBurned_circulatingSupply_totalMintEvents($self'totalBurned, $self'totalSupply, $self'totalMintEvents);
+    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_12);
 }
 
 ((int, int, slice, slice, cell, int, int, int, int, int, int), slice) $GSTDJetton$_fun_get_mint_authority((int, int, slice, slice, cell, int, int, int, int, int, int) $self) impure inline_ref {
     var (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)) = $self;
-    var $fresh$ret_14 = $self'mintAuthority;
-    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_14);
+    var $fresh$ret_13 = $self'mintAuthority;
+    return (($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked), $fresh$ret_13);
 }
 
 ;;
@@ -701,83 +699,79 @@ _ %owner() method_id(83229) {
     
     ;; Handle bounced messages
     if (msg_bounced) { return (); }
-    int op = 0;
-    int in_msg_length = slice_bits(in_msg);
-    if (in_msg_length >= 32) {
-        op = in_msg~load_uint(32);
-        ;; Receive MintWorkerReward message
-        if (op == 3145374392) {
-            var $msg'workerAddr = in_msg~load_msg_addr();
-            var $msg'amount = in_msg~load_varuint16();
-            var $msg'taskId = in_msg~load_uint(64);
-            throw_unless(8319, ( equal_slices_bits(__tact_context_get_sender(), $self'mintAuthority) ));
-            throw_unless(56760, $self'mintable);
-            throw_unless(47714, (($self'totalSupply + $msg'amount) <= $self'maxSupply));
-            throw_unless(37727, (($self'workerPoolMinted + $msg'amount) <= $self'workerPoolMax));
-            $self'totalSupply = ($self'totalSupply + $msg'amount);
-            $self'workerPoolMinted = ($self'workerPoolMinted + $msg'amount);
-            $self'totalMintEvents = ($self'totalMintEvents + 1);
-            var ($walletInit'code, $walletInit'data) = ($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)~$GSTDJetton$_fun_getJettonWalletInit($msg'workerAddr);
-            $global_send($SendParameters$_constructor_to_value_mode_bounce_body_code_data($global_contractAddress(($walletInit'code, $walletInit'data)), 50000000, 2, false, $InternalTransfer$_store_cell($InternalTransfer$_constructor_queryId_amount_from_responseAddress_forwardTonAmount_forwardPayload(0, $msg'amount, $global_myAddress(), $msg'workerAddr, 1, $global_emptySlice()), begin_cell()), $walletInit'code, $walletInit'data));
-            $GSTDJetton$_contract_store(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked));
-            return ();
-        }
-        
-        ;; Receive BurnNotification message
-        if (op == 1668790143) {
-            var $msg'queryId = in_msg~load_uint(64);
-            var $msg'amount = in_msg~load_varuint16();
-            var $msg'sender = in_msg~load_msg_addr();
-            var $msg'responseDestination = in_msg~load_msg_addr();
-            var ($walletInit'code, $walletInit'data) = ($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)~$GSTDJetton$_fun_getJettonWalletInit($msg'sender);
-            throw_unless(3820, ( equal_slices_bits(__tact_context_get_sender(), $global_contractAddress(($walletInit'code, $walletInit'data))) ));
-            $self'totalSupply = ($self'totalSupply - $msg'amount);
-            $self'totalBurned = ($self'totalBurned + $msg'amount);
-            if (( ~ equal_slices_bits($msg'responseDestination, __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c()) )) {
-                $global_send($SendParameters$_constructor_to_value_mode_bounce_body($msg'responseDestination, 0, 66, false, __gen_cell_cell_64d4ef5e06cbd270d6c11080a35d3f1f13c222d3195ec7a4239a2e69ab9f909c()));
-            }
-            $GSTDJetton$_contract_store(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked));
-            return ();
-        }
-        
-        ;; Receive SetMintAuthority message
-        if (op == 1824345925) {
-            var $msg'newAuthority = in_msg~load_msg_addr();
-            throw_unless(35499, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
-            throw_unless(28612, (~ $self'authorityLocked));
-            $self'mintAuthority = $msg'newAuthority;
-            $self'authorityLocked = true;
-            $GSTDJetton$_contract_store(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked));
-            return ();
-        }
-        
-        ;; Receive TokenUpdateContent message
-        if (op == 2937889386) {
-            var $msg'content = in_msg~load_ref();
-            throw_unless(35499, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
-            $self'content = $msg'content;
-            $GSTDJetton$_contract_store(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked));
-            return ();
-        }
-        
-        ;; Receive Deploy message
-        if (op == 0x946a98b6) {
-            var $deploy'queryId = in_msg~load_uint(64);
-            ($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)~$GSTDJetton$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId), begin_cell()));
-            $GSTDJetton$_contract_store(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked));
-            return ();
-        }
-        
+    var op = in_msg~load_opcode_internal();
+    ;; Receive MintWorkerReward message
+    if (op == 3145374392) {
+        var $msg'workerAddr = in_msg~load_msg_addr();
+        var $msg'amount = in_msg~load_varuint16();
+        var $msg'taskId = in_msg~load_uint(64);
+        throw_unless(8319, ( equal_slices_bits(__tact_context_get_sender(), $self'mintAuthority) ));
+        throw_unless(56760, $self'mintable);
+        throw_unless(47714, (($self'totalSupply + $msg'amount) <= $self'maxSupply));
+        throw_unless(37727, (($self'workerPoolMinted + $msg'amount) <= $self'workerPoolMax));
+        $self'totalSupply = $self'totalSupply + $msg'amount;
+        $self'workerPoolMinted = $self'workerPoolMinted + $msg'amount;
+        $self'totalMintEvents = $self'totalMintEvents + 1;
+        var ($walletInit'code, $walletInit'data) = $global_getJettonWalletInit($msg'workerAddr, $global_myAddress());
+        $global_send($SendParameters$_constructor_to_value_mode_bounce_body_code_data($global_contractAddress(($walletInit'code, $walletInit'data)), 50000000, 2, false, $InternalTransfer$_store_cell($InternalTransfer$_constructor_queryId_amount_from_responseAddress_forwardTonAmount_forwardPayload(0, $msg'amount, $global_myAddress(), $msg'workerAddr, 1, $global_emptySlice()), begin_cell()), $walletInit'code, $walletInit'data));
+        $GSTDJetton$_contract_store(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked));
+        return ();
     }
-    ;; Empty Receiver and Text Receivers
-    var text_op = slice_hash(in_msg);
-    ;; Receive "freeze_mint" message
-    if (text_op == 0x32fa1777f8021bbb5d56850a873d5fa78ce51fbafcd8a99c3621ed1a3bec2cf8) {
+    
+    ;; Receive BurnNotification message
+    if (op == 1668790143) {
+        var $msg'queryId = in_msg~load_uint(64);
+        var $msg'amount = in_msg~load_varuint16();
+        var $msg'sender = in_msg~load_msg_addr();
+        var $msg'responseDestination = in_msg~load_msg_addr();
+        var ($walletInit'code, $walletInit'data) = $global_getJettonWalletInit($msg'sender, $global_myAddress());
+        throw_unless(3820, ( equal_slices_bits(__tact_context_get_sender(), $global_contractAddress(($walletInit'code, $walletInit'data))) ));
+        $self'totalSupply = $self'totalSupply - $msg'amount;
+        $self'totalBurned = $self'totalBurned + $msg'amount;
+        if (( ~ equal_slices_bits($msg'responseDestination, __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c()) )) {
+            $global_send($SendParameters$_constructor_to_value_mode_bounce_body($msg'responseDestination, 0, 66, false, __gen_cell_cell_64d4ef5e06cbd270d6c11080a35d3f1f13c222d3195ec7a4239a2e69ab9f909c()));
+        }
+        $GSTDJetton$_contract_store(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked));
+        return ();
+    }
+    
+    ;; Receive SetMintAuthority message
+    if (op == 1824345925) {
+        var $msg'newAuthority = in_msg~load_msg_addr();
+        throw_unless(35499, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+        throw_unless(28612, (~ $self'authorityLocked));
+        $self'mintAuthority = $msg'newAuthority;
+        $self'authorityLocked = true;
+        $GSTDJetton$_contract_store(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked));
+        return ();
+    }
+    
+    ;; Receive TokenUpdateContent message
+    if (op == 2937889386) {
+        var $msg'content = in_msg~load_ref();
+        throw_unless(35499, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+        $self'content = $msg'content;
+        $GSTDJetton$_contract_store(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked));
+        return ();
+    }
+    
+    ;; Receive FreezeMint message
+    if (op == 1022287114) {
+        var $msg = empty_tuple();
         throw_unless(35499, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
         $self'mintable = false;
         $GSTDJetton$_contract_store(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked));
         return ();
     }
+    
+    ;; Receive Deploy message
+    if (op == 0x946a98b6) {
+        var $deploy'queryId = in_msg~load_uint(64);
+        ($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked)~$GSTDJetton$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId), begin_cell()));
+        $GSTDJetton$_contract_store(($self'totalSupply, $self'maxSupply, $self'owner, $self'mintAuthority, $self'content, $self'mintable, $self'workerPoolMinted, $self'workerPoolMax, $self'totalBurned, $self'totalMintEvents, $self'authorityLocked));
+        return ();
+    }
+    
     ;; Throw if not handled
     throw(130);
 }

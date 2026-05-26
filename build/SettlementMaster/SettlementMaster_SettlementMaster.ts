@@ -1263,9 +1263,57 @@ export function dictValueParserEmergencyPause(): DictionaryValue<EmergencyPause>
     }
 }
 
+export type SetGateway = {
+    $$type: 'SetGateway';
+    gateway: Address;
+}
+
+export function storeSetGateway(src: SetGateway) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeUint(2824752052, 32);
+        b_0.storeAddress(src.gateway);
+    };
+}
+
+export function loadSetGateway(slice: Slice) {
+    const sc_0 = slice;
+    if (sc_0.loadUint(32) !== 2824752052) { throw Error('Invalid prefix'); }
+    const _gateway = sc_0.loadAddress();
+    return { $$type: 'SetGateway' as const, gateway: _gateway };
+}
+
+export function loadTupleSetGateway(source: TupleReader) {
+    const _gateway = source.readAddress();
+    return { $$type: 'SetGateway' as const, gateway: _gateway };
+}
+
+export function loadGetterTupleSetGateway(source: TupleReader) {
+    const _gateway = source.readAddress();
+    return { $$type: 'SetGateway' as const, gateway: _gateway };
+}
+
+export function storeTupleSetGateway(source: SetGateway) {
+    const builder = new TupleBuilder();
+    builder.writeAddress(source.gateway);
+    return builder.build();
+}
+
+export function dictValueParserSetGateway(): DictionaryValue<SetGateway> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeSetGateway(src)).endCell());
+        },
+        parse: (src) => {
+            return loadSetGateway(src.loadRef().beginParse());
+        }
+    }
+}
+
 export type SettlementMaster$Data = {
     $$type: 'SettlementMaster$Data';
     owner: Address;
+    gateway: Address;
     gstdJetton: Address;
     treasury: Address;
     protocolFee: Address;
@@ -1284,9 +1332,10 @@ export function storeSettlementMaster$Data(src: SettlementMaster$Data) {
     return (builder: Builder) => {
         const b_0 = builder;
         b_0.storeAddress(src.owner);
+        b_0.storeAddress(src.gateway);
         b_0.storeAddress(src.gstdJetton);
-        b_0.storeAddress(src.treasury);
         const b_1 = new Builder();
+        b_1.storeAddress(src.treasury);
         b_1.storeAddress(src.protocolFee);
         b_1.storeUint(src.workerShare, 8);
         b_1.storeUint(src.treasuryShare, 8);
@@ -1296,7 +1345,9 @@ export function storeSettlementMaster$Data(src: SettlementMaster$Data) {
         b_1.storeCoins(src.totalGSTDMinted);
         b_1.storeUint(src.taskCount, 64);
         b_1.storeBit(src.paused);
-        b_1.storeCoins(src.minPayment);
+        const b_2 = new Builder();
+        b_2.storeCoins(src.minPayment);
+        b_1.storeRef(b_2.endCell());
         b_0.storeRef(b_1.endCell());
     };
 }
@@ -1304,9 +1355,10 @@ export function storeSettlementMaster$Data(src: SettlementMaster$Data) {
 export function loadSettlementMaster$Data(slice: Slice) {
     const sc_0 = slice;
     const _owner = sc_0.loadAddress();
+    const _gateway = sc_0.loadAddress();
     const _gstdJetton = sc_0.loadAddress();
-    const _treasury = sc_0.loadAddress();
     const sc_1 = sc_0.loadRef().beginParse();
+    const _treasury = sc_1.loadAddress();
     const _protocolFee = sc_1.loadAddress();
     const _workerShare = sc_1.loadUintBig(8);
     const _treasuryShare = sc_1.loadUintBig(8);
@@ -1316,12 +1368,14 @@ export function loadSettlementMaster$Data(slice: Slice) {
     const _totalGSTDMinted = sc_1.loadCoins();
     const _taskCount = sc_1.loadUintBig(64);
     const _paused = sc_1.loadBit();
-    const _minPayment = sc_1.loadCoins();
-    return { $$type: 'SettlementMaster$Data' as const, owner: _owner, gstdJetton: _gstdJetton, treasury: _treasury, protocolFee: _protocolFee, workerShare: _workerShare, treasuryShare: _treasuryShare, protocolShare: _protocolShare, baseRate: _baseRate, totalSettled: _totalSettled, totalGSTDMinted: _totalGSTDMinted, taskCount: _taskCount, paused: _paused, minPayment: _minPayment };
+    const sc_2 = sc_1.loadRef().beginParse();
+    const _minPayment = sc_2.loadCoins();
+    return { $$type: 'SettlementMaster$Data' as const, owner: _owner, gateway: _gateway, gstdJetton: _gstdJetton, treasury: _treasury, protocolFee: _protocolFee, workerShare: _workerShare, treasuryShare: _treasuryShare, protocolShare: _protocolShare, baseRate: _baseRate, totalSettled: _totalSettled, totalGSTDMinted: _totalGSTDMinted, taskCount: _taskCount, paused: _paused, minPayment: _minPayment };
 }
 
 export function loadTupleSettlementMaster$Data(source: TupleReader) {
     const _owner = source.readAddress();
+    const _gateway = source.readAddress();
     const _gstdJetton = source.readAddress();
     const _treasury = source.readAddress();
     const _protocolFee = source.readAddress();
@@ -1334,11 +1388,12 @@ export function loadTupleSettlementMaster$Data(source: TupleReader) {
     const _taskCount = source.readBigNumber();
     const _paused = source.readBoolean();
     const _minPayment = source.readBigNumber();
-    return { $$type: 'SettlementMaster$Data' as const, owner: _owner, gstdJetton: _gstdJetton, treasury: _treasury, protocolFee: _protocolFee, workerShare: _workerShare, treasuryShare: _treasuryShare, protocolShare: _protocolShare, baseRate: _baseRate, totalSettled: _totalSettled, totalGSTDMinted: _totalGSTDMinted, taskCount: _taskCount, paused: _paused, minPayment: _minPayment };
+    return { $$type: 'SettlementMaster$Data' as const, owner: _owner, gateway: _gateway, gstdJetton: _gstdJetton, treasury: _treasury, protocolFee: _protocolFee, workerShare: _workerShare, treasuryShare: _treasuryShare, protocolShare: _protocolShare, baseRate: _baseRate, totalSettled: _totalSettled, totalGSTDMinted: _totalGSTDMinted, taskCount: _taskCount, paused: _paused, minPayment: _minPayment };
 }
 
 export function loadGetterTupleSettlementMaster$Data(source: TupleReader) {
     const _owner = source.readAddress();
+    const _gateway = source.readAddress();
     const _gstdJetton = source.readAddress();
     const _treasury = source.readAddress();
     const _protocolFee = source.readAddress();
@@ -1351,12 +1406,13 @@ export function loadGetterTupleSettlementMaster$Data(source: TupleReader) {
     const _taskCount = source.readBigNumber();
     const _paused = source.readBoolean();
     const _minPayment = source.readBigNumber();
-    return { $$type: 'SettlementMaster$Data' as const, owner: _owner, gstdJetton: _gstdJetton, treasury: _treasury, protocolFee: _protocolFee, workerShare: _workerShare, treasuryShare: _treasuryShare, protocolShare: _protocolShare, baseRate: _baseRate, totalSettled: _totalSettled, totalGSTDMinted: _totalGSTDMinted, taskCount: _taskCount, paused: _paused, minPayment: _minPayment };
+    return { $$type: 'SettlementMaster$Data' as const, owner: _owner, gateway: _gateway, gstdJetton: _gstdJetton, treasury: _treasury, protocolFee: _protocolFee, workerShare: _workerShare, treasuryShare: _treasuryShare, protocolShare: _protocolShare, baseRate: _baseRate, totalSettled: _totalSettled, totalGSTDMinted: _totalGSTDMinted, taskCount: _taskCount, paused: _paused, minPayment: _minPayment };
 }
 
 export function storeTupleSettlementMaster$Data(source: SettlementMaster$Data) {
     const builder = new TupleBuilder();
     builder.writeAddress(source.owner);
+    builder.writeAddress(source.gateway);
     builder.writeAddress(source.gstdJetton);
     builder.writeAddress(source.treasury);
     builder.writeAddress(source.protocolFee);
@@ -1590,7 +1646,7 @@ function initSettlementMaster_init_args(src: SettlementMaster_init_args) {
 }
 
 async function SettlementMaster_init(owner: Address, gstdJetton: Address, treasury: Address, protocolFee: Address) {
-    const __code = Cell.fromHex('b5ee9c7241022001000770000114ff00f4a413f4bcf2c80b01020162021202f4d001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200018e26fa40fa40fa40d401d0fa40d307d307d307fa00fa00fa00d33fd200fa003010ad10ac10ab6c1d8e26fa40fa40fa40d401d0fa403014433004d1550280557a7582080f424070530070821005f5e100e20ee3020cd70d1ff2e082210306013c0c8020d7217021d749c21f9430d31f309131e2821059694c6ebae3025f0d0401e470804270882c553010246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0010ac5519c87f01ca0055c050cdce1ace18ce06c8ce15cb0713cb07cb0701fa0201fa0258fa0212cb3f12ca0058fa02cdc9ed5405003400000000626f756e6365645f776f726b65725f7061796d656e7402f88210572e9ef8bae302218210beda40acba8e673135353502d307d307d307308200f7a7f8422cc705f2f48158c25da022a0c064f2f48200b36d23c231f2f410ac109b108a10794816034575c87f01ca0055c050cdce1ace18ce06c8ce15cb0713cb07cb0701fa0201fa0258fa0212cb3f12ca0058fa02cdc9ed54e021070d01fe31d33ffa40fa0030f8422ec705f2e6c2820096d22fb3f2f4f8416f24135f03821005f5e100a1812124215612bef2f4530aa88064a904531aa88064a9045321a121a15039a05238a006a4727f547735c85520821059694c6e5004cb1f12cb3f01fa0201fa02c9270405552010246d50436d03c8cf8580ca00cf8440ce01fa020803fe8069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0072708856100405552010246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb007270882e040a552010246d50436d03c8cf8580ca00cf8440ce01fa02090a0b0016000000006465706f7369740016000000006275796261636b01d88069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0020c200925f03e30d10ac109b108a107910681057104603505504c87f01ca0055c050cdce1ace18ce06c8ce15cb0713cb07cb0701fa0201fa0258fa0212cb3f12ca0058fa02cdc9ed540c00b2821004c4b400725a7005c855208210bb7a9ab85004cb1f12ce01fa02cb3fc92d504410246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0004fe8210540bd399ba8e553138383805fa40fa40fa40308200f7a7f8422cc705f2f410ac4a9b1068105710465003054414c87f01ca0055c050cdce1ace18ce06c8ce15cb0713cb07cb0701fa0201fa0258fa0212cb3f12ca0058fa02cdc9ed54e0218210d70e7cefbae3022182103f7082c1bae302018210946a98b6bae3025f0e0e0f101100b4313403fa00308200f7a7f8422cc705f2f4816caa21c200f2f410ac109b108a107910681057104644554313c87f01ca0055c050cdce1ace18ce06c8ce15cb0713cb07cb0701fa0201fa0258fa0212cb3f12ca0058fa02cdc9ed5400a6313c0bd200308200f7a7f8422cc705f2f410ac109b108a10791068105710461035440302c87f01ca0055c050cdce1ace18ce06c8ce15cb0713cb07cb0701fa0201fa0258fa0212cb3f12ca0058fa02cdc9ed5400eed33f30c8018210aff90f5758cb1fcb3fc910bd10ac109b108a107910681057104610354430f84270705003804201503304c8cf8580ca00cf8440ce01fa02806acf40f400c901fb00c87f01ca0055c050cdce1ace18ce06c8ce15cb0713cb07cb0701fa0201fa0258fa0212cb3f12ca0058fa02cdc9ed540006f2c082020120131b020120141601bbb9197ed44d0d200018e26fa40fa40fa40d401d0fa40d307d307d307fa00fa00fa00d33fd200fa003010ad10ac10ab6c1d8e26fa40fa40fa40d401d0fa403014433004d1550280557a7582080f424070530070821005f5e100e2db3c6cd4815000854743228020120171901bbb4a3bda89a1a400031c4df481f481f481a803a1f481a60fa60fa60ff401f401f401a67fa401f40060215a21582156d83b1c4df481f481f481a803a1f4806028866009a2aa0500aaf4eb04101e8480e0a600e104200bebc201c5b678d9a301800022c01bbb66f5da89a1a400031c4df481f481f481a803a1f481a60fa60fa60ff401f401f401a67fa401f40060215a21582156d83b1c4df481f481f481a803a1f4806028866009a2aa0500aaf4eb04101e8480e0a600e104200bebc201c5b678d9a301a0002210201481c1e01bbb5351da89a1a400031c4df481f481f481a803a1f481a60fa60fa60ff401f401f401a67fa401f40060215a21582156d83b1c4df481f481f481a803a1f4806028866009a2aa0500aaf4eb04101e8480e0a600e104200bebc201c5b678d9a701d000654787601bbb5f37da89a1a400031c4df481f481f481a803a1f481a60fa60fa60ff401f401f401a67fa401f40060215a21582156d83b1c4df481f481f481a803a1f4806028866009a2aa0500aaf4eb04101e8480e0a600e104200bebc201c5b678d9a901f0008547ba92f13c88088');
+    const __code = Cell.fromHex('b5ee9c724102230100083d000114ff00f4a413f4bcf2c80b0102016202150130d001d072d721d200d200fa4021103450666f04f86102f8620303f4ed44d0d200018e2bfa40fa40fa40d401d0fa40fa40d307d307d307fa00fa00fa00d33fd200d430d0fa003010be10bd10bc6c1e8e2ffa40fa40fa40d401d0fa403014433004d155022380557a7582080f4240705300107b107a1079107870821005f5e100e20fe3020dd70d1ff2e082218210a85e4bb4bae30221040708013c0d8020d7217021d749c21f9430d31f309131e2821059694c6ebae3025f0e0501f070804270882c553010246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0010bd551ac87f01ca0055d050dece1bce19ce07c8ce16ce14cb0712cb07cb0701fa0201fa0258fa0212cb3f12ca00c85003fa0212cdcdc9ed5406003400000000626f756e6365645f776f726b65725f7061796d656e7400b2313b0afa40308200f7a7f8422dc705f2f410bd0c109b108a107910681057104610354403c87f01ca0055d050dece1bce19ce07c8ce16ce14cb0712cb07cb0701fa0201fa0258fa0212cb3f12ca00c85003fa0212cdcdc9ed5403f68210572e9ef8bae302218210beda40acbae302218210540bd399ba8e5c3138383805fa40fa40fa40308200f7a7f8422dc705f2f410bd10ac4a9b10681057104613154440c87f01ca0055d050dece1bce19ce07c8ce16ce14cb0712cb07cb0701fa0201fa0258fa0212cb3f12ca00c85003fa0212cdcdc9ed54e021090f1001f231d33ffa40fa00308200c4b1f8425610c705917f95f8422fc705e2f2f4820096d25610b3f2f4f8416f24135f03821005f5e100a1812124215613bef2f4530aa88064a904531aa88064a9045321a121a15093a05173a006a4727f547735c85520821059694c6e5004cb1f12cb3f01fa0201fa02c927040555200a03fa10246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb007270885610040b552010246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb007270882e55300b0c0d0016000000006465706f7369740016000000006275796261636b02a410246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0020c200925f03e30d10bd10ac109b108a10791068105710460350450e1300b2821004c4b400725a7005c855208210bb7a9ab85004cb1f12ce01fa02cb3fc92d504410246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0000e03135353502d307d307d307308200f7a7f8422dc705f2f48158c25da022a0c064f2f48200b36d23c231f2f410bd10ac109b108a1079481603455507c87f01ca0055d050dece1bce19ce07c8ce16ce14cb0712cb07cb0701fa0201fa0258fa0212cb3f12ca00c85003fa0212cdcdc9ed5403fe8210d70e7cefba8e61313403fa00308200f7a7f8422dc705f2f4816caa21c200f2f410bd10ac109b108a1079106810571046443512c87f01ca0055d050dece1bce19ce07c8ce16ce14cb0712cb07cb0701fa0201fa0258fa0212cb3f12ca00c85003fa0212cdcdc9ed54e02182103f7082c1bae302018210946a98b6bae30211121400b4313d0cd200308200f7a7f8422dc705f2f410bd10ac109b108a107910681057104610354403c87f01ca0055d050dece1bce19ce07c8ce16ce14cb0712cb07cb0701fa0201fa0258fa0212cb3f12ca00c85003fa0212cdcdc9ed540196d33f30c8018210aff90f5758cb1fcb3fc910ce10bd10ac109b108a10791068105710461035443012f84270705003804201503304c8cf8580ca00cf8440ce01fa02806acf40f400c901fb0013006ac87f01ca0055d050dece1bce19ce07c8ce16ce14cb0712cb07cb0701fa0201fa0258fa0212cb3f12ca00c85003fa0212cdcdc9ed54000a5f0ff2c082020120161e020120171901d7b9197ed44d0d200018e2bfa40fa40fa40d401d0fa40fa40d307d307d307fa00fa00fa00d33fd200d430d0fa003010be10bd10bc6c1e8e2ffa40fa40fa40d401d0fa403014433004d155022380557a7582080f4240705300107b107a1079107870821005f5e100e2db3c6ce48180008547432280201201a1c01d7b4a3bda89a1a400031c57f481f481f481a803a1f481f481a60fa60fa60ff401f401f401a67fa401a861a1f40060217c217a2178d83d1c5ff481f481f481a803a1f4806028866009a2aa044700aaf4eb04101e8480e0a60020f620f420f220f0e104200bebc201c5b678d9c301b00022d01d7b66f5da89a1a400031c57f481f481f481a803a1f481f481a60fa60fa60ff401f401f401a67fa401a861a1f40060217c217a2178d83d1c5ff481f481f481a803a1f4806028866009a2aa044700aaf4eb04101e8480e0a60020f620f420f220f0e104200bebc201c5b678d9c301d0002210201481f2101d7b5351da89a1a400031c57f481f481f481a803a1f481f481a60fa60fa60ff401f401f401a67fa401a861a1f40060217c217a2178d83d1c5ff481f481f481a803a1f4806028866009a2aa044700aaf4eb04101e8480e0a60020f620f420f220f0e104200bebc201c5b678d9c7020000654787601d7b5f37da89a1a400031c57f481f481f481a803a1f481f481a60fa60fa60ff401f401f401a67fa401a861a1f40060217c217a2178d83d1c5ff481f481f481a803a1f4806028866009a2aa044700aaf4eb04101e8480e0a60020f620f420f220f0e104200bebc201c5b678d9c9022000a547ba956109e7a016b');
     const builder = beginCell();
     builder.storeUint(0, 1);
     initSettlementMaster_init_args({ $$type: 'SettlementMaster_init_args', owner, gstdJetton, treasury, protocolFee })(builder);
@@ -1635,12 +1691,12 @@ export const SettlementMaster_errors = {
     135: { message: "Code of a contract was not found" },
     136: { message: "Invalid standard address" },
     138: { message: "Not a basechain address" },
-    1730: { message: "Only Gateway/Orchestrator can settle" },
     8484: { message: "Payment below minimum" },
     22722: { message: "Must sum to 100" },
     27818: { message: "Rate must be positive" },
     38610: { message: "Settlement paused" },
     45933: { message: "Worker share minimum 50%" },
+    50353: { message: "Only DAO or Gateway can settle" },
     63399: { message: "Only DAO" },
 } as const
 
@@ -1681,12 +1737,12 @@ export const SettlementMaster_errors_backward = {
     "Code of a contract was not found": 135,
     "Invalid standard address": 136,
     "Not a basechain address": 138,
-    "Only Gateway/Orchestrator can settle": 1730,
     "Payment below minimum": 8484,
     "Must sum to 100": 22722,
     "Rate must be positive": 27818,
     "Settlement paused": 38610,
     "Worker share minimum 50%": 45933,
+    "Only DAO or Gateway can settle": 50353,
     "Only DAO": 63399,
 } as const
 
@@ -1713,7 +1769,8 @@ const SettlementMaster_types: ABIType[] = [
     {"name":"MintWorkerReward","header":3145374392,"fields":[{"name":"workerAddr","type":{"kind":"simple","type":"address","optional":false}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"taskId","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
     {"name":"SetBaseRate","header":3608050927,"fields":[{"name":"rate","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
     {"name":"EmergencyPause","header":1064338113,"fields":[{"name":"paused","type":{"kind":"simple","type":"bool","optional":false}}]},
-    {"name":"SettlementMaster$Data","header":null,"fields":[{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"gstdJetton","type":{"kind":"simple","type":"address","optional":false}},{"name":"treasury","type":{"kind":"simple","type":"address","optional":false}},{"name":"protocolFee","type":{"kind":"simple","type":"address","optional":false}},{"name":"workerShare","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"treasuryShare","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"protocolShare","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"baseRate","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalSettled","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalGSTDMinted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"taskCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"paused","type":{"kind":"simple","type":"bool","optional":false}},{"name":"minPayment","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
+    {"name":"SetGateway","header":2824752052,"fields":[{"name":"gateway","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"SettlementMaster$Data","header":null,"fields":[{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"gateway","type":{"kind":"simple","type":"address","optional":false}},{"name":"gstdJetton","type":{"kind":"simple","type":"address","optional":false}},{"name":"treasury","type":{"kind":"simple","type":"address","optional":false}},{"name":"protocolFee","type":{"kind":"simple","type":"address","optional":false}},{"name":"workerShare","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"treasuryShare","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"protocolShare","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"baseRate","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalSettled","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalGSTDMinted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"taskCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"paused","type":{"kind":"simple","type":"bool","optional":false}},{"name":"minPayment","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
     {"name":"SettlementStats","header":null,"fields":[{"name":"totalSettled","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalGSTDMinted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"taskCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"baseRate","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
     {"name":"RevenueSplit","header":null,"fields":[{"name":"worker","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"treasury","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"protocol","type":{"kind":"simple","type":"uint","optional":false,"format":8}}]},
     {"name":"ContractAddresses","header":null,"fields":[{"name":"gstdJetton","type":{"kind":"simple","type":"address","optional":false}},{"name":"treasury","type":{"kind":"simple","type":"address","optional":false}},{"name":"protocolFee","type":{"kind":"simple","type":"address","optional":false}},{"name":"owner","type":{"kind":"simple","type":"address","optional":false}}]},
@@ -1732,6 +1789,7 @@ const SettlementMaster_opcodes = {
     "MintWorkerReward": 3145374392,
     "SetBaseRate": 3608050927,
     "EmergencyPause": 1064338113,
+    "SetGateway": 2824752052,
 }
 
 const SettlementMaster_getters: ABIGetter[] = [
@@ -1751,6 +1809,7 @@ export const SettlementMaster_getterMapping: { [key: string]: string } = {
 }
 
 const SettlementMaster_receivers: ABIReceiver[] = [
+    {"receiver":"internal","message":{"kind":"typed","type":"SetGateway"}},
     {"receiver":"internal","message":{"kind":"typed","type":"SettleTask"}},
     {"receiver":"internal","message":{"kind":"typed","type":"UpdateShares"}},
     {"receiver":"internal","message":{"kind":"typed","type":"UpdateAddresses"}},
@@ -1794,9 +1853,12 @@ export class SettlementMaster implements Contract {
         this.init = init;
     }
     
-    async send(provider: ContractProvider, via: Sender, args: { value: bigint, bounce?: boolean| null | undefined }, message: SettleTask | UpdateShares | UpdateAddresses | SetBaseRate | EmergencyPause | Deploy) {
+    async send(provider: ContractProvider, via: Sender, args: { value: bigint, bounce?: boolean| null | undefined }, message: SetGateway | SettleTask | UpdateShares | UpdateAddresses | SetBaseRate | EmergencyPause | Deploy) {
         
         let body: Cell | null = null;
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'SetGateway') {
+            body = beginCell().store(storeSetGateway(message)).endCell();
+        }
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'SettleTask') {
             body = beginCell().store(storeSettleTask(message)).endCell();
         }

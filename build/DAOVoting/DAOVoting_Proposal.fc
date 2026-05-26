@@ -8,35 +8,50 @@
 ;; NOTE: declarations are sorted for optimal order
 ;;
 
+;; __tact_context_get
+(int, slice, int, slice) __tact_context_get() inline;
+
 ;; __tact_context_get_sender
 slice __tact_context_get_sender() inline;
 
+;; __tact_dict_get_slice_int
+int __tact_dict_get_slice_int(cell d, int kl, slice k, int vl) inline;
+
+;; __tact_dict_set_slice_int
+(cell, ()) __tact_dict_set_slice_int(cell d, int kl, slice k, int v, int vl) inline;
+
 ;; $Proposal$_store
-builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, int, int, int, int, int, int) v) inline;
+builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int) v) inline;
 
 ;; $Proposal$_load
-(slice, ((int, slice, slice, slice, cell, int, int, int, int, int, int, int))) $Proposal$_load(slice sc_0) inline;
+(slice, ((int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int))) $Proposal$_load(slice sc_0) inline;
+
+;; $Context$_get_value
+_ $Context$_get_value((int, slice, int, slice) v) inline;
 
 ;; $ProposalData$_to_external
-(int, slice, slice, int, int, int, int, int, int, int) $ProposalData$_to_external(((int, slice, slice, int, int, int, int, int, int, int)) v) inline;
+(int, slice, slice, int, int, int, int, int, int, int, int) $ProposalData$_to_external(((int, slice, slice, int, int, int, int, int, int, int, int)) v) inline;
 
 ;; $Proposal$init$_load
 (slice, ((int, slice, slice, slice, cell, int, int))) $Proposal$init$_load(slice sc_0) inline;
 
 ;; $Proposal$_contract_init
-(int, slice, slice, slice, cell, int, int, int, int, int, int, int) $Proposal$_contract_init(int $proposalId, slice $dao, slice $proposer, slice $targetContract, cell $payload, int $votingPeriod, int $timelockSeconds) impure inline;
+(int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int) $Proposal$_contract_init(int $proposalId, slice $dao, slice $proposer, slice $targetContract, cell $payload, int $votingPeriod, int $timelockSeconds) impure inline;
 
 ;; $Proposal$_contract_load
-(int, slice, slice, slice, cell, int, int, int, int, int, int, int) $Proposal$_contract_load() impure inline;
+(int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int) $Proposal$_contract_load() impure inline;
 
 ;; $Proposal$_contract_store
-() $Proposal$_contract_store((int, slice, slice, slice, cell, int, int, int, int, int, int, int) v) impure inline;
+() $Proposal$_contract_store((int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int) v) impure inline;
 
-;; $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_createdAt_votingEndsAt_executionUnlocksAt_status
-((int, slice, slice, int, int, int, int, int, int, int)) $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_createdAt_votingEndsAt_executionUnlocksAt_status(int $proposalId, slice $proposer, slice $targetContract, int $votesFor, int $votesAgainst, int $voterCount, int $createdAt, int $votingEndsAt, int $executionUnlocksAt, int $status) inline;
+;; $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_totalStaked_createdAt_votingEndsAt_executionUnlocksAt_status
+((int, slice, slice, int, int, int, int, int, int, int, int)) $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_totalStaked_createdAt_votingEndsAt_executionUnlocksAt_status(int $proposalId, slice $proposer, slice $targetContract, int $votesFor, int $votesAgainst, int $voterCount, int $totalStaked, int $createdAt, int $votingEndsAt, int $executionUnlocksAt, int $status) inline;
 
 ;; $Proposal$_fun_get_proposal_data
-((int, slice, slice, slice, cell, int, int, int, int, int, int, int), (int, slice, slice, int, int, int, int, int, int, int)) $Proposal$_fun_get_proposal_data((int, slice, slice, slice, cell, int, int, int, int, int, int, int) $self) impure inline_ref;
+((int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int), (int, slice, slice, int, int, int, int, int, int, int, int)) $Proposal$_fun_get_proposal_data((int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int) $self) impure inline_ref;
+
+;; $Proposal$_fun_get_voter_stake
+((int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int), int) $Proposal$_fun_get_voter_stake((int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int) $self, slice $voter) impure inline_ref;
 
 ;; $SendParameters$_constructor_to_value_mode_bounce_body
 ((int, cell, cell, cell, int, slice, int)) $SendParameters$_constructor_to_value_mode_bounce_body(slice $to, int $value, int $mode, int $bounce, cell $body) inline;
@@ -48,8 +63,38 @@ global slice __tact_context_sender;
 global cell __tact_child_contract_codes;
 global int __tact_randomized;
 
+(cell, int) __tact_dict_delete(cell dict, int key_len, slice index) asm(index dict key_len) """
+    DICTDEL
+""";
+
+(slice, int) __tact_dict_get(cell dict, int key_len, slice index) asm(index dict key_len) """
+    DICTGET NULLSWAPIFNOT
+""";
+
+(int, slice, int, slice) __tact_context_get() inline {
+    return __tact_context;
+}
+
 slice __tact_context_get_sender() inline {
     return __tact_context_sender;
+}
+
+int __tact_dict_get_slice_int(cell d, int kl, slice k, int vl) inline {
+    var (r, ok) = __tact_dict_get(d, kl, k);
+    if (ok) {
+        return r~load_int(vl);
+    } else {
+        return null();
+    }
+}
+
+(cell, ()) __tact_dict_set_slice_int(cell d, int kl, slice k, int v, int vl) inline {
+    if (null?(v)) {
+        var (r, ok) = __tact_dict_delete(d, kl, k);
+        return (r, ());
+    } else {
+        return (dict_set_builder(d, kl, k, begin_cell().store_int(v, vl)), ());
+    }
 }
 
 int $global_now() impure asm """
@@ -131,7 +176,23 @@ int $global_now() impure asm """
     SENDRAWMSG // https://github.com/tact-lang/tact/issues/1558
 """;
 
+;; DAOVoting_Proposal.constants.fc
+;; Cell XyuPRcQ69lYS+RZUpp4urMHLhjSiuwsueO4QinhVbUs=
+cell __gen_cell_cell_5f2b8f45c43af65612f91654a69e2eacc1cb8634a2bb0b2e78ee108a78556d4b() asm """
+    B{b5ee9c7241010101001900002e00000000766f74655f7374616b655f72657475726e656422862cd2} B>boc PUSHREF
+""";
+
 ;; DAOVoting_Proposal.storage.fc
+;;
+;; Type: Context
+;; TLB: _ bounceable:bool sender:address value:int257 raw:^slice = Context
+;;
+
+_ $Context$_get_value((int, slice, int, slice) v) inline {
+    var (v'bounceable, v'sender, v'value, v'raw) = v;
+    return v'value;
+}
+
 ;;
 ;; Type: SendParameters
 ;; TLB: _ mode:int257 body:Maybe ^cell code:Maybe ^cell data:Maybe ^cell value:int257 to:address bounce:bool = SendParameters
@@ -143,25 +204,25 @@ int $global_now() impure asm """
 
 ;;
 ;; Type: ProposalData
-;; TLB: _ proposalId:uint64 proposer:address targetContract:address votesFor:coins votesAgainst:coins voterCount:uint32 createdAt:uint64 votingEndsAt:uint64 executionUnlocksAt:uint64 status:uint8 = ProposalData
+;; TLB: _ proposalId:uint64 proposer:address targetContract:address votesFor:coins votesAgainst:coins voterCount:uint32 totalStaked:coins createdAt:uint64 votingEndsAt:uint64 executionUnlocksAt:uint64 status:uint8 = ProposalData
 ;;
 
-(int, slice, slice, int, int, int, int, int, int, int) $ProposalData$_to_external(((int, slice, slice, int, int, int, int, int, int, int)) v) inline {
-    var (v'proposalId, v'proposer, v'targetContract, v'votesFor, v'votesAgainst, v'voterCount, v'createdAt, v'votingEndsAt, v'executionUnlocksAt, v'status) = v; 
-    return (v'proposalId, v'proposer, v'targetContract, v'votesFor, v'votesAgainst, v'voterCount, v'createdAt, v'votingEndsAt, v'executionUnlocksAt, v'status);
+(int, slice, slice, int, int, int, int, int, int, int, int) $ProposalData$_to_external(((int, slice, slice, int, int, int, int, int, int, int, int)) v) inline {
+    var (v'proposalId, v'proposer, v'targetContract, v'votesFor, v'votesAgainst, v'voterCount, v'totalStaked, v'createdAt, v'votingEndsAt, v'executionUnlocksAt, v'status) = v; 
+    return (v'proposalId, v'proposer, v'targetContract, v'votesFor, v'votesAgainst, v'voterCount, v'totalStaked, v'createdAt, v'votingEndsAt, v'executionUnlocksAt, v'status);
 }
 
-((int, slice, slice, int, int, int, int, int, int, int)) $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_createdAt_votingEndsAt_executionUnlocksAt_status(int $proposalId, slice $proposer, slice $targetContract, int $votesFor, int $votesAgainst, int $voterCount, int $createdAt, int $votingEndsAt, int $executionUnlocksAt, int $status) inline {
-    return ($proposalId, $proposer, $targetContract, $votesFor, $votesAgainst, $voterCount, $createdAt, $votingEndsAt, $executionUnlocksAt, $status);
+((int, slice, slice, int, int, int, int, int, int, int, int)) $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_totalStaked_createdAt_votingEndsAt_executionUnlocksAt_status(int $proposalId, slice $proposer, slice $targetContract, int $votesFor, int $votesAgainst, int $voterCount, int $totalStaked, int $createdAt, int $votingEndsAt, int $executionUnlocksAt, int $status) inline {
+    return ($proposalId, $proposer, $targetContract, $votesFor, $votesAgainst, $voterCount, $totalStaked, $createdAt, $votingEndsAt, $executionUnlocksAt, $status);
 }
 
 ;;
 ;; Type: Proposal
-;; TLB: _ proposalId:uint64 dao:address proposer:address targetContract:address payload:^cell votesFor:coins votesAgainst:coins voterCount:uint32 createdAt:uint64 votingEndsAt:uint64 executionUnlocksAt:uint64 status:uint8 = Proposal
+;; TLB: _ proposalId:uint64 dao:address proposer:address targetContract:address payload:^cell votesFor:coins votesAgainst:coins voterCount:uint32 voters:dict<address, int> createdAt:uint64 votingEndsAt:uint64 executionUnlocksAt:uint64 status:uint8 = Proposal
 ;;
 
-builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, int, int, int, int, int, int) v) inline {
-    var (v'proposalId, v'dao, v'proposer, v'targetContract, v'payload, v'votesFor, v'votesAgainst, v'voterCount, v'createdAt, v'votingEndsAt, v'executionUnlocksAt, v'status) = v;
+builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int) v) inline {
+    var (v'proposalId, v'dao, v'proposer, v'targetContract, v'payload, v'votesFor, v'votesAgainst, v'voterCount, v'voters, v'createdAt, v'votingEndsAt, v'executionUnlocksAt, v'status) = v;
     build_0 = build_0.store_uint(v'proposalId, 64);
     build_0 = build_0.store_slice(v'dao);
     build_0 = build_0.store_slice(v'proposer);
@@ -171,6 +232,7 @@ builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, 
     var build_1 = begin_cell();
     build_1 = build_1.store_varuint16(v'votesAgainst);
     build_1 = build_1.store_uint(v'voterCount, 32);
+    build_1 = build_1.store_dict(v'voters);
     build_1 = build_1.store_uint(v'createdAt, 64);
     build_1 = build_1.store_uint(v'votingEndsAt, 64);
     build_1 = build_1.store_uint(v'executionUnlocksAt, 64);
@@ -179,7 +241,7 @@ builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, 
     return build_0;
 }
 
-(slice, ((int, slice, slice, slice, cell, int, int, int, int, int, int, int))) $Proposal$_load(slice sc_0) inline {
+(slice, ((int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int))) $Proposal$_load(slice sc_0) inline {
     var v'proposalId = sc_0~load_uint(64);
     var v'dao = sc_0~load_msg_addr();
     var v'proposer = sc_0~load_msg_addr();
@@ -189,11 +251,12 @@ builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, 
     slice sc_1 = sc_0~load_ref().begin_parse();
     var v'votesAgainst = sc_1~load_varuint16();
     var v'voterCount = sc_1~load_uint(32);
+    var v'voters = sc_1~load_dict();
     var v'createdAt = sc_1~load_uint(64);
     var v'votingEndsAt = sc_1~load_uint(64);
     var v'executionUnlocksAt = sc_1~load_uint(64);
     var v'status = sc_1~load_uint(8);
-    return (sc_0, (v'proposalId, v'dao, v'proposer, v'targetContract, v'payload, v'votesFor, v'votesAgainst, v'voterCount, v'createdAt, v'votingEndsAt, v'executionUnlocksAt, v'status));
+    return (sc_0, (v'proposalId, v'dao, v'proposer, v'targetContract, v'payload, v'votesFor, v'votesAgainst, v'voterCount, v'voters, v'createdAt, v'votingEndsAt, v'executionUnlocksAt, v'status));
 }
 
 (slice, ((int, slice, slice, slice, cell, int, int))) $Proposal$init$_load(slice sc_0) inline {
@@ -208,7 +271,7 @@ builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, 
     return (sc_0, (v'proposalId, v'dao, v'proposer, v'targetContract, v'payload, v'votingPeriod, v'timelockSeconds));
 }
 
-(int, slice, slice, slice, cell, int, int, int, int, int, int, int) $Proposal$_contract_load() impure inline {
+(int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int) $Proposal$_contract_load() impure inline {
     slice $sc = get_data().begin_parse();
     int $loaded = $sc~load_int(1);
     if ($loaded) {
@@ -221,7 +284,7 @@ builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, 
     }
 }
 
-() $Proposal$_contract_store((int, slice, slice, slice, cell, int, int, int, int, int, int, int) v) impure inline {
+() $Proposal$_contract_store((int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int) v) impure inline {
     builder b = begin_cell();
     b = b.store_int(true, 1);
     b = $Proposal$_store(b, v);
@@ -232,8 +295,8 @@ builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, 
 ;; Contract Proposal functions
 ;;
 
-(int, slice, slice, slice, cell, int, int, int, int, int, int, int) $Proposal$_contract_init(int $proposalId, slice $dao, slice $proposer, slice $targetContract, cell $payload, int $votingPeriod, int $timelockSeconds) impure inline {
-    var (($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status)) = (null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null());
+(int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int) $Proposal$_contract_init(int $proposalId, slice $dao, slice $proposer, slice $targetContract, cell $payload, int $votingPeriod, int $timelockSeconds) impure inline {
+    var (($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status)) = (null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null());
     $self'proposalId = $proposalId;
     $self'dao = $dao;
     $self'proposer = $proposer;
@@ -242,17 +305,29 @@ builder $Proposal$_store(builder build_0, (int, slice, slice, slice, cell, int, 
     $self'votesFor = 0;
     $self'votesAgainst = 0;
     $self'voterCount = 0;
+    $self'voters = null();
     $self'createdAt = $global_now();
     $self'votingEndsAt = ($global_now() + $votingPeriod);
     $self'executionUnlocksAt = (($global_now() + $votingPeriod) + $timelockSeconds);
     $self'status = 0;
-    return ($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status);
+    return ($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status);
 }
 
-((int, slice, slice, slice, cell, int, int, int, int, int, int, int), (int, slice, slice, int, int, int, int, int, int, int)) $Proposal$_fun_get_proposal_data((int, slice, slice, slice, cell, int, int, int, int, int, int, int) $self) impure inline_ref {
-    var (($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status)) = $self;
-    var $fresh$ret_42 = $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_createdAt_votingEndsAt_executionUnlocksAt_status($self'proposalId, $self'proposer, $self'targetContract, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status);
-    return (($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status), $fresh$ret_42);
+((int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int), (int, slice, slice, int, int, int, int, int, int, int, int)) $Proposal$_fun_get_proposal_data((int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int) $self) impure inline_ref {
+    var (($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status)) = $self;
+    var $fresh$ret_40 = $ProposalData$_constructor_proposalId_proposer_targetContract_votesFor_votesAgainst_voterCount_totalStaked_createdAt_votingEndsAt_executionUnlocksAt_status($self'proposalId, $self'proposer, $self'targetContract, $self'votesFor, $self'votesAgainst, $self'voterCount, ($self'votesFor + $self'votesAgainst), $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status);
+    return (($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status), $fresh$ret_40);
+}
+
+((int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int), int) $Proposal$_fun_get_voter_stake((int, slice, slice, slice, cell, int, int, int, cell, int, int, int, int) $self, slice $voter) impure inline_ref {
+    var (($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status)) = $self;
+    int $stake = __tact_dict_get_slice_int($self'voters, 267, $voter, 257);
+    if (null?($stake)) {
+        var $fresh$ret_41 = 0;
+        return (($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status), $fresh$ret_41);
+    }
+    var $fresh$ret_42 = $stake;
+    return (($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status), $fresh$ret_42);
 }
 
 ;;
@@ -263,6 +338,13 @@ _ %get_proposal_data() method_id(76040) {
     var self = $Proposal$_contract_load();
     var res = self~$Proposal$_fun_get_proposal_data();
     return $ProposalData$_to_external(res);
+}
+
+_ %get_voter_stake(slice $voter) method_id(109267) {
+    slice $voter = $voter;
+    var self = $Proposal$_contract_load();
+    var res = self~$Proposal$_fun_get_voter_stake($voter);
+    return res;
 }
 
 ;;
@@ -285,7 +367,7 @@ _ %get_proposal_data() method_id(76040) {
     __tact_context_sender = msg_sender_addr;
     
     ;; Load contract data
-    var ($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status) = $Proposal$_contract_load();
+    var ($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status) = $Proposal$_contract_load();
     
     ;; Handle bounced messages
     if (msg_bounced) { return (); }
@@ -294,19 +376,22 @@ _ %get_proposal_data() method_id(76040) {
     if (in_msg_length >= 32) {
         op = in_msg~load_uint(32);
         ;; Receive CastVote message
-        if (op == 2427161456) {
+        if (op == 1086625183) {
             var $msg'proposalId = in_msg~load_uint(64);
             var $msg'support = in_msg~load_int(1);
-            var $msg'weight = in_msg~load_varuint16();
             throw_unless(8246, ($self'status == 0));
             throw_unless(15501, ($global_now() < $self'votingEndsAt));
+            throw_unless(59369, null?(__tact_dict_get_slice_int($self'voters, 267, __tact_context_get_sender(), 257)));
+            int $weight = ($Context$_get_value(__tact_context_get()) - 10000000);
+            throw_unless(59363, ($weight > 0));
+            $self'voters~__tact_dict_set_slice_int(267, __tact_context_get_sender(), $weight, 257);
             if ($msg'support) {
-                $self'votesFor = ($self'votesFor + $msg'weight);
+                $self'votesFor = ($self'votesFor + $weight);
             } else {
-                $self'votesAgainst = ($self'votesAgainst + $msg'weight);
+                $self'votesAgainst = ($self'votesAgainst + $weight);
             }
             $self'voterCount = ($self'voterCount + 1);
-            $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
+            $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
             return ();
         }
         
@@ -317,7 +402,7 @@ _ %get_proposal_data() method_id(76040) {
             throw_unless(42435, ( (( equal_slices_bits(__tact_context_get_sender(), $self'proposer) )) ? (true) : (( equal_slices_bits(__tact_context_get_sender(), $self'dao) )) ));
             throw_unless(30773, ($self'status == 0));
             $self'status = 4;
-            $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
+            $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
             return ();
         }
         
@@ -326,7 +411,18 @@ _ %get_proposal_data() method_id(76040) {
     var text_op = slice_hash(in_msg);
     ;; Receive "init" message
     if (text_op == 0x9f31fb7c139e4f1313022f5187d632af397344874ad3c3abb365f301d9d7ab67) {
-        $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
+        $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
+        return ();
+    }
+    ;; Receive "claim_vote_stake" message
+    if (text_op == 0x9d09533a67be67e7f87e13c2cd8818a33e932240c2520de0f75654af191ae74d) {
+        throw_unless(41880, ($global_now() >= $self'votingEndsAt));
+        int $locked = __tact_dict_get_slice_int($self'voters, 267, __tact_context_get_sender(), 257);
+        throw_unless(32600, (~ null?($locked)));
+        int $amount = $locked;
+        $self'voters~__tact_dict_set_slice_int(267, __tact_context_get_sender(), null(), 257);
+        $global_send($SendParameters$_constructor_to_value_mode_bounce_body(__tact_context_get_sender(), $amount, 2, false, __gen_cell_cell_5f2b8f45c43af65612f91654a69e2eacc1cb8634a2bb0b2e78ee108a78556d4b()));
+        $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
         return ();
     }
     ;; Receive "execute" message
@@ -336,7 +432,7 @@ _ %get_proposal_data() method_id(76040) {
         throw_unless(48241, ($self'votesFor > $self'votesAgainst));
         $self'status = 3;
         $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'targetContract, 100000000, 2, false, $self'payload));
-        $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
+        $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
         return ();
     }
     ;; Throw if not handled

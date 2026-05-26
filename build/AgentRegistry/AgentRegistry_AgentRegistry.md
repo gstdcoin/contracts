@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: AgentRegistry
-BoC Size: 2104 bytes
+BoC Size: 2099 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 26

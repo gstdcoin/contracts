@@ -212,8 +212,8 @@ int $global_now() impure asm """
 
 ((slice, slice, slice, int, int, int, int, int, int, int), slice) $TreasuryGold$_fun_owner((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
     var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
-    var $fresh$ret_26 = $self'owner;
-    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_26);
+    var $fresh$ret_24 = $self'owner;
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_24);
 }
 
 ;; TreasuryGold_TreasuryGold.constants.fc
@@ -376,20 +376,20 @@ builder $TreasuryGold$_store(builder build_0, (slice, slice, slice, int, int, in
 
 ((slice, slice, slice, int, int, int, int, int, int, int), (int, int, int, int, int, int)) $TreasuryGold$_fun_get_gold_reserve((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
     var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
-    var $fresh$ret_23 = $GoldReserveData$_constructor_goldReserveXAUt_totalTONReceived_totalTONConvertedToGold_convertRatio_depositCount_lastDepositTime($self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime);
-    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_23);
+    var $fresh$ret_21 = $GoldReserveData$_constructor_goldReserveXAUt_totalTONReceived_totalTONConvertedToGold_convertRatio_depositCount_lastDepositTime($self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime);
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_21);
 }
 
 ((slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_operational_balance((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
     var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
-    var $fresh$ret_24 = $global_myBalance();
-    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_24);
+    var $fresh$ret_22 = $global_myBalance();
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_22);
 }
 
 ((slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_convert_ratio((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
     var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
-    var $fresh$ret_25 = $self'goldConvertRatio;
-    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_25);
+    var $fresh$ret_23 = $self'goldConvertRatio;
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_23);
 }
 
 ;;
@@ -452,6 +452,8 @@ _ %owner() method_id(83229) {
         if (op == 1577629790) {
             var $msg'amount = in_msg~load_varuint16();
             var $msg'txHash = in_msg~load_uint(256);
+            throw_unless(7821, ( (( equal_slices_bits(__tact_context_get_sender(), $self'dexRouter) )) ? (true) : (( equal_slices_bits(__tact_context_get_sender(), $self'owner) )) ));
+            throw_unless(61135, ($msg'amount > 0));
             $self'goldReserveXAUt = ($self'goldReserveXAUt + $msg'amount);
             $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
             return ();

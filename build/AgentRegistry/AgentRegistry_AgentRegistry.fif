@@ -1,4 +1,4 @@
-// automatically generated from `@stdlib/std/stdlib.fc` `/home/ubuntu/contracts/build/AgentRegistry/AgentRegistry_AgentRegistry.fc` 
+// automatically generated from `@stdlib/std/stdlib.fc` `/home/bot/gstdcontracts/build/AgentRegistry/AgentRegistry_AgentRegistry.fc` 
 PROGRAM{
   DECLPROC __tact_context_get
   DECLPROC __tact_context_get_sender
@@ -639,15 +639,14 @@ PROGRAM{
       NIP
       256 LDU
       DROP
+      s0 s6 XCHG
+      DEC
       s9 s10 XCHG
       s8 s9 XCHG
-      s7 s8 XCHG
-      s6 s7 XCHG
-      s5 s6 XCHG
-      s4 s5 XCHG
-      s3 s4 XCHG
-      s1 s3 s11 XCHG3
-      s11 PUSH
+      s0 s7 XCHG
+      s0 s8 XCHG
+      6 ROLL
+      s11 s11 XCPU
       $AgentRegistry$_fun_getNodeAddress INLINECALLDICT
       30000000 PUSHINT
       2 PUSHINT

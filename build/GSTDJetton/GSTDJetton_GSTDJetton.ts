@@ -1472,6 +1472,47 @@ export function dictValueParserGSTDJetton$Data(): DictionaryValue<GSTDJetton$Dat
     }
 }
 
+export type FreezeMint = {
+    $$type: 'FreezeMint';
+}
+
+export function storeFreezeMint(src: FreezeMint) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeUint(1022287114, 32);
+    };
+}
+
+export function loadFreezeMint(slice: Slice) {
+    const sc_0 = slice;
+    if (sc_0.loadUint(32) !== 1022287114) { throw Error('Invalid prefix'); }
+    return { $$type: 'FreezeMint' as const };
+}
+
+export function loadTupleFreezeMint(source: TupleReader) {
+    return { $$type: 'FreezeMint' as const };
+}
+
+export function loadGetterTupleFreezeMint(source: TupleReader) {
+    return { $$type: 'FreezeMint' as const };
+}
+
+export function storeTupleFreezeMint(source: FreezeMint) {
+    const builder = new TupleBuilder();
+    return builder.build();
+}
+
+export function dictValueParserFreezeMint(): DictionaryValue<FreezeMint> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeFreezeMint(src)).endCell());
+        },
+        parse: (src) => {
+            return loadFreezeMint(src.loadRef().beginParse());
+        }
+    }
+}
+
 export type JettonData = {
     $$type: 'JettonData';
     totalSupply: bigint;
@@ -1790,7 +1831,7 @@ function initGSTDJetton_init_args(src: GSTDJetton_init_args) {
 }
 
 async function GSTDJetton_init(owner: Address, content: Cell) {
-    const __code = Cell.fromHex('b5ee9c7241023001000add000114ff00f4a413f4bcf2c80b01020162020e01f8d0eda2edfb01d072d721d200d200fa4021103450666f04f86102f862ed44d0d200018e29fa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd20030104b104a104910481047104610456c1b8e26fa40d45902d101217082300de0b6b3a76400007f228230058d15e17628000053111069105870e20c925f0ce02a0301f4d749c21f9134e30d09f90182f032fa1777f8021bbb5d56850a873d5fa78ce51fbafcd8a99c3621ed1a3bec2cf8ba8e4482008aabf84227c705f2f4107910681057104610357045155034c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed54e05f0af2c0820404fe0ad31f218210bb7a9ab8bae3022182106377b77fbae3022182106cbd4f45ba8e52313605fa403082008aabf84228c705f2f4816fc40bb31bf2f41079106810571056103555127fc87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed54db31e0218210af1ca26abae3020105080c0d02fe31fa40fa003081207ff84229c705f2f48200ddb826f2f48200ba6253b1a02bbbf2f48200935f5351a025bbf2f451aaa0514aa00ba4104a104b5410ccdb3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0820afaf080727070f828718b081035041115041e0601d4102302111602c855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec9465004111104031110030201111101111010465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00108a5517070058c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed54db3103fe31d33f31fa00fa40fa40304cdddb3c810eecf8425a705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0c705f2f451aba1502ba08d086000000000000000000000000000000000000000000000000000000000000000000452c0c705b3913be30d109a107910681e090b017c7080427088104f10246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb000a0026000000004275726e207375636365737366756c006a105710461035440302c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed54db310092313504d43082008aabf84228c705f2f4108a1079106810570610354430c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed54db3100fa8210946a98b6ba8e70d33f30c8018210aff90f5758cb1fcb3fc9109b108a107910681057104610354430f84270705003804201503304c8cf8580ca00cf8440ce01fa02806acf40f400c901fb00c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed54db31e03410390201200f17020158101201c1b4a3bda89a1a400031c53f401f401f481f481a9a401f401a803a1f401f401a67fa400602096209420922090208e208c208ad8371c4df481a8b205a20242e104601bc16d674ec80000fe4504600b1a2bc2ec500000a62220d220b0e1c5b678d96301100022802016a131501c0aa14ed44d0d200018e29fa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd20030104b104a104910481047104610456c1b8e26fa40d45902d101217082300de0b6b3a76400007f228230058d15e17628000053111069105870e2db3c6cb11400022901c0a8afed44d0d200018e29fa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd20030104b104a104910481047104610456c1b8e26fa40d45902d101217082300de0b6b3a76400007f228230058d15e17628000053111069105870e2db3c6cb316000c5334a1546550020120182e020120192c0201581a1c01c5adbcf6a268690000c714fd007d007d207d206a69007d006a00e87d007d00699fe900180825882508248824082388230822b60dc7137d206a2c81688090b8411806f05b59d3b200003f91411802c68af0bb14000029888834882c38712a856d9e3658c01b015edb3c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d01e01c1af16f6a268690000c714fd007d007d207d206a69007d006a00e87d007d00699fe900180825882508248824082388230822b60dc7137d206a2c81688090b8411806f05b59d3b200003f91411802c68af0bb14000029888834882c38716d9e365ac01d0162547a5829f82810bf10ae109d108c107f106e105d104c103f4ed0db3c30104c103f4ed010bf10ae109d108c107b106a10591e0108f828db3c1f011688c87001ca005a02cecec9200114ff00f4a413f4bcf2c80b21020162222903c8d001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200019afa00fa40fa4055206c139afa40fa405902d1017059e204925f04e002d70d1ff2e082218210ac130557bae302218210558e297bbae3020182104056115dbae3025f04f2c08223252702da31d33ffa00fa40fa4031fa005327db3cf84259705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0c705917f95f84228c705e281114d01f2f45153a021c200926c51e30d02c87f01ca0055205afa0212cecec9ed542b2400b0147250437007c855308210f4e4f5915005cb1f13cb3f01fa02cecec9250403505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002fe31d33ffa00fa40fa40f40431fa0082009058f84229c705f2f48200d5575375bef2f45164a15138db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d050767080407f2c4813507cc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec910562b2600981057103440130710465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002c87f01ca0055205afa0212cecec9ed5401f2d33ffa00fa4030815427f84226c705f2f48200d5575342bef2f45131a17080405414367f07c8553082106377b77f5005cb1f13cb3f01fa02cecec926044313505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002280020c87f01ca0055205afa0212cecec9ed540147a0f605da89a1a4000335f401f481f480aa40d82735f481f480b205a202e0b3c5b678d8692a01125cdb3c3054633052302b0018f82ac87001ca005a02cecec901c1b4249da89a1a400031c53f401f401f481f481a9a401f401a803a1f401f401a67fa400602096209420922090208e208c208ad8371c4df481a8b205a20242e104601bc16d674ec80000fe4504600b1a2bc2ec500000a62220d220b0e1c5b678d96302d00022701c1bbd78ed44d0d200018e29fa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd20030104b104a104910481047104610456c1b8e26fa40d45902d101217082300de0b6b3a76400007f228230058d15e17628000053111069105870e2db3c6cb382f00065472a10cc41080');
+    const __code = Cell.fromHex('b5ee9c7241023001000a7f000114ff00f4a413f4bcf2c80b01020162020e01f6d001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200018e29fa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd20030104b104a104910481047104610456c1b8e26fa40d45902d101217082300de0b6b3a76400007f228230058d15e17628000053111069105870e20c925f0ce00ad70d1f0304faf2e082218210bb7a9ab8bae3022182106377b77fbae3022182106cbd4f45ba8e50313605fa403082008aabf84228c705f2f4816fc40bb31bf2f41079106810571056103555127fc87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed54e0218210af1ca26abae3022104070b0c02fc31fa40fa003081207ff84229c705f2f48200ddb826f2f48200ba6253b1a02bbbf2f48200935f5351a025bbf2f451aaa0514aa00ba4f8285220db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0820afaf080727070f828718b0810350411140410231e0501cc102bc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec946501024103f400f10465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00102a10791068105710465a1514060054c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed5403fc31d33f31fa00fa40fa4030f82812db3c810eecf8425a705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0c705f2f451a1a159a08d086000000000000000000000000000000000000000000000000000000000000000000452a0c705b39139e30d0a107910681e080a017c7080427088104d10246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00090026000000004275726e207375636365737366756c00641057104610354430c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed54008e313504d43082008aabf84228c705f2f4108a1079106810570610354430c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed5401be82103ceedd0aba8e465b3382008aabf84227c705f2f4107910681057104610357044554313c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed54e0018210946a98b6bae3025f0cf2c0820d00dcd33f30c8018210aff90f5758cb1fcb3fc9109b108a107910681057104610354430f84270705003804201503304c8cf8580ca00cf8440ce01fa02806acf40f400c901fb00c87f01ca0055a050bafa025008fa0216ce14ce12ccca0001fa02c858fa0258fa0213cb3fca00cdc9ed540201200f17020158101201c1b4a3bda89a1a400031c53f401f401f481f481a9a401f401a803a1f401f401a67fa400602096209420922090208e208c208ad8371c4df481a8b205a20242e104601bc16d674ec80000fe4504600b1a2bc2ec500000a62220d220b0e1c5b678d96301100022802016a131501c0aa14ed44d0d200018e29fa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd20030104b104a104910481047104610456c1b8e26fa40d45902d101217082300de0b6b3a76400007f228230058d15e17628000053111069105870e2db3c6cb11400022901c0a8afed44d0d200018e29fa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd20030104b104a104910481047104610456c1b8e26fa40d45902d101217082300de0b6b3a76400007f228230058d15e17628000053111069105870e2db3c6cb316000c5334a1546550020120182e020120192c0201581a1c01c5adbcf6a268690000c714fd007d007d207d206a69007d006a00e87d007d00699fe900180825882508248824082388230822b60dc7137d206a2c81688090b8411806f05b59d3b200003f91411802c68af0bb14000029888834882c38712a856d9e3658c01b0162f828db3c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d01e01c1af16f6a268690000c714fd007d007d207d206a69007d006a00e87d007d00699fe900180825882508248824082388230822b60dc7137d206a2c81688090b8411806f05b59d3b200003f91411802c68af0bb14000029888834882c38716d9e365ac01d011af828f828db3c30546b70546ba01e0104db3c1f011688c87001ca005a02cecec9200114ff00f4a413f4bcf2c80b21020162222903c8d001d072d721d200d200fa4021103450666f04f86102f862ed44d0d200019afa00fa40fa4055206c139afa40fa405902d1017059e204925f04e002d70d1ff2e082218210ac130557bae302218210558e297bbae3020182104056115dbae3025f04f2c08223252702da31d33ffa00fa40fa4031fa005327db3cf84259705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d0c705917f95f84228c705e281114d01f2f45153a021c200926c51e30d02c87f01ca0055205afa0212cecec9ed542b2400b0147250437007c855308210f4e4f5915005cb1f13cb3f01fa02cecec9250403505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002fe31d33ffa00fa40fa40f40431fa0082009058f84229c705f2f48200d5575375bef2f45164a15138db3c5c705920f90022f9005ad76501d76582020134c8cb17cb0fcb0fcbffcbff71f90400c87401cb0212ca07cbffc9d050767080407f2c4813507cc855508210ac1305575007cb1f15cb3f5003fa02cece01fa02cec910562b2600981057103440130710465522c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002c87f01ca0055205afa0212cecec9ed5401f2d33ffa00fa4030815427f84226c705f2f48200d5575342bef2f45131a17080405414367f07c8553082106377b77f5005cb1f13cb3f01fa02cecec926044313505510246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0002280020c87f01ca0055205afa0212cecec9ed540147a0f605da89a1a4000335f401f481f480aa40d82735f481f480b205a202e0b3c5b678d8692a01125cdb3c3054633052302b0018f82ac87001ca005a02cecec901c1b4249da89a1a400031c53f401f401f481f481a9a401f401a803a1f401f401a67fa400602096209420922090208e208c208ad8371c4df481a8b205a20242e104601bc16d674ec80000fe4504600b1a2bc2ec500000a62220d220b0e1c5b678d96302d00022701c1bbd78ed44d0d200018e29fa00fa00fa40fa40d4d200fa00d401d0fa00fa00d33fd20030104b104a104910481047104610456c1b8e26fa40d45902d101217082300de0b6b3a76400007f228230058d15e17628000053111069105870e2db3c6cb382f00065472a11d72fe0d');
     const builder = beginCell();
     builder.storeUint(0, 1);
     initGSTDJetton_init_args({ $$type: 'GSTDJetton_init_args', owner, content })(builder);
@@ -1923,6 +1964,7 @@ const GSTDJetton_types: ABIType[] = [
     {"name":"InternalTransfer","header":2886927703,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"from","type":{"kind":"simple","type":"address","optional":false}},{"name":"responseAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"forwardTonAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"forwardPayload","type":{"kind":"simple","type":"slice","optional":false,"format":"remainder"}}]},
     {"name":"Burn","header":1079382365,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"responseDestination","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"GSTDJetton$Data","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"maxSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"mintAuthority","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"workerPoolMinted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"workerPoolMax","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalBurned","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalMintEvents","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"authorityLocked","type":{"kind":"simple","type":"bool","optional":false}}]},
+    {"name":"FreezeMint","header":1022287114,"fields":[]},
     {"name":"JettonData","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"adminAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"jettonContent","type":{"kind":"simple","type":"cell","optional":false}},{"name":"jettonWalletCode","type":{"kind":"simple","type":"cell","optional":false}}]},
     {"name":"WorkerPoolStats","header":null,"fields":[{"name":"minted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"max","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"remaining","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
     {"name":"BurnStats","header":null,"fields":[{"name":"totalBurned","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"circulatingSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalMintEvents","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
@@ -1944,6 +1986,7 @@ const GSTDJetton_opcodes = {
     "Transfer": 1435380091,
     "InternalTransfer": 2886927703,
     "Burn": 1079382365,
+    "FreezeMint": 1022287114,
 }
 
 const GSTDJetton_getters: ABIGetter[] = [
@@ -1971,7 +2014,7 @@ const GSTDJetton_receivers: ABIReceiver[] = [
     {"receiver":"internal","message":{"kind":"typed","type":"BurnNotification"}},
     {"receiver":"internal","message":{"kind":"typed","type":"SetMintAuthority"}},
     {"receiver":"internal","message":{"kind":"typed","type":"TokenUpdateContent"}},
-    {"receiver":"internal","message":{"kind":"text","text":"freeze_mint"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"FreezeMint"}},
     {"receiver":"internal","message":{"kind":"typed","type":"Deploy"}},
 ]
 
@@ -2010,7 +2053,7 @@ export class GSTDJetton implements Contract {
         this.init = init;
     }
     
-    async send(provider: ContractProvider, via: Sender, args: { value: bigint, bounce?: boolean| null | undefined }, message: MintWorkerReward | BurnNotification | SetMintAuthority | TokenUpdateContent | "freeze_mint" | Deploy) {
+    async send(provider: ContractProvider, via: Sender, args: { value: bigint, bounce?: boolean| null | undefined }, message: MintWorkerReward | BurnNotification | SetMintAuthority | TokenUpdateContent | FreezeMint | Deploy) {
         
         let body: Cell | null = null;
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'MintWorkerReward') {
@@ -2025,8 +2068,8 @@ export class GSTDJetton implements Contract {
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'TokenUpdateContent') {
             body = beginCell().store(storeTokenUpdateContent(message)).endCell();
         }
-        if (message === "freeze_mint") {
-            body = beginCell().storeUint(0, 32).storeStringTail(message).endCell();
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'FreezeMint') {
+            body = beginCell().store(storeFreezeMint(message)).endCell();
         }
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'Deploy') {
             body = beginCell().store(storeDeploy(message)).endCell();
