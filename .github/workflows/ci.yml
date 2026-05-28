@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  build:
+    name: Build & Type-Check Contracts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build contracts (Tact → FunC → BoC)
+        run: npm run build
+
+      - name: Verify build artifacts
+        run: |
+          echo "Checking build output..."
+          ls -la build/ 2>/dev/null || echo "No build/ dir — check tact.config.json output path"
+          find . -name "*.boc" 2>/dev/null | head -10
