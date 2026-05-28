@@ -862,6 +862,47 @@ export function dictValueParserChangeOwnerOk(): DictionaryValue<ChangeOwnerOk> {
     }
 }
 
+export type FreezeMint = {
+    $$type: 'FreezeMint';
+}
+
+export function storeFreezeMint(src: FreezeMint) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeUint(1022287114, 32);
+    };
+}
+
+export function loadFreezeMint(slice: Slice) {
+    const sc_0 = slice;
+    if (sc_0.loadUint(32) !== 1022287114) { throw Error('Invalid prefix'); }
+    return { $$type: 'FreezeMint' as const };
+}
+
+export function loadTupleFreezeMint(source: TupleReader) {
+    return { $$type: 'FreezeMint' as const };
+}
+
+export function loadGetterTupleFreezeMint(source: TupleReader) {
+    return { $$type: 'FreezeMint' as const };
+}
+
+export function storeTupleFreezeMint(source: FreezeMint) {
+    const builder = new TupleBuilder();
+    return builder.build();
+}
+
+export function dictValueParserFreezeMint(): DictionaryValue<FreezeMint> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeFreezeMint(src)).endCell());
+        },
+        parse: (src) => {
+            return loadFreezeMint(src.loadRef().beginParse());
+        }
+    }
+}
+
 export type MintWorkerReward = {
     $$type: 'MintWorkerReward';
     workerAddr: Address;
@@ -1558,47 +1599,6 @@ export function dictValueParserGSTDJetton$Data(): DictionaryValue<GSTDJetton$Dat
     }
 }
 
-export type FreezeMint = {
-    $$type: 'FreezeMint';
-}
-
-export function storeFreezeMint(src: FreezeMint) {
-    return (builder: Builder) => {
-        const b_0 = builder;
-        b_0.storeUint(1022287114, 32);
-    };
-}
-
-export function loadFreezeMint(slice: Slice) {
-    const sc_0 = slice;
-    if (sc_0.loadUint(32) !== 1022287114) { throw Error('Invalid prefix'); }
-    return { $$type: 'FreezeMint' as const };
-}
-
-export function loadTupleFreezeMint(source: TupleReader) {
-    return { $$type: 'FreezeMint' as const };
-}
-
-export function loadGetterTupleFreezeMint(source: TupleReader) {
-    return { $$type: 'FreezeMint' as const };
-}
-
-export function storeTupleFreezeMint(source: FreezeMint) {
-    const builder = new TupleBuilder();
-    return builder.build();
-}
-
-export function dictValueParserFreezeMint(): DictionaryValue<FreezeMint> {
-    return {
-        serialize: (src, builder) => {
-            builder.storeRef(beginCell().store(storeFreezeMint(src)).endCell());
-        },
-        parse: (src) => {
-            return loadFreezeMint(src.loadRef().beginParse());
-        }
-    }
-}
-
 export type JettonData = {
     $$type: 'JettonData';
     totalSupply: bigint;
@@ -2047,6 +2047,7 @@ const GSTDJetton_types: ABIType[] = [
     {"name":"FactoryDeploy","header":1829761339,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"cashback","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"ChangeOwner","header":2174598809,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"newOwner","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"ChangeOwnerOk","header":846932810,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"newOwner","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"FreezeMint","header":1022287114,"fields":[]},
     {"name":"MintWorkerReward","header":3145374392,"fields":[{"name":"workerAddr","type":{"kind":"simple","type":"address","optional":false}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"taskId","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
     {"name":"SetMintAuthority","header":1824345925,"fields":[{"name":"newAuthority","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"BurnNotification","header":1668790143,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"sender","type":{"kind":"simple","type":"address","optional":false}},{"name":"responseDestination","type":{"kind":"simple","type":"address","optional":false}}]},
@@ -2057,7 +2058,6 @@ const GSTDJetton_types: ABIType[] = [
     {"name":"InternalTransfer","header":2886927703,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"from","type":{"kind":"simple","type":"address","optional":false}},{"name":"responseAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"forwardTonAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"forwardPayload","type":{"kind":"simple","type":"slice","optional":false,"format":"remainder"}}]},
     {"name":"Burn","header":1079382365,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"responseDestination","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"GSTDJetton$Data","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"maxSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"mintAuthority","type":{"kind":"simple","type":"address","optional":false}},{"name":"content","type":{"kind":"simple","type":"cell","optional":false}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"workerPoolMinted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"workerPoolMax","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalBurned","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalMintEvents","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"authorityLocked","type":{"kind":"simple","type":"bool","optional":false}},{"name":"initialAllocationDone","type":{"kind":"simple","type":"bool","optional":false}}]},
-    {"name":"FreezeMint","header":1022287114,"fields":[]},
     {"name":"JettonData","header":null,"fields":[{"name":"totalSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"mintable","type":{"kind":"simple","type":"bool","optional":false}},{"name":"adminAddress","type":{"kind":"simple","type":"address","optional":false}},{"name":"jettonContent","type":{"kind":"simple","type":"cell","optional":false}},{"name":"jettonWalletCode","type":{"kind":"simple","type":"cell","optional":false}}]},
     {"name":"WorkerPoolStats","header":null,"fields":[{"name":"minted","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"max","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"remaining","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}}]},
     {"name":"BurnStats","header":null,"fields":[{"name":"totalBurned","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"circulatingSupply","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalMintEvents","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
@@ -2071,6 +2071,7 @@ const GSTDJetton_opcodes = {
     "FactoryDeploy": 1829761339,
     "ChangeOwner": 2174598809,
     "ChangeOwnerOk": 846932810,
+    "FreezeMint": 1022287114,
     "MintWorkerReward": 3145374392,
     "SetMintAuthority": 1824345925,
     "BurnNotification": 1668790143,
@@ -2080,7 +2081,6 @@ const GSTDJetton_opcodes = {
     "Transfer": 1435380091,
     "InternalTransfer": 2886927703,
     "Burn": 1079382365,
-    "FreezeMint": 1022287114,
 }
 
 const GSTDJetton_getters: ABIGetter[] = [

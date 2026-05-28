@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: SettlementMaster
-BoC Size: 2142 bytes
+BoC Size: 2326 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 27
@@ -98,8 +98,8 @@ TL-B: `set_gateway#a85e4bb4 gateway:address = SetGateway`
 Signature: `SetGateway{gateway:address}`
 
 ### SettlementMaster$Data
-TL-B: `_ owner:address gateway:address gstdJetton:address treasury:address protocolFee:address workerShare:uint8 treasuryShare:uint8 protocolShare:uint8 baseRate:coins totalSettled:coins totalGSTDMinted:coins taskCount:uint64 paused:bool minPayment:coins = SettlementMaster`
-Signature: `SettlementMaster{owner:address,gateway:address,gstdJetton:address,treasury:address,protocolFee:address,workerShare:uint8,treasuryShare:uint8,protocolShare:uint8,baseRate:coins,totalSettled:coins,totalGSTDMinted:coins,taskCount:uint64,paused:bool,minPayment:coins}`
+TL-B: `_ owner:address gateway:address gstdJetton:address treasury:address protocolFee:address workerShare:uint8 treasuryShare:uint8 protocolShare:uint8 baseRate:coins totalSettled:coins totalGSTDMinted:coins taskCount:uint64 settledTasks:dict<int, bool> paused:bool minPayment:coins = SettlementMaster`
+Signature: `SettlementMaster{owner:address,gateway:address,gstdJetton:address,treasury:address,protocolFee:address,workerShare:uint8,treasuryShare:uint8,protocolShare:uint8,baseRate:coins,totalSettled:coins,totalGSTDMinted:coins,taskCount:uint64,settledTasks:dict<int, bool>,paused:bool,minPayment:coins}`
 
 ### SettlementStats
 TL-B: `_ totalSettled:coins totalGSTDMinted:coins taskCount:uint64 baseRate:coins = SettlementStats`
@@ -171,9 +171,11 @@ No arguments
 * 8484: Payment below minimum
 * 22722: Must sum to 100
 * 27818: Rate must be positive
+* 32292: Worker address cannot be zero
 * 38610: Settlement paused
 * 45933: Worker share minimum 50%
 * 50353: Only DAO or Gateway can settle
+* 54291: Task already settled
 * 63399: Only DAO
 
 ## Trait inheritance diagram

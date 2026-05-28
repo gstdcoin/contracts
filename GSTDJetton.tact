@@ -11,6 +11,8 @@ import "@stdlib/ownable";
 
 // ── Messages ────────────────────────────────────────────────────────────────
 
+message FreezeMint {}
+
 message MintWorkerReward {
     workerAddr: Address;
     amount: Int as coins;
@@ -272,8 +274,6 @@ contract GSTDJetton with Deployable, Ownable {
     }
 
 }
-// Binary message for freeze_mint (replaces text message for gas efficiency)
-message FreezeMint {}
 
 // ── Standalone helper (does not use contract state) ─────────────────────────
 fun getJettonWalletInit(address: Address, master: Address): StateInit {

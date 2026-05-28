@@ -78,6 +78,9 @@ contract SettlementMaster with Deployable, Ownable {
     totalGSTDMinted: Int as coins; // total GSTD minted to workers
     taskCount: Int as uint64;
 
+    // ── Replay / double-settlement guard ─────────────────────────────────
+    settledTasks: map<Int, Bool>; // taskId => true; prevents paying same task twice
+
     // ── Circuit breaker ─────────────────────────────────────────────────
     paused: Bool;
     minPayment: Int as coins; // Minimum TON per settlement
@@ -118,6 +121,11 @@ contract SettlementMaster with Deployable, Ownable {
     receive(msg: SettleTask) {
         require(sender() == self.owner || sender() == self.gateway, "Only DAO or Gateway can settle");
         require(!self.paused, "Settlement paused");
+        require(msg.workerAddr != newAddress(0, 0), "Worker address cannot be zero");
+
+        // ── Replay guard: each taskId can only be settled once ───────────
+        require(self.settledTasks.get(msg.taskId) == null, "Task already settled");
+        self.settledTasks.set(msg.taskId, true);
 
         let total: Int = context().value - ton("0.1"); // reserve for gas
         require(total >= self.minPayment, "Payment below minimum");
@@ -127,8 +135,12 @@ contract SettlementMaster with Deployable, Ownable {
         let treasuryAmt: Int = total * self.treasuryShare / 100;
         let protocolAmt: Int = total - workerAmt - treasuryAmt; // remainder
 
+        // ── Cap computeUnits to prevent overflow in bonus calculation ────
+        let safeComputeUnits: Int = msg.computeUnits;
+        if (safeComputeUnits > 1000000000) { safeComputeUnits = 1000000000; } // 1B CU max
+
         // ── Cap bonus before stats update ───────────────────────────────
-        let maxAllowedBonus: Int = self.baseRate * msg.computeUnits;
+        let maxAllowedBonus: Int = self.baseRate * safeComputeUnits;
         let actualBonus: Int = msg.gstdBonusAmount;
         if (actualBonus > maxAllowedBonus) { actualBonus = maxAllowedBonus; }
 

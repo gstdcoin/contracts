@@ -65,6 +65,10 @@ Signature: `ChangeOwner{queryId:uint64,newOwner:address}`
 TL-B: `change_owner_ok#327b2b4a queryId:uint64 newOwner:address = ChangeOwnerOk`
 Signature: `ChangeOwnerOk{queryId:uint64,newOwner:address}`
 
+### FreezeMint
+TL-B: `freeze_mint#3ceedd0a  = FreezeMint`
+Signature: `FreezeMint{}`
+
 ### MintWorkerReward
 TL-B: `mint_worker_reward#bb7a9ab8 workerAddr:address amount:coins taskId:uint64 = MintWorkerReward`
 Signature: `MintWorkerReward{workerAddr:address,amount:coins,taskId:uint64}`
@@ -104,10 +108,6 @@ Signature: `Burn{queryId:uint64,amount:coins,responseDestination:address}`
 ### GSTDJetton$Data
 TL-B: `_ totalSupply:coins maxSupply:coins owner:address mintAuthority:address content:^cell mintable:bool workerPoolMinted:coins workerPoolMax:coins totalBurned:coins totalMintEvents:uint64 authorityLocked:bool initialAllocationDone:bool = GSTDJetton`
 Signature: `GSTDJetton{totalSupply:coins,maxSupply:coins,owner:address,mintAuthority:address,content:^cell,mintable:bool,workerPoolMinted:coins,workerPoolMax:coins,totalBurned:coins,totalMintEvents:uint64,authorityLocked:bool,initialAllocationDone:bool}`
-
-### FreezeMint
-TL-B: `freeze_mint#3ceedd0a  = FreezeMint`
-Signature: `FreezeMint{}`
 
 ### JettonData
 TL-B: `_ totalSupply:coins mintable:bool adminAddress:address jettonContent:^cell jettonWalletCode:^cell = JettonData`
