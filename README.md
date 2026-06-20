@@ -36,12 +36,12 @@ GSTD is an open-source decentralized network where anyone can run a node, earn t
            85%    │  10% │   5% │
                   ▼      ▼      ▼
              Worker  Treasury  Burn
-             (node)  (gold)  (GSTD←DEX)
+             (node) (treasury) (GSTD←DEX)
                         │
                         ▼
-               ┌─────────────────┐
-               │  TreasuryGold   │  ← accumulates, backs GSTD
-               └─────────────────┘
+               ┌─────────────────────┐
+               │  EcosystemTreasury  │  ← accumulates, funds buybacks
+               └─────────────────────┘
 
 ┌──────────────┐  ┌─────────────────┐  ┌──────────────────┐
 │  GSTDJetton  │  │  AgentRegistry  │  │   DAOVoting      │
@@ -66,7 +66,7 @@ GSTD is an open-source decentralized network where anyone can run a node, earn t
 | **GSTDJetton** | `GSTDJetton.tact` | TEP-74 Jetton, 1B supply, mint-only by SettlementMaster |
 | **SettlementMaster** | `SettlementMaster.tact` | Revenue split: 85% worker / 10% treasury / 5% buyback-burn |
 | **SettlementRouter** | `SettlementRouter.tact` | Routes any token → GSTD via DeDust/Ston.fi before settlement |
-| **TreasuryGold** | `TreasuryGold.tact` | Accumulates 10% of revenue, backs GSTD with real assets |
+| **EcosystemTreasury** | `EcosystemTreasury.tact` | Accumulates 10% of fees for GSTD buybacks |
 
 ### Governance
 
@@ -113,7 +113,7 @@ Every payment made to use the network (AI inference, RPC endpoints, compute jobs
 User pays 1 TON for AI inference
          │
          ├── 85% (0.85 TON) → Node operator (immediate payment)
-         ├── 10% (0.10 TON) → TreasuryGold (gold reserve)
+         ├── 10% (0.10 TON) → EcosystemTreasury (buybacks)
          └──  5% (0.05 TON) → Buy GSTD on DEX → BURN
 ```
 

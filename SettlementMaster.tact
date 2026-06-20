@@ -3,7 +3,7 @@
 // ============================================================================
 // Receives task payments, splits 85/10/5:
 //   85% → Worker Node (TON)
-//   10% → Treasury (→ Gold Reserve)
+//   10% → Ecosystem Treasury (buybacks)
 //    5% → Protocol Buyback & Burn
 // Also triggers GSTD bonus minting for workers.
 // ============================================================================
@@ -162,7 +162,7 @@ contract SettlementMaster with Deployable, Ownable {
             }.toCell(),
         });
 
-        // ── 2. Send to Treasury (10% TON → Gold reserve) ───────────────
+        // ── 2. Send to Ecosystem Treasury (10%) ────────────────────────
         send(SendParameters {
             to: self.treasury,
             value: treasuryAmt,
