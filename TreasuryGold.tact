@@ -1,9 +1,9 @@
 // ============================================================================
-// TreasuryGold Contract — Gold Reserve Management
+// EcosystemTreasury (legacy) — superseded by EcosystemTreasury.tact
 // ============================================================================
 // Receives 10% of settlement revenue
-// Converts 70% to XAUt (Tether Gold) via DEX
-// Maintains transparent on-chain gold reserve
+// Funds held for ecosystem buybacks (XAUt conversion removed)
+// See EcosystemTreasury.tact for current implementation
 // ============================================================================
 
 import "@stdlib/deploy";
