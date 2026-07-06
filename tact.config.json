@@ -49,6 +49,11 @@
             "name": "GstdBridge",
             "path": "./bridge/ton/GstdBridge.tact",
             "output": "./build/GstdBridge"
+        },
+        {
+            "name": "EcosystemTreasury",
+            "path": "./EcosystemTreasury.tact",
+            "output": "./build/EcosystemTreasury"
         }
     ]
 }

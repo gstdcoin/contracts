@@ -5,7 +5,7 @@
     "scripts": {
         "build": "./node_modules/.bin/tact --config tact.config.json",
         "deploy:testnet": "TON_NETWORK=testnet npx ts-node --project tsconfig.deploy.json scripts/deploy-testnet.ts",
-        "deploy:mainnet": "TON_NETWORK=mainnet npx ts-node --project tsconfig.deploy.json scripts/deploy-testnet.ts",
+        "deploy:mainnet": "TON_NETWORK=mainnet npx ts-node --project tsconfig.deploy.json scripts/deploy-mainnet.ts",
         "verify": "node scripts/verify-contracts.js"
     },
     "dependencies": {
