@@ -1247,6 +1247,7 @@ export type AgentRegistry$Data = {
     cpuCount: bigint;
     gpuCount: bigint;
     headCount: bigint;
+    registeredNodes: Dictionary<bigint, boolean>;
 }
 
 export function storeAgentRegistry$Data(src: AgentRegistry$Data) {
@@ -1264,6 +1265,7 @@ export function storeAgentRegistry$Data(src: AgentRegistry$Data) {
         b_1.storeUint(src.cpuCount, 64);
         b_1.storeUint(src.gpuCount, 64);
         b_1.storeUint(src.headCount, 64);
+        b_1.storeDict(src.registeredNodes, Dictionary.Keys.BigInt(257), Dictionary.Values.Bool());
         b_0.storeRef(b_1.endCell());
     };
 }
@@ -1282,7 +1284,8 @@ export function loadAgentRegistry$Data(slice: Slice) {
     const _cpuCount = sc_1.loadUintBig(64);
     const _gpuCount = sc_1.loadUintBig(64);
     const _headCount = sc_1.loadUintBig(64);
-    return { $$type: 'AgentRegistry$Data' as const, owner: _owner, settlementContract: _settlementContract, totalNodes: _totalNodes, activeNodes: _activeNodes, totalTasksCompleted: _totalTasksCompleted, genesisVersion: _genesisVersion, genesisManifestHash: _genesisManifestHash, edgeCount: _edgeCount, cpuCount: _cpuCount, gpuCount: _gpuCount, headCount: _headCount };
+    const _registeredNodes = Dictionary.load(Dictionary.Keys.BigInt(257), Dictionary.Values.Bool(), sc_1);
+    return { $$type: 'AgentRegistry$Data' as const, owner: _owner, settlementContract: _settlementContract, totalNodes: _totalNodes, activeNodes: _activeNodes, totalTasksCompleted: _totalTasksCompleted, genesisVersion: _genesisVersion, genesisManifestHash: _genesisManifestHash, edgeCount: _edgeCount, cpuCount: _cpuCount, gpuCount: _gpuCount, headCount: _headCount, registeredNodes: _registeredNodes };
 }
 
 export function loadTupleAgentRegistry$Data(source: TupleReader) {
@@ -1297,7 +1300,8 @@ export function loadTupleAgentRegistry$Data(source: TupleReader) {
     const _cpuCount = source.readBigNumber();
     const _gpuCount = source.readBigNumber();
     const _headCount = source.readBigNumber();
-    return { $$type: 'AgentRegistry$Data' as const, owner: _owner, settlementContract: _settlementContract, totalNodes: _totalNodes, activeNodes: _activeNodes, totalTasksCompleted: _totalTasksCompleted, genesisVersion: _genesisVersion, genesisManifestHash: _genesisManifestHash, edgeCount: _edgeCount, cpuCount: _cpuCount, gpuCount: _gpuCount, headCount: _headCount };
+    const _registeredNodes = Dictionary.loadDirect(Dictionary.Keys.BigInt(257), Dictionary.Values.Bool(), source.readCellOpt());
+    return { $$type: 'AgentRegistry$Data' as const, owner: _owner, settlementContract: _settlementContract, totalNodes: _totalNodes, activeNodes: _activeNodes, totalTasksCompleted: _totalTasksCompleted, genesisVersion: _genesisVersion, genesisManifestHash: _genesisManifestHash, edgeCount: _edgeCount, cpuCount: _cpuCount, gpuCount: _gpuCount, headCount: _headCount, registeredNodes: _registeredNodes };
 }
 
 export function loadGetterTupleAgentRegistry$Data(source: TupleReader) {
@@ -1312,7 +1316,8 @@ export function loadGetterTupleAgentRegistry$Data(source: TupleReader) {
     const _cpuCount = source.readBigNumber();
     const _gpuCount = source.readBigNumber();
     const _headCount = source.readBigNumber();
-    return { $$type: 'AgentRegistry$Data' as const, owner: _owner, settlementContract: _settlementContract, totalNodes: _totalNodes, activeNodes: _activeNodes, totalTasksCompleted: _totalTasksCompleted, genesisVersion: _genesisVersion, genesisManifestHash: _genesisManifestHash, edgeCount: _edgeCount, cpuCount: _cpuCount, gpuCount: _gpuCount, headCount: _headCount };
+    const _registeredNodes = Dictionary.loadDirect(Dictionary.Keys.BigInt(257), Dictionary.Values.Bool(), source.readCellOpt());
+    return { $$type: 'AgentRegistry$Data' as const, owner: _owner, settlementContract: _settlementContract, totalNodes: _totalNodes, activeNodes: _activeNodes, totalTasksCompleted: _totalTasksCompleted, genesisVersion: _genesisVersion, genesisManifestHash: _genesisManifestHash, edgeCount: _edgeCount, cpuCount: _cpuCount, gpuCount: _gpuCount, headCount: _headCount, registeredNodes: _registeredNodes };
 }
 
 export function storeTupleAgentRegistry$Data(source: AgentRegistry$Data) {
@@ -1328,6 +1333,7 @@ export function storeTupleAgentRegistry$Data(source: AgentRegistry$Data) {
     builder.writeNumber(source.cpuCount);
     builder.writeNumber(source.gpuCount);
     builder.writeNumber(source.headCount);
+    builder.writeCell(source.registeredNodes.size > 0 ? beginCell().storeDictDirect(source.registeredNodes, Dictionary.Keys.BigInt(257), Dictionary.Values.Bool()).endCell() : null);
     return builder.build();
 }
 
@@ -1718,7 +1724,7 @@ function initNodeIdentity_init_args(src: NodeIdentity_init_args) {
 }
 
 async function NodeIdentity_init(nodeId: bigint, registry: Address, owner: Address, nodeType: bigint, capabilities: bigint, region: bigint) {
-    const __code = Cell.fromHex('b5ee9c7241020901000254000114ff00f4a413f4bcf2c80b0102016202070138d0eda2edfb01d072d721d200d200fa4021103450666f04f86102f8620302eced44d0d200018e2ed3fffa40fa40d307d31fd307d23fd23fd401d0d33fd307d33fd33f30104c104b104a104910481047104610456c1c8e2e810101d700fa40fa40d401d0810101d700810101d700810101d7003010361035103406d1550470530071f823f823e20d925f0de02bd749c21fe3000bf901040601f40bd31f218210a62085d1ba8e61313c0bd3ff31d21fd21fd31f308200ca24f8422cc705f2f45052a05034a002a0f823109b108a10791068105710461035443012c87f01ca0055b050bccbff19ce17ce15cb0713cb1fcb07ca3fca3f01c8cb3f12cb0712cb3f12cb3fcdc9ed54db31e0018210317aa849bae3020b05008831d3ff31d307308200ca24f8422ac705f2f4109b5518c87f01ca0055b050bccbff19ce17ce15cb0713cb1fcb07ca3fca3f01c8cb3f12cb0712cb3f12cb3fcdc9ed54db3100b682f09f31fb7c139e4f1313022f5187d632af397344874ad3c3abb365f301d9d7ab67ba8e30109b5518c87f01ca0055b050bccbff19ce17ce15cb0713cb1fcb07ca3fca3f01c8cb3f12cb0712cb3f12cb3fcdc9ed54e05f0cf2c08201f1a11a6bda89a1a400031c5da7fff481f481a60fa63fa60fa47fa47fa803a1a67fa60fa67fa67e6020982096209420922090208e208c208ad8391c5d020203ae01f481f481a803a1020203ae01020203ae01020203ae0060206c206a20680da2aa08e0a600e3f047f047c5b6787676767676767676767678d835080016547b98547a98547a9853a95edbfc39');
+    const __code = Cell.fromHex('b5ee9c7241020901000263000114ff00f4a413f4bcf2c80b0102016202070138d0eda2edfb01d072d721d200d200fa4021103450666f04f86102f8620302eced44d0d200018e2ed3fffa40fa40d307d31fd307d23fd23fd401d0d33fd307d33fd33f30104c104b104a104910481047104610456c1c8e2e810101d700fa40fa40d401d0810101d700810101d700810101d7003010361035103406d1550470530071f823f823e20d925f0de02bd749c21fe3000bf901040601fc0bd31f218210a62085d1ba8e6f313c0bd3ff31d21fd21fd31f308200ca24f8422cc705f2f45052a020c100923070de5034a020c100923070de02a0f823109b108a10791068105710461035443012c87f01ca0055b050bccbff19ce17ce15cb0713cb1fcb07ca3fca3f01c8cb3f12cb0712cb3f12cb3fcdc9ed54db31e00105009e8210317aa849ba8e4431d3ff31d307308200ca24f8422ac705f2f4109b5518c87f01ca0055b050bccbff19ce17ce15cb0713cb1fcb07ca3fca3f01c8cb3f12cb0712cb3f12cb3fcdc9ed54db31e00b00b682f09f31fb7c139e4f1313022f5187d632af397344874ad3c3abb365f301d9d7ab67ba8e30109b5518c87f01ca0055b050bccbff19ce17ce15cb0713cb1fcb07ca3fca3f01c8cb3f12cb0712cb3f12cb3fcdc9ed54e05f0cf2c08201f1a11a6bda89a1a400031c5da7fff481f481a60fa63fa60fa47fa47fa803a1a67fa60fa67fa67e6020982096209420922090208e208c208ad8391c5d020203ae01f481f481a803a1020203ae01020203ae01020203ae0060206c206a20680da2aa08e0a600e3f047f047c5b6787676767676767676767678d835080016547b98547a98547a9853a97d9dcbdb');
     const builder = beginCell();
     builder.storeUint(0, 1);
     initNodeIdentity_init_args({ $$type: 'NodeIdentity_init_args', nodeId, registry, owner, nodeType, capabilities, region })(builder);
@@ -1763,6 +1769,7 @@ export const NodeIdentity_errors = {
     135: { message: "Code of a contract was not found" },
     136: { message: "Invalid standard address" },
     138: { message: "Not a basechain address" },
+    1880: { message: "Node already registered" },
     27658: { message: "Only owner or Settlement" },
     44404: { message: "Only DAO or Settlement can report violations" },
     48099: { message: "Genesis manifest mismatch — update your node software" },
@@ -1807,6 +1814,7 @@ export const NodeIdentity_errors_backward = {
     "Code of a contract was not found": 135,
     "Invalid standard address": 136,
     "Not a basechain address": 138,
+    "Node already registered": 1880,
     "Only owner or Settlement": 27658,
     "Only DAO or Settlement can report violations": 44404,
     "Genesis manifest mismatch — update your node software": 48099,
@@ -1836,7 +1844,7 @@ const NodeIdentity_types: ABIType[] = [
     {"name":"ReportGenesisViolation","header":1141050109,"fields":[{"name":"nodeId","type":{"kind":"simple","type":"uint","optional":false,"format":256}},{"name":"reporterNodeId","type":{"kind":"simple","type":"uint","optional":false,"format":256}},{"name":"evidenceHash","type":{"kind":"simple","type":"uint","optional":false,"format":256}}]},
     {"name":"SetGenesisManifest","header":2346698756,"fields":[{"name":"version","type":{"kind":"simple","type":"uint","optional":false,"format":32}},{"name":"manifestHash","type":{"kind":"simple","type":"uint","optional":false,"format":256}}]},
     {"name":"SlashNode","header":2934378540,"fields":[{"name":"nodeId","type":{"kind":"simple","type":"uint","optional":false,"format":256}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"reason","type":{"kind":"simple","type":"string","optional":false}}]},
-    {"name":"AgentRegistry$Data","header":null,"fields":[{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"settlementContract","type":{"kind":"simple","type":"address","optional":false}},{"name":"totalNodes","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"activeNodes","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"totalTasksCompleted","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"genesisVersion","type":{"kind":"simple","type":"uint","optional":false,"format":32}},{"name":"genesisManifestHash","type":{"kind":"simple","type":"uint","optional":false,"format":256}},{"name":"edgeCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"cpuCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"gpuCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"headCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
+    {"name":"AgentRegistry$Data","header":null,"fields":[{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"settlementContract","type":{"kind":"simple","type":"address","optional":false}},{"name":"totalNodes","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"activeNodes","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"totalTasksCompleted","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"genesisVersion","type":{"kind":"simple","type":"uint","optional":false,"format":32}},{"name":"genesisManifestHash","type":{"kind":"simple","type":"uint","optional":false,"format":256}},{"name":"edgeCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"cpuCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"gpuCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"headCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"registeredNodes","type":{"kind":"dict","key":"int","value":"bool"}}]},
     {"name":"NodeIdentity$Data","header":null,"fields":[{"name":"nodeId","type":{"kind":"simple","type":"uint","optional":false,"format":256}},{"name":"registry","type":{"kind":"simple","type":"address","optional":false}},{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"nodeType","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"capabilities","type":{"kind":"simple","type":"uint","optional":false,"format":32}},{"name":"region","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"qualityScore","type":{"kind":"simple","type":"int","optional":false,"format":64}},{"name":"uptimeScore","type":{"kind":"simple","type":"int","optional":false,"format":64}},{"name":"tasksCompleted","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"status","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"registeredAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"lastActiveAt","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
     {"name":"NetworkStats","header":null,"fields":[{"name":"totalNodes","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"activeNodes","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"totalTasksCompleted","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"edgeCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"cpuCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"gpuCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"headCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
     {"name":"GenesisManifestData","header":null,"fields":[{"name":"version","type":{"kind":"simple","type":"uint","optional":false,"format":32}},{"name":"manifestHash","type":{"kind":"simple","type":"uint","optional":false,"format":256}}]},

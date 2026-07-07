@@ -107,7 +107,7 @@ contract SettlementMaster with Deployable, Ownable {
         self.taskCount = 0;
 
         self.paused = false;
-        self.minPayment = ton("0.1"); // minimum 0.1 TON per settlement
+        self.minPayment = ton("0.05"); // effective minimum payment after gas reserve (total = value - 0.1 TON gas)
     }
 
     // ── DAO: Set gateway address ─────────────────────────────────────────
@@ -127,7 +127,9 @@ contract SettlementMaster with Deployable, Ownable {
         require(self.settledTasks.get(msg.taskId) == null, "Task already settled");
         self.settledTasks.set(msg.taskId, true);
 
-        let total: Int = context().value - ton("0.1"); // reserve for gas
+        // Gas reserve: 0.1 TON kept for gas + nested sends. Actual minimum call value = 0.15 TON.
+        require(context().value > ton("0.1"), "Insufficient value for gas reserve");
+        let total: Int = context().value - ton("0.1");
         require(total >= self.minPayment, "Payment below minimum");
 
         // Calculate shares

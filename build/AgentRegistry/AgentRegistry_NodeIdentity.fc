@@ -212,8 +212,10 @@ _ %get_node_info() method_id(101685) {
             var $msg'uptimeDelta = in_msg~load_int(32);
             var $msg'tasksDelta = in_msg~load_uint(32);
             throw_unless(51748, ( equal_slices_bits(__tact_context_get_sender(), $self'registry) ));
-            $self'qualityScore = ($self'qualityScore + $msg'qualityDelta);
-            $self'uptimeScore = ($self'uptimeScore + $msg'uptimeDelta);
+            int $newQ = ($self'qualityScore + $msg'qualityDelta);
+            $self'qualityScore = (($newQ < 0) ? 0 : $newQ);
+            int $newU = ($self'uptimeScore + $msg'uptimeDelta);
+            $self'uptimeScore = (($newU < 0) ? 0 : $newU);
             $self'tasksCompleted = ($self'tasksCompleted + $msg'tasksDelta);
             $self'lastActiveAt = $global_now();
             $NodeIdentity$_contract_store(($self'nodeId, $self'registry, $self'owner, $self'nodeType, $self'capabilities, $self'region, $self'qualityScore, $self'uptimeScore, $self'tasksCompleted, $self'status, $self'registeredAt, $self'lastActiveAt));

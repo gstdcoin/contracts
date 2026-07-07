@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: AgentRegistry
-BoC Size: 2131 bytes
+BoC Size: 2287 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 26
@@ -90,8 +90,8 @@ TL-B: `slash_node#aee7102c nodeId:uint256 amount:coins reason:^string = SlashNod
 Signature: `SlashNode{nodeId:uint256,amount:coins,reason:^string}`
 
 ### AgentRegistry$Data
-TL-B: `_ owner:address settlementContract:address totalNodes:uint64 activeNodes:uint64 totalTasksCompleted:uint64 genesisVersion:uint32 genesisManifestHash:uint256 edgeCount:uint64 cpuCount:uint64 gpuCount:uint64 headCount:uint64 = AgentRegistry`
-Signature: `AgentRegistry{owner:address,settlementContract:address,totalNodes:uint64,activeNodes:uint64,totalTasksCompleted:uint64,genesisVersion:uint32,genesisManifestHash:uint256,edgeCount:uint64,cpuCount:uint64,gpuCount:uint64,headCount:uint64}`
+TL-B: `_ owner:address settlementContract:address totalNodes:uint64 activeNodes:uint64 totalTasksCompleted:uint64 genesisVersion:uint32 genesisManifestHash:uint256 edgeCount:uint64 cpuCount:uint64 gpuCount:uint64 headCount:uint64 registeredNodes:dict<int, bool> = AgentRegistry`
+Signature: `AgentRegistry{owner:address,settlementContract:address,totalNodes:uint64,activeNodes:uint64,totalTasksCompleted:uint64,genesisVersion:uint32,genesisManifestHash:uint256,edgeCount:uint64,cpuCount:uint64,gpuCount:uint64,headCount:uint64,registeredNodes:dict<int, bool>}`
 
 ### NodeIdentity$Data
 TL-B: `_ nodeId:uint256 registry:address owner:address nodeType:uint8 capabilities:uint32 region:uint8 qualityScore:int64 uptimeScore:int64 tasksCompleted:uint64 status:uint8 registeredAt:uint64 lastActiveAt:uint64 = NodeIdentity`
@@ -161,6 +161,7 @@ No arguments
 * 135: Code of a contract was not found
 * 136: Invalid standard address
 * 138: Not a basechain address
+* 1880: Node already registered
 * 27658: Only owner or Settlement
 * 44404: Only DAO or Settlement can report violations
 * 48099: Genesis manifest mismatch — update your node software

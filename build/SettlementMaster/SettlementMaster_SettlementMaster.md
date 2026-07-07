@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: SettlementMaster
-BoC Size: 2326 bytes
+BoC Size: 2342 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 27
@@ -169,6 +169,7 @@ No arguments
 * 136: Invalid standard address
 * 138: Not a basechain address
 * 8484: Payment below minimum
+* 16246: Insufficient value for gas reserve
 * 22722: Must sum to 100
 * 27818: Rate must be positive
 * 32292: Worker address cannot be zero

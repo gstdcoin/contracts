@@ -72,6 +72,9 @@ contract AgentRegistry with Deployable, Ownable {
     gpuCount: Int as uint64;
     headCount: Int as uint64;
 
+    // ── Duplicate guard — prevents inflating counters via re-registration ─
+    registeredNodes: map<Int, Bool>;
+
     init(owner: Address, settlement: Address) {
         self.owner = owner;
         self.settlementContract = settlement;
@@ -91,6 +94,9 @@ contract AgentRegistry with Deployable, Ownable {
 
     // ── Register new node ───────────────────────────────────────────────
     receive(msg: RegisterNode) {
+        // Prevent duplicate registration — re-registering would double-count stats
+        require(self.registeredNodes.get(msg.nodeId) == null, "Node already registered");
+
         // Verify Genesis hash matches current manifest
         if (self.genesisManifestHash != 0) {
             require(
@@ -98,6 +104,8 @@ contract AgentRegistry with Deployable, Ownable {
                 "Genesis manifest mismatch — update your node software",
             );
         }
+
+        self.registeredNodes.set(msg.nodeId, true);
 
         // Deploy individual Node Identity contract
         let nodeInit: StateInit = initOf NodeIdentity(
@@ -163,7 +171,7 @@ contract AgentRegistry with Deployable, Ownable {
             sender() == self.owner || sender() == self.settlementContract,
             "Only DAO or Settlement can report violations",
         );
-        self.activeNodes = self.activeNodes - 1;
+        if (self.activeNodes > 0) { self.activeNodes = self.activeNodes - 1; }
         let nodeAddr: Address = self.getNodeAddress(msg.nodeId);
         send(SendParameters {
             to: nodeAddr,
@@ -270,8 +278,10 @@ contract NodeIdentity {
 
     receive(msg: UpdateReputation) {
         require(sender() == self.registry, "Only registry");
-        self.qualityScore = self.qualityScore + msg.qualityDelta;
-        self.uptimeScore = self.uptimeScore + msg.uptimeDelta;
+        let newQ: Int = self.qualityScore + msg.qualityDelta;
+        self.qualityScore = newQ < 0 ? 0 : newQ; // floor at 0 — score cannot go negative
+        let newU: Int = self.uptimeScore + msg.uptimeDelta;
+        self.uptimeScore = newU < 0 ? 0 : newU;
         self.tasksCompleted = self.tasksCompleted + msg.tasksDelta;
         self.lastActiveAt = now();
     }

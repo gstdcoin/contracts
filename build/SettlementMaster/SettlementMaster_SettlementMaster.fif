@@ -228,7 +228,7 @@ PROGRAM{
     s7 s9 XCHG
     8 ROLL
     FALSE
-    100000000 PUSHINT
+    50000000 PUSHINT
   }>
   $SettlementMaster$_contract_load PROCINLINE:<{
     c4 PUSH
@@ -545,6 +545,12 @@ PROGRAM{
       TRUE
       1 PUSHINT
       __tact_dict_set_int_int INLINECALLDICT
+      16246 PUSHINT
+      __tact_context_get INLINECALLDICT
+      $Context$_get_value INLINECALLDICT
+      100000000 PUSHINT
+      GREATER
+      THROWANYIFNOT
       __tact_context_get INLINECALLDICT
       $Context$_get_value INLINECALLDICT
       100000000 PUSHINT

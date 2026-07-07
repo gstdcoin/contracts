@@ -198,8 +198,22 @@ PROGRAM{
         THROWANYIFNOT
         s5 s2 XCHG2
         ADD
+        DUP
+        0 LESSINT
+        IF:<{
+          DROP
+          0 PUSHINT
+        }>ELSE<{
+        }>
         s3 s4 XCHG2
         ADD
+        DUP
+        0 LESSINT
+        IF:<{
+          DROP
+          0 PUSHINT
+        }>ELSE<{
+        }>
         s0 s2 XCHG
         ADD
             NOW

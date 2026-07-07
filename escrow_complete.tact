@@ -103,6 +103,7 @@ contract Escrow with Deployable, Ownable {
         let totalPayout: Int = msg.platformFee + msg.executorReward;
         require(totalPayout > 0, "Payout must be positive");
         require(myBalance() >= totalPayout + ton("0.1"), "Insufficient contract balance");
+        require(self.totalValueLocked >= totalPayout, "Payout exceeds tracked locked balance");
 
         // Update tracking
         self.totalWithdrawals = self.totalWithdrawals + 1;
