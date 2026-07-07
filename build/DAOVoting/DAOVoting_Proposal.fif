@@ -1,4 +1,4 @@
-// automatically generated from `@stdlib/std/stdlib.fc` `/home/bot/gstdcontracts/build/DAOVoting/DAOVoting_Proposal.fc` 
+// automatically generated from `@stdlib/std/stdlib.fc` `/home/bot/contracts/build/DAOVoting/DAOVoting_Proposal.fc` 
 PROGRAM{
   DECLPROC __tact_context_get
   DECLPROC __tact_context_get_sender
