@@ -1,0 +1,26 @@
+{
+  "network": "mainnet",
+  "phase": 1,
+  "deployedAt": "2026-07-08T12:12:06.340Z",
+  "deployer": "EQCL0U7TH1GQbOB0o-BeiKm6gyBCma5OS6JOIJGobKkJJWCh",
+  "admin": "UQCkXFlNRsubUp7Uh7lg_ScUqLCiff1QCLsdQU0a7kphqQED",
+  "gateway": "UQB03R2DuNR9LKkW1AxbWUDsegAjxCRVwRimZlyNQX2Gc8ve",
+  "contracts": {
+    "GSTDJetton": "EQDv6cYW9nNiKjN3Nwl8D6ABjUiH1gYfWVGZhfP7-9tZskTO",
+    "EcosystemTreasury": "EQAbtTCsty8-gpX-45eotGWxnYG1c7ew7NFsZ9LJBRiv_Ii_",
+    "SettlementMaster": "EQAhuR_cEaIkRqs4gvgXSD-Qw2FRUkkBUZQkTBrFT5n-ZrSS",
+    "Escrow": "EQDqdyFsruwXzlScIVM0c7LKbBb4EOgwLeFO4bpNnuwc7rTF"
+  },
+  "phase2_todo": [
+    "Deploy DAOVoting",
+    "Deploy AgentRegistry",
+    "Transfer SettlementMaster.owner to DAOVoting",
+    "Transfer EcosystemTreasury.owner to DAOVoting",
+    "Deploy TreasuryGold + wire DEX swap integration"
+  ],
+  "phase3_todo": [
+    "Deploy GstdBridge (implement swap-in first)",
+    "Deploy ProviderRegistry (fix Jetton integration first)",
+    "Deploy SlashMechanics (fix message type mismatch first)"
+  ]
+}
