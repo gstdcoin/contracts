@@ -1,9 +1,9 @@
 // ============================================================================
-// EcosystemTreasury (legacy) — superseded by EcosystemTreasury.tact
+// TreasuryGold — Phase 2 Gold Reserve Contract
 // ============================================================================
-// Receives 10% of settlement revenue
-// Funds held for ecosystem buybacks (XAUt conversion removed)
-// See EcosystemTreasury.tact for current implementation
+// Receives TON, converts a configurable ratio into XAUt (Tether Gold) via DEX.
+// NOT deployed in Phase 1 — use EcosystemTreasury.tact for Phase 1.
+// Phase 2 upgrade: enables gold-backed ecosystem reserve.
 // ============================================================================
 
 import "@stdlib/deploy";

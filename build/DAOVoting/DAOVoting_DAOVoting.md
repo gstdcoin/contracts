@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: DAOVoting
-BoC Size: 2590 bytes
+BoC Size: 2781 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 24
@@ -160,6 +160,7 @@ No arguments
 * 41880: Voting still active
 * 42435: Not authorized
 * 48241: Vote did not pass
+* 48348: Only DAO can execute
 * 51706: Quorum not reached
 * 56882: Only owner/DAO multisig
 * 57030: Must attach min 1 TON as proposal stake

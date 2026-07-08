@@ -182,6 +182,11 @@ cell __gen_cell_cell_5f2b8f45c43af65612f91654a69e2eacc1cb8634a2bb0b2e78ee108a785
     B{b5ee9c7241010101001900002e00000000766f74655f7374616b655f72657475726e656422862cd2} B>boc PUSHREF
 """;
 
+;; Cell tTPfXrTkZlUb+RQ7skNGAVE+zkOUotGhWJ3l828fvew=
+cell __gen_cell_cell_b533df5eb4e466551bf9143bb2434601513ece4394a2d1a1589de5f36f1fbdec() asm """
+    B{b5ee9c7241010101001900002e00000000657865637574696f6e5f636f6e6669726d65643180745a} B>boc PUSHREF
+""";
+
 ;; DAOVoting_Proposal.storage.fc
 ;;
 ;; Type: Context
@@ -432,12 +437,14 @@ _ %get_voter_stake(slice $voter) method_id(109267) {
     }
     ;; Receive "execute" message
     if (text_op == 0xb14fdeec46f0654aee9d76d3e481c5026f579fad38ebfd74a2bb463891c05838) {
+        throw_unless(48348, ( equal_slices_bits(__tact_context_get_sender(), $self'dao) ));
         throw_unless(15354, ( (($self'status == 0)) ? (true) : (($self'status == 1)) ));
         throw_unless(62971, ($global_now() >= $self'executionUnlocksAt));
         throw_unless(48241, ($self'votesFor > $self'votesAgainst));
         throw_unless(51706, (($self'votesFor + $self'votesAgainst) >= $self'quorumStake));
         $self'status = 3;
         $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'targetContract, 100000000, 2, false, $self'payload));
+        $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'dao, 20000000, 2, false, __gen_cell_cell_b533df5eb4e466551bf9143bb2434601513ece4394a2d1a1589de5f36f1fbdec()));
         $Proposal$_contract_store(($self'proposalId, $self'dao, $self'proposer, $self'targetContract, $self'payload, $self'votesFor, $self'votesAgainst, $self'voterCount, $self'quorumStake, $self'voters, $self'createdAt, $self'votingEndsAt, $self'executionUnlocksAt, $self'status));
         return ();
     }

@@ -74,10 +74,14 @@ contract SettlementRouter with Deployable, Ownable {
 
     // ── Callback from DEX / DLN after swap ──
     receive(msg: SwapResult) {
-        // Assert sender is recognized DEX or active Sovereign DLN vault
-        // ...
-        
-        // Forward the newly acquired GSTD to the target destination 
+        // Only recognized DEX or DLN vault can send swap results.
+        // Prevents anyone from crafting a fake SwapResult to manipulate routing.
+        require(
+            sender() == self.deDustVault || sender() == self.stonfiRouter,
+            "Only registered DEX can send swap results"
+        );
+
+        // Forward the newly acquired GSTD to the target destination
         // with the original payload attached.
         if (msg.targetDestination != newAddress(0,0)) {
             send(SendParameters{

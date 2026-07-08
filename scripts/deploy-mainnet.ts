@@ -6,7 +6,7 @@
  *
  * Deploy order:
  *   1. GSTDJetton        — the GSTD token (TEP-74)
- *   2. TreasuryGold      — collects 10% fee (DEX swap is manual Phase 1)
+ *   2. EcosystemTreasury — collects 10% fee (Phase 1: simple DAO-managed treasury)
  *   3. SettlementMaster  — 85/10/5 task payment split + GSTD minting
  *   4. Escrow            — task payment escrow for node operators
  *
@@ -27,10 +27,10 @@ import * as fs from 'fs';
 import * as readline from 'readline';
 import { Address, beginCell, Cell, contractAddress, toNano, TonClient, WalletContractV4 } from '@ton/ton';
 import { mnemonicToPrivateKey } from '@ton/crypto';
-import { GSTDJetton }       from '../build/GSTDJetton/GSTDJetton_GSTDJetton';
-import { SettlementMaster } from '../build/SettlementMaster/SettlementMaster_SettlementMaster';
-import { TreasuryGold }     from '../build/TreasuryGold/TreasuryGold_TreasuryGold';
-import { Escrow }           from '../build/EscrowComplete/EscrowComplete_Escrow';
+import { GSTDJetton }          from '../build/GSTDJetton/GSTDJetton_GSTDJetton';
+import { SettlementMaster }    from '../build/SettlementMaster/SettlementMaster_SettlementMaster';
+import { EcosystemTreasury }   from '../build/EcosystemTreasury/EcosystemTreasury_EcosystemTreasury';
+import { Escrow }              from '../build/EscrowComplete/EscrowComplete_Escrow';
 
 const NETWORK      = process.env.TON_NETWORK || '';
 const MNEMONIC     = process.env.DEPLOYER_MNEMONIC || '';
@@ -113,7 +113,7 @@ async function main() {
     console.log(`║  Admin wallet : ${ADMIN_WALLET.slice(0,20)}...`);
     console.log(`║  Gateway      : ${GATEWAY_ADDR.slice(0,20)}...`);
     console.log(`║  Allocations  : Team ${TEAM_AMOUNT}M / Eco ${ECOSYSTEM_AMOUNT}M / Liq ${LIQUIDITY_AMOUNT}M GSTD`);
-    console.log('║  Contracts    : GSTDJetton, TreasuryGold, Settlement, Escrow');
+    console.log('║  Contracts    : GSTDJetton, EcosystemTreasury, Settlement, Escrow');
     console.log('╚══════════════════════════════════════════════════════╝\n');
     console.log('⚠️  WARNING: This deploys to TON MAINNET with real funds.');
     console.log('   SetMintAuthority is IRREVERSIBLE after this script completes.\n');
@@ -157,25 +157,21 @@ async function main() {
         console.log(`   ✓  Already deployed: ${jettonAddr}`);
     }
 
-    // ── 2. TreasuryGold ───────────────────────────────────────────────────
-    console.log('\n2️⃣  Deploying TreasuryGold (Phase 1: manual gold conversion)...');
-    // Phase 1: DEX router = zero address, gold conversion is manual by admin
-    const ZERO_ADDR = Address.parse('EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c');
-    const XAUT_ADDR = process.env.XAUT_JETTON_MASTER
-        ? Address.parse(process.env.XAUT_JETTON_MASTER)
-        : ZERO_ADDR;
-
-    const treasuryInit = await TreasuryGold.init(adminAddr, XAUT_ADDR, ZERO_ADDR);
+    // ── 2. EcosystemTreasury ──────────────────────────────────────────────
+    // Phase 1 uses the simple EcosystemTreasury (accepts "deposit", DAO withdraws).
+    // TreasuryGold (XAUt conversion) is Phase 2 — requires live DEX integration.
+    console.log('\n2️⃣  Deploying EcosystemTreasury...');
+    const treasuryInit = await EcosystemTreasury.init(adminAddr);
     const treasuryAddr = contractAddress(0, treasuryInit);
-    deployed.TreasuryGold = treasuryAddr.toString();
+    deployed.EcosystemTreasury = treasuryAddr.toString();
 
     if (!(await client.isContractDeployed(treasuryAddr))) {
-        const treasury = client.open(new TreasuryGold(treasuryAddr, treasuryInit));
+        const treasury = client.open(new EcosystemTreasury(treasuryAddr, treasuryInit));
         await treasury.send(provider.sender(keyPair.secretKey), { value: toNano('0.3') }, {
             $$type: 'Deploy', queryId: BigInt(Date.now()),
         });
         await waitSeqno(provider, seqno++);
-        console.log(`   ✅ TreasuryGold: ${treasuryAddr}`);
+        console.log(`   ✅ EcosystemTreasury: ${treasuryAddr}`);
     } else {
         console.log(`   ✓  Already deployed: ${treasuryAddr}`);
     }
@@ -274,11 +270,11 @@ async function main() {
         gateway:     GATEWAY_ADDR,
         contracts:   deployed,
         phase2_todo: [
-            'Deploy DAOVoting (fix TON-weighted voting first)',
-            'Deploy AgentRegistry (fix counter underflow first)',
+            'Deploy DAOVoting',
+            'Deploy AgentRegistry',
             'Transfer SettlementMaster.owner to DAOVoting',
-            'Transfer TreasuryGold.owner to DAOVoting',
-            'Implement TreasuryGold DEX swap integration',
+            'Transfer EcosystemTreasury.owner to DAOVoting',
+            'Deploy TreasuryGold + wire DEX swap integration',
         ],
         phase3_todo: [
             'Deploy GstdBridge (implement swap-in first)',
@@ -301,7 +297,7 @@ async function main() {
     console.log('  2. Set env vars in Vercel dashboard:');
     console.log(`       NEXT_PUBLIC_TON_JETTON=${deployed.GSTDJetton}`);
     console.log(`       NEXT_PUBLIC_SETTLEMENT=${deployed.SettlementMaster}`);
-    console.log(`       NEXT_PUBLIC_TREASURY=${deployed.TreasuryGold}`);
+    console.log(`       NEXT_PUBLIC_TREASURY=${deployed.EcosystemTreasury}`);
     console.log(`       NEXT_PUBLIC_ESCROW=${deployed.Escrow}`);
     console.log('  3. Update gstdbot env: GSTD_JETTON_ADDRESS + GSTD_SETTLEMENT_ADDRESS');
     console.log(`\n📄 Record saved: ${outPath}`);

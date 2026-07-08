@@ -1,6 +1,6 @@
-// GSTD Platform — Escrow Smart Contract
-// Handles task compensation distribution via pull-model
-// Worker deposits → Task completion → Owner authorizes payout → Split 95/5
+// DEPRECATED — superseded by escrow_complete.tact
+// escrow_complete.tact adds nonce replay protection, TVL tracking, and multi-task batch support.
+// This file is NOT deployed. Kept for reference only.
 
 import "@stdlib/deploy";
 import "@stdlib/ownable";

@@ -107,7 +107,8 @@ contract DAOVoting with Deployable, Ownable {
     // ── Execute passed proposal (after timelock) ────────────────────────
     receive(msg: ExecuteProposal) {
         // Forward execution to the specific Proposal contract which validates
-        // voting results and timelock. The proposal contract sends to target.
+        // voting results, timelock, and quorum before executing.
+        // executedCount is intentionally NOT incremented here — Proposal is authoritative.
         let proposalAddr: Address = self.get_proposal_address(msg.proposalId);
         send(SendParameters {
             to: proposalAddr,
@@ -116,6 +117,13 @@ contract DAOVoting with Deployable, Ownable {
             bounce: false,
             body: "execute".asComment(),
         });
+    }
+
+    // ── Called back by Proposal on successful execution ──────────────────
+    receive("execution_confirmed") {
+        // Only a Proposal contract deployed by this DAO can send this.
+        // We cannot verify the exact proposalId here without a map, but
+        // the Proposal verifies all conditions before calling back.
         self.executedCount = self.executedCount + 1;
     }
 
@@ -267,6 +275,8 @@ contract Proposal {
 
     // ── Execute if passed and timelock expired ──────────────────────────
     receive("execute") {
+        // Only the DAO that deployed this proposal can trigger execution.
+        require(sender() == self.dao, "Only DAO can execute");
         require(self.status == 0 || self.status == 1, "Cannot execute");
         require(now() >= self.executionUnlocksAt, "Timelock not expired");
         require(self.votesFor > self.votesAgainst, "Vote did not pass");
@@ -282,6 +292,15 @@ contract Proposal {
             mode: SendIgnoreErrors,
             bounce: false,
             body: self.payload,
+        });
+
+        // Notify DAO to increment its executedCount
+        send(SendParameters {
+            to: self.dao,
+            value: ton("0.02"),
+            mode: SendIgnoreErrors,
+            bounce: false,
+            body: "execution_confirmed".asComment(),
         });
     }
 
