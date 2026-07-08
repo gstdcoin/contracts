@@ -57,6 +57,10 @@ message SetGateway {
     gateway: Address;
 }
 
+message SetOwnJettonWallet {
+    wallet: Address; // SM's own GSTD jetton wallet (pre-funded by admin)
+}
+
 // ── Settlement Master Contract ──────────────────────────────────────────────
 
 contract SettlementMaster with Deployable, Ownable {
@@ -75,8 +79,10 @@ contract SettlementMaster with Deployable, Ownable {
     // ── Economics ────────────────────────────────────────────────────────
     baseRate: Int as coins; // nanoGSTD per compute unit
     totalSettled: Int as coins; // total TON settled
-    totalGSTDMinted: Int as coins; // total GSTD minted to workers
+    totalGSTDMinted: Int as coins; // total GSTD sent to workers (from pool, not minted)
     taskCount: Int as uint64;
+    // SM's own GSTD jetton wallet — set by admin after deploy, pre-funded with reward pool
+    ownJettonWallet: Address;
 
     // ── Replay / double-settlement guard ─────────────────────────────────
     settledTasks: map<Int, Bool>; // taskId => true; prevents paying same task twice
@@ -108,6 +114,7 @@ contract SettlementMaster with Deployable, Ownable {
 
         self.paused = false;
         self.minPayment = ton("0.05"); // effective minimum payment after gas reserve (total = value - 0.1 TON gas)
+        self.ownJettonWallet = newAddress(0, 0); // set via SetOwnJettonWallet after deploy
     }
 
     // ── DAO: Set gateway address ─────────────────────────────────────────
@@ -182,18 +189,25 @@ contract SettlementMaster with Deployable, Ownable {
             body: "buyback".asComment(),
         });
 
-        // ── 4. Mint GSTD bonus to worker (capped by computeUnits × baseRate) ─
-        if (actualBonus > 0) {
+        // ── 4. Transfer GSTD bonus to worker from pre-funded pool ──────────
+        // Uses standard TEP-74 Jetton Transfer (opcode 0xf8a7ea5).
+        // Admin must pre-fund ownJettonWallet with GSTD before bonuses activate.
+        if (actualBonus > 0 && self.ownJettonWallet != newAddress(0, 0)) {
             send(SendParameters {
-                to: self.gstdJetton,
+                to: self.ownJettonWallet,
                 value: ton("0.12"),
                 mode: SendIgnoreErrors,
                 bounce: false,
-                body: MintWorkerReward {
-                    workerAddr: msg.workerAddr,
-                    amount: actualBonus,
-                    taskId: msg.taskId,
-                }.toCell(),
+                body: beginCell()
+                    .storeUint(0xf8a7ea5, 32)      // Transfer opcode (TEP-74)
+                    .storeUint(msg.taskId, 64)      // queryId
+                    .storeCoins(actualBonus)         // amount
+                    .storeAddress(msg.workerAddr)    // destination
+                    .storeAddress(msg.workerAddr)    // response_destination
+                    .storeBit(false)                 // no custom payload
+                    .storeCoins(ton("0.01"))         // forward_ton_amount (notify worker)
+                    .storeBit(false)                 // no forward payload
+                    .endCell(),
             });
         }
     }
@@ -209,6 +223,14 @@ contract SettlementMaster with Deployable, Ownable {
             bounce: false,
             body: "bounced_worker_payment".asComment(),
         });
+    }
+
+    // ── Admin: Set SM's own GSTD jetton wallet ──────────────────────────
+    // Call once after deploy. Wallet address = compute_jetton_wallet(SM_address, gstdJetton).
+    // Then transfer GSTD to that wallet as the worker reward pool.
+    receive(msg: SetOwnJettonWallet) {
+        require(sender() == self.owner, "Only DAO");
+        self.ownJettonWallet = msg.wallet;
     }
 
     // ── DAO Governance: Update revenue split ────────────────────────────

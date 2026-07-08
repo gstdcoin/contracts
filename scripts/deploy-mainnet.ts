@@ -1,53 +1,41 @@
 /**
  * GSTD Phase 1 Mainnet Deployment
  *
- * Deploys ONLY the Phase 1 contracts (token + settlement + escrow).
- * DAOVoting, AgentRegistry, Bridge are Phase 2/3 — not deployed here.
+ * The GSTD token (EQDv6cYW9nNiKjN3Nwl8D6ABjUiH1gYfWVGZhfP7-9tZskTO) already exists
+ * on mainnet with 1B supply fully minted and admin key burned. We do NOT redeploy it.
  *
  * Deploy order:
- *   1. GSTDJetton        — the GSTD token (TEP-74)
- *   2. EcosystemTreasury — collects 10% fee (Phase 1: simple DAO-managed treasury)
- *   3. SettlementMaster  — 85/10/5 task payment split + GSTD minting
- *   4. Escrow            — task payment escrow for node operators
+ *   1. EcosystemTreasury — collects 10% fee (Phase 1: simple DAO-managed treasury)
+ *   2. SettlementMaster  — 85/10/5 TON split + GSTD pool transfer for worker bonuses
+ *   3. Escrow            — task payment escrow for node operators
  *
  * Post-deploy wiring:
- *   - SetMintAuthority: GSTDJetton ← SettlementMaster (ONE-TIME, irreversible)
  *   - SetGateway: SettlementMaster ← GATEWAY_ADDRESS (your orchestrator)
- *   - MintInitialAllocation: team/ecosystem/liquidity wallets
+ *   - SetOwnJettonWallet: SettlementMaster ← SM's computed GSTD jetton wallet address
+ *   - Transfer GSTD from your wallet to SM's jetton wallet (worker reward pool)
  *
  * Usage:
- *   cp .env.example .env    # fill all values
  *   npm run build           # compile contracts first
- *   npx ts-node scripts/deploy-mainnet.ts
+ *   npx ts-node --project tsconfig.deploy.json scripts/deploy-mainnet.ts
  */
 
 import 'dotenv/config';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as readline from 'readline';
-import { Address, beginCell, Cell, contractAddress, toNano, TonClient, WalletContractV4 } from '@ton/ton';
+import { Address, beginCell, contractAddress, toNano, TonClient, WalletContractV4 } from '@ton/ton';
 import { mnemonicToPrivateKey } from '@ton/crypto';
-import { GSTDJetton }          from '../build/GSTDJetton/GSTDJetton_GSTDJetton';
 import { SettlementMaster }    from '../build/SettlementMaster/SettlementMaster_SettlementMaster';
 import { EcosystemTreasury }   from '../build/EcosystemTreasury/EcosystemTreasury_EcosystemTreasury';
 import { Escrow }              from '../build/EscrowComplete/EscrowComplete_Escrow';
+
+// Existing GSTD token — 1B minted, admin burned, DO NOT redeploy
+const EXISTING_GSTD_JETTON = 'EQDv6cYW9nNiKjN3Nwl8D6ABjUiH1gYfWVGZhfP7-9tZskTO';
 
 const NETWORK      = process.env.TON_NETWORK || '';
 const MNEMONIC     = process.env.DEPLOYER_MNEMONIC || '';
 const ADMIN_WALLET = process.env.ADMIN_WALLET || '';
 const GATEWAY_ADDR = process.env.GATEWAY_ADDRESS || '';  // orchestrator (gstdbot backend)
-
-// Allocation wallets (set in .env)
-const TEAM_WALLET      = process.env.TEAM_WALLET      || '';
-const ECOSYSTEM_WALLET = process.env.ECOSYSTEM_WALLET || '';
-const LIQUIDITY_WALLET = process.env.LIQUIDITY_WALLET || '';
-
-// Allocation amounts (GSTD, human-readable — script converts to nanoGSTD)
-const TEAM_AMOUNT      = BigInt(process.env.TEAM_AMOUNT      || '100000000');  // 100M
-const ECOSYSTEM_AMOUNT = BigInt(process.env.ECOSYSTEM_AMOUNT || '200000000');  // 200M
-const LIQUIDITY_AMOUNT = BigInt(process.env.LIQUIDITY_AMOUNT || '100000000');  // 100M
-
-const NANO = BigInt('1000000000');
 
 const ENDPOINTS: Record<string, string> = {
     mainnet: 'https://toncenter.com/api/v2/jsonRPC',
@@ -75,18 +63,6 @@ function confirm(question: string): Promise<boolean> {
     });
 }
 
-function buildMetadataCell(): Cell {
-    return beginCell()
-        .storeUint(0, 8)
-        .storeStringTail(JSON.stringify({
-            name:        'GSTD Token',
-            description: 'AI Compute Network Governance & Utility Token',
-            symbol:      'GSTD',
-            decimals:    '9',
-            image:       'https://app.gstdtoken.com/gstd-logo.png',
-        }))
-        .endCell();
-}
 
 async function main() {
     // ── Pre-flight checks ─────────────────────────────────────────────────
@@ -95,30 +71,28 @@ async function main() {
         console.error('   For testnet use: npx ts-node scripts/deploy-testnet.ts');
         process.exit(1);
     }
-    const missing = ['DEPLOYER_MNEMONIC', 'ADMIN_WALLET', 'GATEWAY_ADDRESS',
-                     'TEAM_WALLET', 'ECOSYSTEM_WALLET', 'LIQUIDITY_WALLET']
+    const missing = ['DEPLOYER_MNEMONIC', 'ADMIN_WALLET', 'GATEWAY_ADDRESS']
         .filter(k => !process.env[k]);
     if (missing.length) {
         console.error('❌ Missing env vars:', missing.join(', '));
-        console.error('   Copy .env.example → .env and fill all values');
         process.exit(1);
     }
 
     const adminAddr   = Address.parse(ADMIN_WALLET);
     const gatewayAddr = Address.parse(GATEWAY_ADDR);
+    const gstdJetton  = Address.parse(EXISTING_GSTD_JETTON);
 
     console.log('\n╔══════════════════════════════════════════════════════╗');
     console.log('║   GSTD Phase 1 — MAINNET DEPLOYMENT                 ║');
     console.log('╠══════════════════════════════════════════════════════╣');
     console.log(`║  Admin wallet : ${ADMIN_WALLET.slice(0,20)}...`);
     console.log(`║  Gateway      : ${GATEWAY_ADDR.slice(0,20)}...`);
-    console.log(`║  Allocations  : Team ${TEAM_AMOUNT}M / Eco ${ECOSYSTEM_AMOUNT}M / Liq ${LIQUIDITY_AMOUNT}M GSTD`);
-    console.log('║  Contracts    : GSTDJetton, EcosystemTreasury, Settlement, Escrow');
+    console.log(`║  GSTD token   : ${EXISTING_GSTD_JETTON.slice(0,20)}... (existing)`);
+    console.log('║  Deploying    : EcosystemTreasury, SettlementMaster, Escrow');
     console.log('╚══════════════════════════════════════════════════════╝\n');
-    console.log('⚠️  WARNING: This deploys to TON MAINNET with real funds.');
-    console.log('   SetMintAuthority is IRREVERSIBLE after this script completes.\n');
+    console.log('⚠️  This deploys to TON MAINNET with real funds.\n');
 
-    const ok = await confirm('Have you verified the testnet deployment and are ready for mainnet?');
+    const ok = await confirm('Ready to deploy to mainnet?');
     if (!ok) { console.log('Aborted.'); process.exit(0); }
 
     // ── Connect ───────────────────────────────────────────────────────────
@@ -132,30 +106,15 @@ async function main() {
     const balance = await client.getBalance(deployer);
     console.log(`Balance: ${Number(balance) / 1e9} TON`);
 
-    if (Number(balance) < toNano('5')) {
-        console.error('❌ Insufficient balance. Need ≥ 5 TON for gas.');
+    if (Number(balance) < toNano('2')) {
+        console.error('❌ Insufficient balance. Need ≥ 2 TON for gas.');
         process.exit(1);
     }
 
     let seqno = await provider.getSeqno();
-    const deployed: Record<string, string> = {};
-
-    // ── 1. GSTDJetton ─────────────────────────────────────────────────────
-    console.log('\n1️⃣  Deploying GSTDJetton...');
-    const jettonInit = await GSTDJetton.init(adminAddr, buildMetadataCell());
-    const jettonAddr = contractAddress(0, jettonInit);
-    deployed.GSTDJetton = jettonAddr.toString();
-
-    if (!(await client.isContractDeployed(jettonAddr))) {
-        const jetton = client.open(new GSTDJetton(jettonAddr, jettonInit));
-        await jetton.send(provider.sender(keyPair.secretKey), { value: toNano('0.5') }, {
-            $$type: 'Deploy', queryId: BigInt(Date.now()),
-        });
-        await waitSeqno(provider, seqno++);
-        console.log(`   ✅ GSTDJetton: ${jettonAddr}`);
-    } else {
-        console.log(`   ✓  Already deployed: ${jettonAddr}`);
-    }
+    const deployed: Record<string, string> = {
+        GSTDJetton: EXISTING_GSTD_JETTON, // existing — not redeployed
+    };
 
     // ── 2. EcosystemTreasury ──────────────────────────────────────────────
     // Phase 1 uses the simple EcosystemTreasury (accepts "deposit", DAO withdraws).
@@ -176,9 +135,9 @@ async function main() {
         console.log(`   ✓  Already deployed: ${treasuryAddr}`);
     }
 
-    // ── 3. SettlementMaster ───────────────────────────────────────────────
-    console.log('\n3️⃣  Deploying SettlementMaster...');
-    const settlementInit = await SettlementMaster.init(adminAddr, jettonAddr, treasuryAddr, adminAddr);
+    // ── 2. SettlementMaster ───────────────────────────────────────────────
+    console.log('\n2️⃣  Deploying SettlementMaster...');
+    const settlementInit = await SettlementMaster.init(adminAddr, gstdJetton, treasuryAddr, adminAddr);
     const settlementAddr = contractAddress(0, settlementInit);
     deployed.SettlementMaster = settlementAddr.toString();
 
@@ -193,8 +152,8 @@ async function main() {
         console.log(`   ✓  Already deployed: ${settlementAddr}`);
     }
 
-    // ── 4. Escrow ─────────────────────────────────────────────────────────
-    console.log('\n4️⃣  Deploying Escrow...');
+    // ── 3. Escrow ─────────────────────────────────────────────────────────
+    console.log('\n3️⃣  Deploying Escrow...');
     const escrowInit = await Escrow.init(adminAddr, treasuryAddr);
     const escrowAddr = contractAddress(0, escrowInit);
     deployed.Escrow = escrowAddr.toString();
@@ -210,47 +169,8 @@ async function main() {
         console.log(`   ✓  Already deployed: ${escrowAddr}`);
     }
 
-    // ── 5. Pre-mint initial allocations (BEFORE authority lock) ───────────
-    console.log('\n5️⃣  Pre-minting initial allocations...');
-    console.log(`   Team      : ${TEAM_AMOUNT}M GSTD → ${TEAM_WALLET}`);
-    console.log(`   Ecosystem : ${ECOSYSTEM_AMOUNT}M GSTD → ${ECOSYSTEM_WALLET}`);
-    console.log(`   Liquidity : ${LIQUIDITY_AMOUNT}M GSTD → ${LIQUIDITY_WALLET}`);
-    const mintOk = await confirm('   Confirm initial allocation mint?');
-    if (mintOk) {
-        const jetton = client.open(new GSTDJetton(jettonAddr));
-        await jetton.send(provider.sender(keyPair.secretKey), { value: toNano('0.5') }, {
-            $$type: 'MintInitialAllocation',
-            teamAddr:        Address.parse(TEAM_WALLET),
-            teamAmount:      TEAM_AMOUNT * NANO,
-            ecosystemAddr:   Address.parse(ECOSYSTEM_WALLET),
-            ecosystemAmount: ECOSYSTEM_AMOUNT * NANO,
-            liquidityAddr:   Address.parse(LIQUIDITY_WALLET),
-            liquidityAmount: LIQUIDITY_AMOUNT * NANO,
-        });
-        await waitSeqno(provider, seqno++);
-        console.log(`   ✅ Allocated ${TEAM_AMOUNT + ECOSYSTEM_AMOUNT + LIQUIDITY_AMOUNT}M GSTD`);
-    } else {
-        console.log('   ⚠️  Skipped. Call MintInitialAllocation manually BEFORE SetMintAuthority.');
-    }
-
-    // ── 6. Lock mint authority to SettlementMaster (IRREVERSIBLE) ─────────
-    console.log('\n6️⃣  Locking mint authority to SettlementMaster...');
-    console.log(`   This is IRREVERSIBLE. Settlement address: ${settlementAddr}`);
-    const lockOk = await confirm('   Confirm lock?');
-    if (!lockOk) {
-        console.log('   ⚠️  Skipped. Run SetMintAuthority manually when ready.');
-    } else {
-        const jetton = client.open(new GSTDJetton(jettonAddr));
-        await jetton.send(provider.sender(keyPair.secretKey), { value: toNano('0.05') }, {
-            $$type: 'SetMintAuthority',
-            newAuthority: settlementAddr,
-        });
-        await waitSeqno(provider, seqno++);
-        console.log('   ✅ Mint authority permanently locked to SettlementMaster');
-    }
-
-    // ── 7. Set gateway on SettlementMaster ────────────────────────────────
-    console.log('\n7️⃣  Setting gateway on SettlementMaster...');
+    // ── 4. Set gateway on SettlementMaster ────────────────────────────────
+    console.log('\n4️⃣  Setting gateway on SettlementMaster...');
     console.log(`   Gateway: ${gatewayAddr}`);
     const settlement = client.open(new SettlementMaster(settlementAddr));
     await settlement.send(provider.sender(keyPair.secretKey), { value: toNano('0.05') }, {
@@ -294,12 +214,16 @@ async function main() {
     }
     console.log('\n📋 Next steps:');
     console.log('  1. Verify on https://tonscan.org');
-    console.log('  2. Set env vars in Vercel dashboard:');
+    console.log('  2. Fund SM GSTD reward pool:');
+    console.log(`       a) Compute SM jetton wallet: get_wallet_address(${settlementAddr}, gstdJetton)`);
+    console.log(`       b) Call SetOwnJettonWallet on SettlementMaster with that address`);
+    console.log(`       c) Transfer GSTD from your wallet to SM jetton wallet (worker reward pool)`);
+    console.log('  3. Set env vars in Vercel dashboard:');
     console.log(`       NEXT_PUBLIC_TON_JETTON=${deployed.GSTDJetton}`);
     console.log(`       NEXT_PUBLIC_SETTLEMENT=${deployed.SettlementMaster}`);
     console.log(`       NEXT_PUBLIC_TREASURY=${deployed.EcosystemTreasury}`);
     console.log(`       NEXT_PUBLIC_ESCROW=${deployed.Escrow}`);
-    console.log('  3. Update gstdbot env: GSTD_JETTON_ADDRESS + GSTD_SETTLEMENT_ADDRESS');
+    console.log('  4. Update gstdbot env: GSTD_SETTLEMENT_ADDRESS');
     console.log(`\n📄 Record saved: ${outPath}`);
 }
 
