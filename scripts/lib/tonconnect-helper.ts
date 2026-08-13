@@ -15,7 +15,11 @@ import { TonConnect, type IStorage, isWalletInfoRemote, type SendTransactionRequ
 import qrcode from 'qrcode-terminal';
 
 const SESSION_FILE = join(__dirname, '..', '..', '.tonconnect-session.json');
-const MANIFEST_URL = process.env.TONCONNECT_MANIFEST_URL || 'https://gstdtoken.com/tonconnect-manifest.json';
+// gstdtoken.com is mid-DNS-migration (Cloudflare NS not fully propagated
+// everywhere yet) — defaulting to the Worker's own workers.dev URL so this
+// works today. Switch back to https://gstdtoken.com/tonconnect-manifest.json
+// (or set TONCONNECT_MANIFEST_URL) once the custom domain is confirmed live.
+const MANIFEST_URL = process.env.TONCONNECT_MANIFEST_URL || 'https://gstd-web.gstdtoken-site.workers.dev/tonconnect-manifest.json';
 const WALLET_NAME = process.env.TONCONNECT_WALLET || 'tonkeeper';
 
 /** Minimal file-backed IStorage — TonConnect's Node.js storage contract. */
