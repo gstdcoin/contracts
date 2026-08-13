@@ -61,6 +61,52 @@ message SetOwnJettonWallet {
     wallet: Address; // SM's own GSTD jetton wallet (pre-funded by admin)
 }
 
+// ── P2P settlement additions ────────────────────────────────────────────────
+// See docs/P2P_SETTLEMENT_RFC.md for the full design. Summary: instead of
+// trusting sender() (a single gateway wallet), these messages trust a quorum
+// of Ed25519 signatures attached to the call — any address can submit the
+// transaction, but it only succeeds if enough registered nodes attested to
+// the same (taskId, workerAddr, resultHash).
+
+// DAO-controlled allowlist of attestor Ed25519 public keys. Interim mechanism:
+// populated by the DAO from AgentRegistry's registered nodes until a direct
+// on-chain relay from AgentRegistry is wired up (cross-contract calls in TON
+// are asynchronous, so that relay is separate follow-up work, not done here).
+message RegisterAttestorKey {
+    pubkey: Int as uint256; // Ed25519 public key of a registered node
+    authorized: Bool;
+}
+
+message SetQuorumThreshold {
+    threshold: Int as uint8; // minimum distinct valid attestations required
+}
+
+// One task's completion, attested by a quorum of other nodes instead of
+// trusted-gateway-only. `attestations` is a chain of cells, one per
+// attestation: 256-bit pubkey + 512-bit Ed25519 signature over
+// sha256(taskId . workerAddr . resultHash), each cell holding a single ref
+// to the next attestation (or no ref for the last one).
+message SettleTaskWithProof {
+    taskId: Int as uint64;
+    workerAddr: Address;
+    resultHash: Int as uint256; // hash of the accepted (majority-agreed) result
+    attestationCount: Int as uint8;
+    attestations: Cell;
+    gstdBonusAmount: Int as coins;
+    computeUnits: Int as uint64;
+}
+
+// Same as SettleTaskWithProof but for a bounded batch of tasks completed by
+// the SAME worker, settled in one call so the ~0.15 TON gas floor per call
+// is paid once instead of once per task. `entries` is a chain of BatchEntry
+// cells (see struct below), max MaxBatchSize per call.
+message SettleBatch {
+    workerAddr: Address;
+    entryCount: Int as uint8;
+    entries: Cell;
+    totalGstdBonusAmount: Int as coins;
+}
+
 // ── Settlement Master Contract ──────────────────────────────────────────────
 
 contract SettlementMaster with Deployable, Ownable {
@@ -91,6 +137,10 @@ contract SettlementMaster with Deployable, Ownable {
     paused: Bool;
     minPayment: Int as coins; // Minimum TON per settlement
 
+    // ── P2P settlement (quorum-attested) ─────────────────────────────────
+    attestorKeys: map<Int, Bool>; // Ed25519 pubkey (uint256) => authorized
+    quorumThreshold: Int as uint8; // min distinct valid attestations required
+
     init(
         owner: Address,
         gstdJetton: Address,
@@ -115,6 +165,8 @@ contract SettlementMaster with Deployable, Ownable {
         self.paused = false;
         self.minPayment = ton("0.05"); // effective minimum payment after gas reserve (total = value - 0.1 TON gas)
         self.ownJettonWallet = newAddress(0, 0); // set via SetOwnJettonWallet after deploy
+
+        self.quorumThreshold = 2; // default: 2-of-3 redundant execution
     }
 
     // ── DAO: Set gateway address ─────────────────────────────────────────
@@ -139,18 +191,91 @@ contract SettlementMaster with Deployable, Ownable {
         let total: Int = context().value - ton("0.1");
         require(total >= self.minPayment, "Payment below minimum");
 
+        self.settlePayout(msg.taskId, msg.workerAddr, total, msg.gstdBonusAmount, msg.computeUnits);
+    }
+
+    // ── P2P settlement: quorum-attested, any sender ─────────────────────
+    // No sender() check — trust comes entirely from the attached signature
+    // quorum, verified below. This is what lets a node settle its own work.
+    receive(msg: SettleTaskWithProof) {
+        require(!self.paused, "Settlement paused");
+        require(msg.workerAddr != newAddress(0, 0), "Worker address cannot be zero");
+        require(self.settledTasks.get(msg.taskId) == null, "Task already settled");
+
+        require(
+            self.verifyQuorum(msg.taskId, msg.workerAddr, msg.resultHash, msg.attestationCount, msg.attestations),
+            "Insufficient attested quorum",
+        );
+
+        self.settledTasks.set(msg.taskId, true);
+
+        require(context().value > ton("0.1"), "Insufficient value for gas reserve");
+        let total: Int = context().value - ton("0.1");
+        require(total >= self.minPayment, "Payment below minimum");
+
+        self.settlePayout(msg.taskId, msg.workerAddr, total, msg.gstdBonusAmount, msg.computeUnits);
+    }
+
+    // ── P2P settlement: batched, single gas reserve for up to MaxBatchSize
+    // tasks belonging to the same worker. Each entry carries its own quorum
+    // proof; only the payout is combined. ────────────────────────────────
+    receive(msg: SettleBatch) {
+        require(!self.paused, "Settlement paused");
+        require(msg.workerAddr != newAddress(0, 0), "Worker address cannot be zero");
+        require(msg.entryCount > 0, "Empty batch");
+        require(msg.entryCount <= 5, "Batch too large"); // MaxBatchSize
+
+        require(context().value > ton("0.1"), "Insufficient value for gas reserve");
+        let totalValue: Int = context().value - ton("0.1");
+        require(totalValue >= self.minPayment, "Payment below minimum");
+
+        let cursor: Cell = msg.entries;
+        let i: Int = 0;
+        let acceptedComputeUnits: Int = 0;
+        while (i < msg.entryCount) {
+            let es: Slice = cursor.beginParse();
+            let taskId: Int = es.loadUint(64);
+            let resultHash: Int = es.loadUint(256);
+            let attestationCount: Int = es.loadUint(8);
+            let computeUnits: Int = es.loadUint(64);
+            let attestations: Cell = es.loadRef();
+
+            require(self.settledTasks.get(taskId) == null, "Task already settled");
+            require(
+                self.verifyQuorum(taskId, msg.workerAddr, resultHash, attestationCount, attestations),
+                "Insufficient attested quorum for batch entry",
+            );
+            self.settledTasks.set(taskId, true);
+            acceptedComputeUnits += computeUnits;
+
+            if (es.refs() > 0) {
+                cursor = es.loadRef(); // link to next BatchEntry
+            }
+            i += 1;
+        }
+
+        // Single combined payout for the whole batch — this is the point of
+        // batching: one 0.1 TON gas reserve for up to 5 tasks, not five.
+        self.settlePayout(0, msg.workerAddr, totalValue, msg.totalGstdBonusAmount, acceptedComputeUnits);
+    }
+
+    // ── Shared payout logic (worker/treasury/protocol split + GSTD bonus) ─
+    // taskId is used only for the WorkerPayment memo and bonus queryId; for
+    // SettleBatch it's 0 since a batch settles many taskIds at once (each
+    // already recorded individually in settledTasks above).
+    fun settlePayout(taskId: Int, workerAddr: Address, total: Int, gstdBonusAmount: Int, computeUnits: Int) {
         // Calculate shares
         let workerAmt: Int = total * self.workerShare / 100;
         let treasuryAmt: Int = total * self.treasuryShare / 100;
         let protocolAmt: Int = total - workerAmt - treasuryAmt; // remainder
 
         // ── Cap computeUnits to prevent overflow in bonus calculation ────
-        let safeComputeUnits: Int = msg.computeUnits;
+        let safeComputeUnits: Int = computeUnits;
         if (safeComputeUnits > 1000000000) { safeComputeUnits = 1000000000; } // 1B CU max
 
         // ── Cap bonus before stats update ───────────────────────────────
         let maxAllowedBonus: Int = self.baseRate * safeComputeUnits;
-        let actualBonus: Int = msg.gstdBonusAmount;
+        let actualBonus: Int = gstdBonusAmount;
         if (actualBonus > maxAllowedBonus) { actualBonus = maxAllowedBonus; }
 
         // ── Update statistics BEFORE sends (prevent race conditions) ────
@@ -160,14 +285,14 @@ contract SettlementMaster with Deployable, Ownable {
 
         // ── 1. Pay worker (85% TON) — bounce:true to recover on failure ─
         send(SendParameters {
-            to: msg.workerAddr,
+            to: workerAddr,
             value: workerAmt,
             mode: SendIgnoreErrors,
             bounce: true,
             body: WorkerPayment {
-                taskId: msg.taskId,
+                taskId: taskId,
                 amount: workerAmt,
-                bonusGSTD: msg.gstdBonusAmount,
+                bonusGSTD: gstdBonusAmount,
             }.toCell(),
         });
 
@@ -200,16 +325,79 @@ contract SettlementMaster with Deployable, Ownable {
                 bounce: false,
                 body: beginCell()
                     .storeUint(0xf8a7ea5, 32)      // Transfer opcode (TEP-74)
-                    .storeUint(msg.taskId, 64)      // queryId
+                    .storeUint(taskId, 64)           // queryId
                     .storeCoins(actualBonus)         // amount
-                    .storeAddress(msg.workerAddr)    // destination
-                    .storeAddress(msg.workerAddr)    // response_destination
+                    .storeAddress(workerAddr)        // destination
+                    .storeAddress(workerAddr)        // response_destination
                     .storeBit(false)                 // no custom payload
                     .storeCoins(ton("0.01"))         // forward_ton_amount (notify worker)
                     .storeBit(false)                 // no forward payload
                     .endCell(),
             });
         }
+    }
+
+    // ── Verify a quorum of distinct, registered-attestor signatures over
+    // sha256(taskId . workerAddr . resultHash). Bounded to <= 5 entries so
+    // gas cost stays predictable regardless of attestationCount claims. ──
+    fun verifyQuorum(taskId: Int, workerAddr: Address, resultHash: Int, count: Int, attestations: Cell): Bool {
+        if (count < self.quorumThreshold) { return false; }
+        if (count > 5) { return false; } // MaxAttestations
+
+        let msgHash: Int = beginCell()
+            .storeUint(taskId, 64)
+            .storeAddress(workerAddr)
+            .storeUint(resultHash, 256)
+            .endCell()
+            .hash();
+
+        let seen1: Int = -1;
+        let seen2: Int = -1;
+        let seen3: Int = -1;
+        let seen4: Int = -1;
+        let seen5: Int = -1;
+        let validCount: Int = 0;
+
+        let cursor: Cell = attestations;
+        let i: Int = 0;
+        while (i < count) {
+            let cs: Slice = cursor.beginParse();
+            let pubkey: Int = cs.loadUint(256);
+            let signature: Slice = cs.loadBits(512);
+
+            let isDup: Bool = (pubkey == seen1) || (pubkey == seen2) || (pubkey == seen3) || (pubkey == seen4) || (pubkey == seen5);
+            if (i == 0) { seen1 = pubkey; }
+            if (i == 1) { seen2 = pubkey; }
+            if (i == 2) { seen3 = pubkey; }
+            if (i == 3) { seen4 = pubkey; }
+            if (i == 4) { seen5 = pubkey; }
+
+            if (!isDup && self.attestorKeys.get(pubkey) == true && checkSignature(msgHash, signature, pubkey)) {
+                validCount += 1;
+            }
+
+            if (cs.refs() > 0) {
+                cursor = cs.loadRef();
+            }
+            i += 1;
+        }
+
+        return validCount >= self.quorumThreshold;
+    }
+
+    // ── DAO: manage the attestor allowlist and quorum size ───────────────
+    // Interim: DAO populates this from AgentRegistry's registered nodes.
+    // A direct on-chain relay from AgentRegistry is follow-up work (requires
+    // an async cross-contract message, not done in this pass).
+    receive(msg: RegisterAttestorKey) {
+        require(sender() == self.owner, "Only DAO");
+        self.attestorKeys.set(msg.pubkey, msg.authorized);
+    }
+
+    receive(msg: SetQuorumThreshold) {
+        require(sender() == self.owner, "Only DAO");
+        require(msg.threshold >= 1, "Threshold must be at least 1");
+        self.quorumThreshold = msg.threshold;
     }
 
     // ── Handle bounced worker payments (return TON to settlement pool) ──
@@ -294,6 +482,18 @@ contract SettlementMaster with Deployable, Ownable {
 
     get fun is_paused(): Bool {
         return self.paused;
+    }
+
+    get fun get_quorum_threshold(): Int {
+        return self.quorumThreshold;
+    }
+
+    get fun is_attestor_authorized(pubkey: Int): Bool {
+        return self.attestorKeys.get(pubkey) == true;
+    }
+
+    get fun is_task_settled(taskId: Int): Bool {
+        return self.settledTasks.get(taskId) != null;
     }
 }
 

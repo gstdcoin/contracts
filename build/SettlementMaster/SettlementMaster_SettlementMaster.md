@@ -1,9 +1,9 @@
 # Tact compilation report
 Contract: SettlementMaster
-BoC Size: 2342 bytes
+BoC Size: 4428 bytes
 
 ## Structures (Structs and Messages)
-Total structures: 27
+Total structures: 32
 
 ### DataSize
 TL-B: `_ cells:int257 bits:int257 refs:int257 = DataSize`
@@ -97,9 +97,29 @@ Signature: `EmergencyPause{paused:bool}`
 TL-B: `set_gateway#a85e4bb4 gateway:address = SetGateway`
 Signature: `SetGateway{gateway:address}`
 
+### SetOwnJettonWallet
+TL-B: `set_own_jetton_wallet#d4d7e3ab wallet:address = SetOwnJettonWallet`
+Signature: `SetOwnJettonWallet{wallet:address}`
+
+### RegisterAttestorKey
+TL-B: `register_attestor_key#8b75d73e pubkey:uint256 authorized:bool = RegisterAttestorKey`
+Signature: `RegisterAttestorKey{pubkey:uint256,authorized:bool}`
+
+### SetQuorumThreshold
+TL-B: `set_quorum_threshold#7b4bc498 threshold:uint8 = SetQuorumThreshold`
+Signature: `SetQuorumThreshold{threshold:uint8}`
+
+### SettleTaskWithProof
+TL-B: `settle_task_with_proof#813a2916 taskId:uint64 workerAddr:address resultHash:uint256 attestationCount:uint8 attestations:^cell gstdBonusAmount:coins computeUnits:uint64 = SettleTaskWithProof`
+Signature: `SettleTaskWithProof{taskId:uint64,workerAddr:address,resultHash:uint256,attestationCount:uint8,attestations:^cell,gstdBonusAmount:coins,computeUnits:uint64}`
+
+### SettleBatch
+TL-B: `settle_batch#2c6e4484 workerAddr:address entryCount:uint8 entries:^cell totalGstdBonusAmount:coins = SettleBatch`
+Signature: `SettleBatch{workerAddr:address,entryCount:uint8,entries:^cell,totalGstdBonusAmount:coins}`
+
 ### SettlementMaster$Data
-TL-B: `_ owner:address gateway:address gstdJetton:address treasury:address protocolFee:address workerShare:uint8 treasuryShare:uint8 protocolShare:uint8 baseRate:coins totalSettled:coins totalGSTDMinted:coins taskCount:uint64 settledTasks:dict<int, bool> paused:bool minPayment:coins = SettlementMaster`
-Signature: `SettlementMaster{owner:address,gateway:address,gstdJetton:address,treasury:address,protocolFee:address,workerShare:uint8,treasuryShare:uint8,protocolShare:uint8,baseRate:coins,totalSettled:coins,totalGSTDMinted:coins,taskCount:uint64,settledTasks:dict<int, bool>,paused:bool,minPayment:coins}`
+TL-B: `_ owner:address gateway:address gstdJetton:address treasury:address protocolFee:address workerShare:uint8 treasuryShare:uint8 protocolShare:uint8 baseRate:coins totalSettled:coins totalGSTDMinted:coins taskCount:uint64 ownJettonWallet:address settledTasks:dict<int, bool> paused:bool minPayment:coins attestorKeys:dict<int, bool> quorumThreshold:uint8 = SettlementMaster`
+Signature: `SettlementMaster{owner:address,gateway:address,gstdJetton:address,treasury:address,protocolFee:address,workerShare:uint8,treasuryShare:uint8,protocolShare:uint8,baseRate:coins,totalSettled:coins,totalGSTDMinted:coins,taskCount:uint64,ownJettonWallet:address,settledTasks:dict<int, bool>,paused:bool,minPayment:coins,attestorKeys:dict<int, bool>,quorumThreshold:uint8}`
 
 ### SettlementStats
 TL-B: `_ totalSettled:coins totalGSTDMinted:coins taskCount:uint64 baseRate:coins = SettlementStats`
@@ -114,7 +134,7 @@ TL-B: `_ gstdJetton:address treasury:address protocolFee:address owner:address =
 Signature: `ContractAddresses{gstdJetton:address,treasury:address,protocolFee:address,owner:address}`
 
 ## Get methods
-Total get methods: 5
+Total get methods: 8
 
 ## get_settlement_stats
 No arguments
@@ -127,6 +147,15 @@ No arguments
 
 ## is_paused
 No arguments
+
+## get_quorum_threshold
+No arguments
+
+## is_attestor_authorized
+Argument: pubkey
+
+## is_task_settled
+Argument: taskId
 
 ## owner
 No arguments
@@ -168,13 +197,18 @@ No arguments
 * 135: Code of a contract was not found
 * 136: Invalid standard address
 * 138: Not a basechain address
+* 5300: Empty batch
 * 8484: Payment below minimum
 * 16246: Insufficient value for gas reserve
+* 17839: Insufficient attested quorum for batch entry
+* 20709: Batch too large
 * 22722: Must sum to 100
 * 27818: Rate must be positive
 * 32292: Worker address cannot be zero
 * 38610: Settlement paused
+* 40616: Threshold must be at least 1
 * 45933: Worker share minimum 50%
+* 49269: Insufficient attested quorum
 * 50353: Only DAO or Gateway can settle
 * 54291: Task already settled
 * 63399: Only DAO
