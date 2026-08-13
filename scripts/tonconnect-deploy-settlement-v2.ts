@@ -30,6 +30,7 @@ import 'dotenv/config';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Address, beginCell, contractAddress, storeStateInit, toNano } from '@ton/core';
+import { TonClient } from '@ton/ton';
 import { SettlementMaster, storeDeploy, storeRegisterAttestorKey } from '../build/SettlementMaster/SettlementMaster_SettlementMaster';
 import { connectWallet, sendForApproval } from './lib/tonconnect-helper';
 
@@ -60,25 +61,43 @@ async function main() {
     const settlementAddr = contractAddress(0, settlementInit);
     console.log(`Computed address: ${settlementAddr}\n`);
 
-    const stateInitCell = beginCell().store(storeStateInit(settlementInit)).endCell();
-    const deployBody = beginCell().store(storeDeploy({ $$type: 'Deploy', queryId: BigInt(Date.now()) })).endCell();
+    // ── Safety: never spend gas re-sending a deploy that already landed ──
+    const client = new TonClient({ endpoint: 'https://toncenter.com/api/v2/jsonRPC', apiKey: process.env.TON_API_KEY });
+    console.log('🔍 Checking this address isn\'t already deployed (avoid burning gas twice)...');
+    if (await client.isContractDeployed(settlementAddr)) {
+        console.log(`\n✓  Already deployed at ${settlementAddr} — nothing to send. Skipping deploy transaction.`);
+    } else {
+        // ── Safety: warn (don't just fail silently in the wallet) if the
+        // connected wallet doesn't look funded enough to cover this.
+        const signerBalance = await client.getBalance(Address.parse(connectedAddress));
+        const needed = toNano('0.3');
+        console.log(`   Wallet balance: ${Number(signerBalance) / 1e9} TON (need ~${Number(needed) / 1e9} TON for this deploy)`);
+        if (signerBalance < needed) {
+            console.error(`\n❌ Insufficient balance in ${connectedAddress}. Top up before retrying — aborting, nothing sent.`);
+            process.exit(1);
+        }
 
-    await sendForApproval(
-        tonConnect,
-        {
-            validUntil: Math.floor(Date.now() / 1000) + 300,
-            messages: [{
-                address: settlementAddr.toString(),
-                amount: toNano('0.3').toString(),
-                stateInit: stateInitCell.toBoc().toString('base64'),
-                payload: deployBody.toBoc().toString('base64'),
-            }],
-        },
-        `Deploy SettlementMaster v2 at ${settlementAddr}`,
-    );
+        const stateInitCell = beginCell().store(storeStateInit(settlementInit)).endCell();
+        const deployBody = beginCell().store(storeDeploy({ $$type: 'Deploy', queryId: BigInt(Date.now()) })).endCell();
 
-    console.log('\n⏳ Waiting ~15s for the deploy to land before checking...');
-    await sleep(15_000);
+        console.log(`\n💸 About to request approval for: 0.3 TON → ${settlementAddr} (contract deploy, one-time)`);
+        await sendForApproval(
+            tonConnect,
+            {
+                validUntil: Math.floor(Date.now() / 1000) + 300,
+                messages: [{
+                    address: settlementAddr.toString(),
+                    amount: needed.toString(),
+                    stateInit: stateInitCell.toBoc().toString('base64'),
+                    payload: deployBody.toBoc().toString('base64'),
+                }],
+            },
+            `Deploy SettlementMaster v2 at ${settlementAddr}`,
+        );
+
+        console.log('\n⏳ Waiting ~15s for the deploy to land before checking...');
+        await sleep(15_000);
+    }
 
     if (ATTESTOR_PUBKEY_HEX) {
         if (!/^[0-9a-fA-F]{64}$/.test(ATTESTOR_PUBKEY_HEX)) {
