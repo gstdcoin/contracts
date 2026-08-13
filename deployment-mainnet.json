@@ -9,7 +9,8 @@
     "GSTDJetton": "EQDv6cYW9nNiKjN3Nwl8D6ABjUiH1gYfWVGZhfP7-9tZskTO",
     "EcosystemTreasury": "EQAbtTCsty8-gpX-45eotGWxnYG1c7ew7NFsZ9LJBRiv_Ii_",
     "SettlementMaster": "EQAhuR_cEaIkRqs4gvgXSD-Qw2FRUkkBUZQkTBrFT5n-ZrSS",
-    "Escrow": "EQDqdyFsruwXzlScIVM0c7LKbBb4EOgwLeFO4bpNnuwc7rTF"
+    "Escrow": "EQDqdyFsruwXzlScIVM0c7LKbBb4EOgwLeFO4bpNnuwc7rTF",
+    "SettlementMasterV2": "EQCi-QjafvcYE7wgl9Dc5jAFJrmiy_oGfcobzORb2gZQezhE"
   },
   "_escrow_note": "The Escrow address above is the Phase 1 deployment. README.md's 'Deployed Contracts' table lists a different, newer Escrow address (EQCucUHZGCr8KwBalmumsITvtMBtc5ZylAfw7sJk5SXpBWVh) — both still have live code on-chain as of 2026-08-13, but README's is the current canonical one. This file was never updated after that redeployment.",
   "phase2_completed": {
@@ -26,5 +27,6 @@
     "Deploy GstdBridge (implement swap-in first)",
     "Deploy ProviderRegistry (fix Jetton integration first)",
     "Deploy SlashMechanics (fix message type mismatch first)"
-  ]
+  ],
+  "_settlement_v2_note": "Deployed 2026-08-13T20:43:20.158Z via TON Connect (signed by 0:a45c594d46cb9b529ed487b960fd2714a8b0a27dfd5008bb1d414d1aee4a61a9, no mnemonic used). Supports SettleTaskWithProof/SettleBatch (quorum-attested P2P settlement, default quorumThreshold=2-of-3). Old SettlementMaster (EQAhuR_cEaIkRqs4gvgXSD-Qw2FRUkkBUZQkTBrFT5n-ZrSS) abandoned in place — held no GSTD, ~0.1 TON at migration time."
 }
