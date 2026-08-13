@@ -28,5 +28,11 @@
     "Deploy ProviderRegistry (fix Jetton integration first)",
     "Deploy SlashMechanics (fix message type mismatch first)"
   ],
-  "_settlement_v2_note": "Deployed 2026-08-13T20:43:20.158Z via TON Connect (signed by 0:a45c594d46cb9b529ed487b960fd2714a8b0a27dfd5008bb1d414d1aee4a61a9, no mnemonic used). Supports SettleTaskWithProof/SettleBatch (quorum-attested P2P settlement, default quorumThreshold=2-of-3). Old SettlementMaster (EQAhuR_cEaIkRqs4gvgXSD-Qw2FRUkkBUZQkTBrFT5n-ZrSS) abandoned in place — held no GSTD, ~0.1 TON at migration time."
+  "_settlement_v2_note": "Deployed 2026-08-13T20:43:20.158Z via TON Connect (signed by 0:a45c594d46cb9b529ed487b960fd2714a8b0a27dfd5008bb1d414d1aee4a61a9, no mnemonic used). Supports SettleTaskWithProof/SettleBatch (quorum-attested P2P settlement, default quorumThreshold=2-of-3). Old SettlementMaster (EQAhuR_cEaIkRqs4gvgXSD-Qw2FRUkkBUZQkTBrFT5n-ZrSS) abandoned in place — held no GSTD, ~0.1 TON at migration time.",
+  "bonus_pool": {
+    "note": "GSTD bonus pool funded 2026-08-14 via TON Connect (same signer as deploy). ownJettonWallet computed and set via SetOwnJettonWallet; balance verified on-chain via get_wallet_data() after funding.",
+    "ownJettonWallet": "EQAmshP8GtzzSNgb3XwcjtuNivbg4eiuvCt91zQ07mXj-lUH",
+    "fundedAmountGstd": 499,
+    "verifiedBalanceGstd": 499
+  }
 }
