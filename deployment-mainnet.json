@@ -11,11 +11,15 @@
     "SettlementMaster": "EQAhuR_cEaIkRqs4gvgXSD-Qw2FRUkkBUZQkTBrFT5n-ZrSS",
     "Escrow": "EQDqdyFsruwXzlScIVM0c7LKbBb4EOgwLeFO4bpNnuwc7rTF"
   },
+  "_escrow_note": "The Escrow address above is the Phase 1 deployment. README.md's 'Deployed Contracts' table lists a different, newer Escrow address (EQCucUHZGCr8KwBalmumsITvtMBtc5ZylAfw7sJk5SXpBWVh) — both still have live code on-chain as of 2026-08-13, but README's is the current canonical one. This file was never updated after that redeployment.",
+  "phase2_completed": {
+    "note": "Verified on-chain 2026-08-13 (real code + tx history at each address).",
+    "DAOVoting": "EQBa-hyO3JkcRJNyYKKOqBjsQ6KAS-dAHj6rf8KOuH4Jzls5",
+    "AgentRegistry": "EQDtWcGCQXLFdh7TmkL5QFbFNYXxL9mjOk4ehmsNFwCtsDoT"
+  },
   "phase2_todo": [
-    "Deploy DAOVoting",
-    "Deploy AgentRegistry",
-    "Transfer SettlementMaster.owner to DAOVoting",
-    "Transfer EcosystemTreasury.owner to DAOVoting",
+    "Transfer SettlementMaster.owner to DAOVoting — NOT done: owner getter still returns the original deployer wallet (verified on-chain 2026-08-13)",
+    "Transfer EcosystemTreasury.owner to DAOVoting — NOT done: owner getter still returns the original deployer wallet (verified on-chain 2026-08-13)",
     "Deploy TreasuryGold + wire DEX swap integration"
   ],
   "phase3_todo": [

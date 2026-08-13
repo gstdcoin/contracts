@@ -143,8 +143,13 @@ Higher tiers also increase governance voting weight and receive priority task ro
 - **Minimum proposal stake:** 10,000 GSTD
 - **Quorum:** 10% of staked supply must vote
 - **Timelock:** 48 hours between passing and execution
-- **What DAO controls:** Revenue split percentages, base rates, contract addresses, slash parameters, new feature activation
+- **What DAO controls (once ownership transfer below is done):** Revenue split percentages, base rates, contract addresses, slash parameters, new feature activation
 - **What DAO cannot do:** Take funds from workers, freeze individual wallets
+- **Current status:** DAOVoting is deployed, but `SettlementMaster.owner` and
+  `EcosystemTreasury.owner` still point to the original deployer wallet
+  (verified on-chain 2026-08-13) — the ownership transfer to DAOVoting has
+  not happened yet, so the DAO cannot actually control those two contracts
+  yet. See `deployment-mainnet.json`'s `phase2_todo`.
 
 ---
 
@@ -153,9 +158,18 @@ Higher tiers also increase governance voting weight and receive priority task ro
 | Contract | Address |
 |---|---|
 | GSTDJetton | `EQDv6cYW9nNiKjN3Nwl8D6ABjUiH1gYfWVGZhfP7-9tZskTO` |
+| SettlementMaster | `EQAhuR_cEaIkRqs4gvgXSD-Qw2FRUkkBUZQkTBrFT5n-ZrSS` |
+| EcosystemTreasury | `EQAbtTCsty8-gpX-45eotGWxnYG1c7ew7NFsZ9LJBRiv_Ii_` |
 | AgentRegistry | `EQDtWcGCQXLFdh7TmkL5QFbFNYXxL9mjOk4ehmsNFwCtsDoT` |
 | DAOVoting | `EQBa-hyO3JkcRJNyYKKOqBjsQ6KAS-dAHj6rf8KOuH4Jzls5` |
 | Escrow | `EQCucUHZGCr8KwBalmumsITvtMBtc5ZylAfw7sJk5SXpBWVh` |
+
+All addresses above verified live on-chain 2026-08-13 (real code deployed,
+transaction history present). Note the Escrow address differs from the one
+in `deployment-mainnet.json`'s Phase 1 record (`EQDqdyFsruwXzlScIVM0c7LKbBb4EOgwLeFO4bpNnuwc7rTF`)
+— that older address also still has live code on-chain, but this table is
+the current canonical one; the JSON predates whatever redeployment produced
+the address above and was never updated to match.
 
 ---
 
@@ -174,9 +188,17 @@ node scripts/verify-contracts.js
 
 ## Deploy (mainnet)
 
+Phase 1 contracts (EcosystemTreasury, SettlementMaster, Escrow — GSTDJetton
+already exists and is not redeployed):
+
 ```bash
-node scripts/deploy-mainnet.js
+npm run build
+npx ts-node --project tsconfig.deploy.json scripts/deploy-mainnet.ts
 ```
+
+AgentRegistry and DAOVoting are also live on mainnet (see table above), but
+no deploy script for either is currently committed to this repo — however
+they were originally deployed, it wasn't via a script that's still here.
 
 ---
 
