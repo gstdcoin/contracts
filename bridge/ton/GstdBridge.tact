@@ -85,6 +85,18 @@ contract GstdBridgeRouter with Deployable, Ownable {
         
         self.totalBridgedOut += msg.minOut;
 
+        // ⚠ This event fires unconditionally right after dispatching the
+        // STON.fi swap message, before there's any confirmation the swap
+        // actually succeeded. The Go backend oracle watches this event to
+        // unlock/mint funds on the destination chain -- if the swap fails or
+        // bounces (e.g. slippage/liquidity), the bridge never actually
+        // receives GSTD, but the oracle already believes a successful
+        // `minOut`-GSTD bridge-out happened. Needs a callback/confirmation
+        // step before emitting, not a fire-and-forget. Lower priority than
+        // most findings in this codebase since the bridge overall is already
+        // documented as deferred -- no live validators, no MPC key shares,
+        // no vault wallets on the other chains -- so this isn't reachable by
+        // real funds yet either way.
         // Emit Oracle Event
         emit(CrossChainEvent{
             user: ctx.sender,
