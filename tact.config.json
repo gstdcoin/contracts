@@ -21,6 +21,11 @@
             "output": "./build/AgentRegistry"
         },
         {
+            "name": "AgentRegistryV2",
+            "path": "./AgentRegistryV2.tact",
+            "output": "./build/AgentRegistryV2"
+        },
+        {
             "name": "DAOVoting",
             "path": "./DAOVoting.tact",
             "output": "./build/DAOVoting"

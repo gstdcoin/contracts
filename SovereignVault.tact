@@ -1,3 +1,22 @@
+// ============================================================================
+// ⚠ NOT SAFE TO DEPLOY AS-IS — see ExecuteSwap below.
+// ============================================================================
+// `ExecuteSwap` pays out `msg.amountOut` to `msg.destination` (both fully
+// caller-controlled) on nothing more than a signature from `nodeKeeper`, a
+// hot wallet the contract's own comment describes as "managed by the node
+// backend" -- i.e. deliberately lower-security than `owner`. There is no
+// on-chain proof that any real cross-chain/DEX swap justified the payout.
+// A compromised or malicious nodeKeeper key can drain the entire vault in
+// one message: ExecuteSwap{destination: <attacker>, amountOut: <totalLiquidity>}.
+// Fixing this properly needs real proof-of-swap (an oracle/relayer
+// attestation or a quorum, similar to SettlementMaster's attested
+// settlement) before value moves -- that's genuine bridge-security design
+// work, not a one-line fix, and this project's own bridge is already
+// documented elsewhere as deferred for exactly that reason. Not deployed
+// anywhere (absent from deployment-mainnet.json) -- do not deploy or fund
+// this contract until ExecuteSwap has real verification.
+// ============================================================================
+
 import "@stdlib/deploy";
 import "@stdlib/ownable";
 
