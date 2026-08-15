@@ -26,6 +26,11 @@
             "output": "./build/DAOVoting"
         },
         {
+            "name": "DAOVotingV2",
+            "path": "./DAOVotingV2.tact",
+            "output": "./build/DAOVotingV2"
+        },
+        {
             "name": "SovereignVault",
             "path": "./SovereignVault.tact",
             "output": "./build/SovereignVault"
