@@ -1009,59 +1009,6 @@ export function dictValueParserWithdrawOperational(): DictionaryValue<WithdrawOp
     }
 }
 
-export type GoldSwapConfirmed = {
-    $$type: 'GoldSwapConfirmed';
-    amount: bigint;
-    txHash: bigint;
-}
-
-export function storeGoldSwapConfirmed(src: GoldSwapConfirmed) {
-    return (builder: Builder) => {
-        const b_0 = builder;
-        b_0.storeUint(1577629790, 32);
-        b_0.storeCoins(src.amount);
-        b_0.storeUint(src.txHash, 256);
-    };
-}
-
-export function loadGoldSwapConfirmed(slice: Slice) {
-    const sc_0 = slice;
-    if (sc_0.loadUint(32) !== 1577629790) { throw Error('Invalid prefix'); }
-    const _amount = sc_0.loadCoins();
-    const _txHash = sc_0.loadUintBig(256);
-    return { $$type: 'GoldSwapConfirmed' as const, amount: _amount, txHash: _txHash };
-}
-
-export function loadTupleGoldSwapConfirmed(source: TupleReader) {
-    const _amount = source.readBigNumber();
-    const _txHash = source.readBigNumber();
-    return { $$type: 'GoldSwapConfirmed' as const, amount: _amount, txHash: _txHash };
-}
-
-export function loadGetterTupleGoldSwapConfirmed(source: TupleReader) {
-    const _amount = source.readBigNumber();
-    const _txHash = source.readBigNumber();
-    return { $$type: 'GoldSwapConfirmed' as const, amount: _amount, txHash: _txHash };
-}
-
-export function storeTupleGoldSwapConfirmed(source: GoldSwapConfirmed) {
-    const builder = new TupleBuilder();
-    builder.writeNumber(source.amount);
-    builder.writeNumber(source.txHash);
-    return builder.build();
-}
-
-export function dictValueParserGoldSwapConfirmed(): DictionaryValue<GoldSwapConfirmed> {
-    return {
-        serialize: (src, builder) => {
-            builder.storeRef(beginCell().store(storeGoldSwapConfirmed(src)).endCell());
-        },
-        parse: (src) => {
-            return loadGoldSwapConfirmed(src.loadRef().beginParse());
-        }
-    }
-}
-
 export type SetXautJetton = {
     $$type: 'SetXautJetton';
     xautAddr: Address;
@@ -1109,11 +1056,321 @@ export function dictValueParserSetXautJetton(): DictionaryValue<SetXautJetton> {
     }
 }
 
+export type SetPtonMaster = {
+    $$type: 'SetPtonMaster';
+    ptonMaster: Address;
+}
+
+export function storeSetPtonMaster(src: SetPtonMaster) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeUint(3491397779, 32);
+        b_0.storeAddress(src.ptonMaster);
+    };
+}
+
+export function loadSetPtonMaster(slice: Slice) {
+    const sc_0 = slice;
+    if (sc_0.loadUint(32) !== 3491397779) { throw Error('Invalid prefix'); }
+    const _ptonMaster = sc_0.loadAddress();
+    return { $$type: 'SetPtonMaster' as const, ptonMaster: _ptonMaster };
+}
+
+export function loadTupleSetPtonMaster(source: TupleReader) {
+    const _ptonMaster = source.readAddress();
+    return { $$type: 'SetPtonMaster' as const, ptonMaster: _ptonMaster };
+}
+
+export function loadGetterTupleSetPtonMaster(source: TupleReader) {
+    const _ptonMaster = source.readAddress();
+    return { $$type: 'SetPtonMaster' as const, ptonMaster: _ptonMaster };
+}
+
+export function storeTupleSetPtonMaster(source: SetPtonMaster) {
+    const builder = new TupleBuilder();
+    builder.writeAddress(source.ptonMaster);
+    return builder.build();
+}
+
+export function dictValueParserSetPtonMaster(): DictionaryValue<SetPtonMaster> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeSetPtonMaster(src)).endCell());
+        },
+        parse: (src) => {
+            return loadSetPtonMaster(src.loadRef().beginParse());
+        }
+    }
+}
+
+export type SetOwnXautJettonWallet = {
+    $$type: 'SetOwnXautJettonWallet';
+    wallet: Address;
+}
+
+export function storeSetOwnXautJettonWallet(src: SetOwnXautJettonWallet) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeUint(1004249603, 32);
+        b_0.storeAddress(src.wallet);
+    };
+}
+
+export function loadSetOwnXautJettonWallet(slice: Slice) {
+    const sc_0 = slice;
+    if (sc_0.loadUint(32) !== 1004249603) { throw Error('Invalid prefix'); }
+    const _wallet = sc_0.loadAddress();
+    return { $$type: 'SetOwnXautJettonWallet' as const, wallet: _wallet };
+}
+
+export function loadTupleSetOwnXautJettonWallet(source: TupleReader) {
+    const _wallet = source.readAddress();
+    return { $$type: 'SetOwnXautJettonWallet' as const, wallet: _wallet };
+}
+
+export function loadGetterTupleSetOwnXautJettonWallet(source: TupleReader) {
+    const _wallet = source.readAddress();
+    return { $$type: 'SetOwnXautJettonWallet' as const, wallet: _wallet };
+}
+
+export function storeTupleSetOwnXautJettonWallet(source: SetOwnXautJettonWallet) {
+    const builder = new TupleBuilder();
+    builder.writeAddress(source.wallet);
+    return builder.build();
+}
+
+export function dictValueParserSetOwnXautJettonWallet(): DictionaryValue<SetOwnXautJettonWallet> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeSetOwnXautJettonWallet(src)).endCell());
+        },
+        parse: (src) => {
+            return loadSetOwnXautJettonWallet(src.loadRef().beginParse());
+        }
+    }
+}
+
+export type SetOwnPtonJettonWallet = {
+    $$type: 'SetOwnPtonJettonWallet';
+    wallet: Address;
+}
+
+export function storeSetOwnPtonJettonWallet(src: SetOwnPtonJettonWallet) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeUint(1646744519, 32);
+        b_0.storeAddress(src.wallet);
+    };
+}
+
+export function loadSetOwnPtonJettonWallet(slice: Slice) {
+    const sc_0 = slice;
+    if (sc_0.loadUint(32) !== 1646744519) { throw Error('Invalid prefix'); }
+    const _wallet = sc_0.loadAddress();
+    return { $$type: 'SetOwnPtonJettonWallet' as const, wallet: _wallet };
+}
+
+export function loadTupleSetOwnPtonJettonWallet(source: TupleReader) {
+    const _wallet = source.readAddress();
+    return { $$type: 'SetOwnPtonJettonWallet' as const, wallet: _wallet };
+}
+
+export function loadGetterTupleSetOwnPtonJettonWallet(source: TupleReader) {
+    const _wallet = source.readAddress();
+    return { $$type: 'SetOwnPtonJettonWallet' as const, wallet: _wallet };
+}
+
+export function storeTupleSetOwnPtonJettonWallet(source: SetOwnPtonJettonWallet) {
+    const builder = new TupleBuilder();
+    builder.writeAddress(source.wallet);
+    return builder.build();
+}
+
+export function dictValueParserSetOwnPtonJettonWallet(): DictionaryValue<SetOwnPtonJettonWallet> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeSetOwnPtonJettonWallet(src)).endCell());
+        },
+        parse: (src) => {
+            return loadSetOwnPtonJettonWallet(src.loadRef().beginParse());
+        }
+    }
+}
+
+export type SetRouterXautWallet = {
+    $$type: 'SetRouterXautWallet';
+    wallet: Address;
+}
+
+export function storeSetRouterXautWallet(src: SetRouterXautWallet) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeUint(616787849, 32);
+        b_0.storeAddress(src.wallet);
+    };
+}
+
+export function loadSetRouterXautWallet(slice: Slice) {
+    const sc_0 = slice;
+    if (sc_0.loadUint(32) !== 616787849) { throw Error('Invalid prefix'); }
+    const _wallet = sc_0.loadAddress();
+    return { $$type: 'SetRouterXautWallet' as const, wallet: _wallet };
+}
+
+export function loadTupleSetRouterXautWallet(source: TupleReader) {
+    const _wallet = source.readAddress();
+    return { $$type: 'SetRouterXautWallet' as const, wallet: _wallet };
+}
+
+export function loadGetterTupleSetRouterXautWallet(source: TupleReader) {
+    const _wallet = source.readAddress();
+    return { $$type: 'SetRouterXautWallet' as const, wallet: _wallet };
+}
+
+export function storeTupleSetRouterXautWallet(source: SetRouterXautWallet) {
+    const builder = new TupleBuilder();
+    builder.writeAddress(source.wallet);
+    return builder.build();
+}
+
+export function dictValueParserSetRouterXautWallet(): DictionaryValue<SetRouterXautWallet> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeSetRouterXautWallet(src)).endCell());
+        },
+        parse: (src) => {
+            return loadSetRouterXautWallet(src.loadRef().beginParse());
+        }
+    }
+}
+
+export type SwapGold = {
+    $$type: 'SwapGold';
+    minAskAmount: bigint;
+    deadline: bigint;
+}
+
+export function storeSwapGold(src: SwapGold) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeUint(2021599419, 32);
+        b_0.storeCoins(src.minAskAmount);
+        b_0.storeUint(src.deadline, 32);
+    };
+}
+
+export function loadSwapGold(slice: Slice) {
+    const sc_0 = slice;
+    if (sc_0.loadUint(32) !== 2021599419) { throw Error('Invalid prefix'); }
+    const _minAskAmount = sc_0.loadCoins();
+    const _deadline = sc_0.loadUintBig(32);
+    return { $$type: 'SwapGold' as const, minAskAmount: _minAskAmount, deadline: _deadline };
+}
+
+export function loadTupleSwapGold(source: TupleReader) {
+    const _minAskAmount = source.readBigNumber();
+    const _deadline = source.readBigNumber();
+    return { $$type: 'SwapGold' as const, minAskAmount: _minAskAmount, deadline: _deadline };
+}
+
+export function loadGetterTupleSwapGold(source: TupleReader) {
+    const _minAskAmount = source.readBigNumber();
+    const _deadline = source.readBigNumber();
+    return { $$type: 'SwapGold' as const, minAskAmount: _minAskAmount, deadline: _deadline };
+}
+
+export function storeTupleSwapGold(source: SwapGold) {
+    const builder = new TupleBuilder();
+    builder.writeNumber(source.minAskAmount);
+    builder.writeNumber(source.deadline);
+    return builder.build();
+}
+
+export function dictValueParserSwapGold(): DictionaryValue<SwapGold> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeSwapGold(src)).endCell());
+        },
+        parse: (src) => {
+            return loadSwapGold(src.loadRef().beginParse());
+        }
+    }
+}
+
+export type TransferNotification = {
+    $$type: 'TransferNotification';
+    queryId: bigint;
+    amount: bigint;
+    sender: Address;
+    forwardPayload: Slice;
+}
+
+export function storeTransferNotification(src: TransferNotification) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeUint(4108645777, 32);
+        b_0.storeUint(src.queryId, 64);
+        b_0.storeCoins(src.amount);
+        b_0.storeAddress(src.sender);
+        b_0.storeBuilder(src.forwardPayload.asBuilder());
+    };
+}
+
+export function loadTransferNotification(slice: Slice) {
+    const sc_0 = slice;
+    if (sc_0.loadUint(32) !== 4108645777) { throw Error('Invalid prefix'); }
+    const _queryId = sc_0.loadUintBig(64);
+    const _amount = sc_0.loadCoins();
+    const _sender = sc_0.loadAddress();
+    const _forwardPayload = sc_0;
+    return { $$type: 'TransferNotification' as const, queryId: _queryId, amount: _amount, sender: _sender, forwardPayload: _forwardPayload };
+}
+
+export function loadTupleTransferNotification(source: TupleReader) {
+    const _queryId = source.readBigNumber();
+    const _amount = source.readBigNumber();
+    const _sender = source.readAddress();
+    const _forwardPayload = source.readCell().asSlice();
+    return { $$type: 'TransferNotification' as const, queryId: _queryId, amount: _amount, sender: _sender, forwardPayload: _forwardPayload };
+}
+
+export function loadGetterTupleTransferNotification(source: TupleReader) {
+    const _queryId = source.readBigNumber();
+    const _amount = source.readBigNumber();
+    const _sender = source.readAddress();
+    const _forwardPayload = source.readCell().asSlice();
+    return { $$type: 'TransferNotification' as const, queryId: _queryId, amount: _amount, sender: _sender, forwardPayload: _forwardPayload };
+}
+
+export function storeTupleTransferNotification(source: TransferNotification) {
+    const builder = new TupleBuilder();
+    builder.writeNumber(source.queryId);
+    builder.writeNumber(source.amount);
+    builder.writeAddress(source.sender);
+    builder.writeSlice(source.forwardPayload.asCell());
+    return builder.build();
+}
+
+export function dictValueParserTransferNotification(): DictionaryValue<TransferNotification> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeTransferNotification(src)).endCell());
+        },
+        parse: (src) => {
+            return loadTransferNotification(src.loadRef().beginParse());
+        }
+    }
+}
+
 export type TreasuryGold$Data = {
     $$type: 'TreasuryGold$Data';
     owner: Address;
     xautJetton: Address;
     dexRouter: Address;
+    ptonMaster: Address;
+    ownXautJettonWallet: Address;
+    ownPtonJettonWallet: Address;
+    routerXautWallet: Address;
     goldReserveXAUt: bigint;
     totalTONReceived: bigint;
     totalTONConvertedToGold: bigint;
@@ -1129,14 +1386,20 @@ export function storeTreasuryGold$Data(src: TreasuryGold$Data) {
         b_0.storeAddress(src.owner);
         b_0.storeAddress(src.xautJetton);
         b_0.storeAddress(src.dexRouter);
-        b_0.storeCoins(src.goldReserveXAUt);
         const b_1 = new Builder();
-        b_1.storeCoins(src.totalTONReceived);
-        b_1.storeCoins(src.totalTONConvertedToGold);
-        b_1.storeCoins(src.totalOperationalSpent);
-        b_1.storeUint(src.goldConvertRatio, 8);
-        b_1.storeUint(src.depositCount, 64);
-        b_1.storeUint(src.lastDepositTime, 64);
+        b_1.storeAddress(src.ptonMaster);
+        b_1.storeAddress(src.ownXautJettonWallet);
+        b_1.storeAddress(src.ownPtonJettonWallet);
+        const b_2 = new Builder();
+        b_2.storeAddress(src.routerXautWallet);
+        b_2.storeCoins(src.goldReserveXAUt);
+        b_2.storeCoins(src.totalTONReceived);
+        b_2.storeCoins(src.totalTONConvertedToGold);
+        b_2.storeCoins(src.totalOperationalSpent);
+        b_2.storeUint(src.goldConvertRatio, 8);
+        b_2.storeUint(src.depositCount, 64);
+        b_2.storeUint(src.lastDepositTime, 64);
+        b_1.storeRef(b_2.endCell());
         b_0.storeRef(b_1.endCell());
     };
 }
@@ -1146,21 +1409,30 @@ export function loadTreasuryGold$Data(slice: Slice) {
     const _owner = sc_0.loadAddress();
     const _xautJetton = sc_0.loadAddress();
     const _dexRouter = sc_0.loadAddress();
-    const _goldReserveXAUt = sc_0.loadCoins();
     const sc_1 = sc_0.loadRef().beginParse();
-    const _totalTONReceived = sc_1.loadCoins();
-    const _totalTONConvertedToGold = sc_1.loadCoins();
-    const _totalOperationalSpent = sc_1.loadCoins();
-    const _goldConvertRatio = sc_1.loadUintBig(8);
-    const _depositCount = sc_1.loadUintBig(64);
-    const _lastDepositTime = sc_1.loadUintBig(64);
-    return { $$type: 'TreasuryGold$Data' as const, owner: _owner, xautJetton: _xautJetton, dexRouter: _dexRouter, goldReserveXAUt: _goldReserveXAUt, totalTONReceived: _totalTONReceived, totalTONConvertedToGold: _totalTONConvertedToGold, totalOperationalSpent: _totalOperationalSpent, goldConvertRatio: _goldConvertRatio, depositCount: _depositCount, lastDepositTime: _lastDepositTime };
+    const _ptonMaster = sc_1.loadAddress();
+    const _ownXautJettonWallet = sc_1.loadAddress();
+    const _ownPtonJettonWallet = sc_1.loadAddress();
+    const sc_2 = sc_1.loadRef().beginParse();
+    const _routerXautWallet = sc_2.loadAddress();
+    const _goldReserveXAUt = sc_2.loadCoins();
+    const _totalTONReceived = sc_2.loadCoins();
+    const _totalTONConvertedToGold = sc_2.loadCoins();
+    const _totalOperationalSpent = sc_2.loadCoins();
+    const _goldConvertRatio = sc_2.loadUintBig(8);
+    const _depositCount = sc_2.loadUintBig(64);
+    const _lastDepositTime = sc_2.loadUintBig(64);
+    return { $$type: 'TreasuryGold$Data' as const, owner: _owner, xautJetton: _xautJetton, dexRouter: _dexRouter, ptonMaster: _ptonMaster, ownXautJettonWallet: _ownXautJettonWallet, ownPtonJettonWallet: _ownPtonJettonWallet, routerXautWallet: _routerXautWallet, goldReserveXAUt: _goldReserveXAUt, totalTONReceived: _totalTONReceived, totalTONConvertedToGold: _totalTONConvertedToGold, totalOperationalSpent: _totalOperationalSpent, goldConvertRatio: _goldConvertRatio, depositCount: _depositCount, lastDepositTime: _lastDepositTime };
 }
 
 export function loadTupleTreasuryGold$Data(source: TupleReader) {
     const _owner = source.readAddress();
     const _xautJetton = source.readAddress();
     const _dexRouter = source.readAddress();
+    const _ptonMaster = source.readAddress();
+    const _ownXautJettonWallet = source.readAddress();
+    const _ownPtonJettonWallet = source.readAddress();
+    const _routerXautWallet = source.readAddress();
     const _goldReserveXAUt = source.readBigNumber();
     const _totalTONReceived = source.readBigNumber();
     const _totalTONConvertedToGold = source.readBigNumber();
@@ -1168,13 +1440,17 @@ export function loadTupleTreasuryGold$Data(source: TupleReader) {
     const _goldConvertRatio = source.readBigNumber();
     const _depositCount = source.readBigNumber();
     const _lastDepositTime = source.readBigNumber();
-    return { $$type: 'TreasuryGold$Data' as const, owner: _owner, xautJetton: _xautJetton, dexRouter: _dexRouter, goldReserveXAUt: _goldReserveXAUt, totalTONReceived: _totalTONReceived, totalTONConvertedToGold: _totalTONConvertedToGold, totalOperationalSpent: _totalOperationalSpent, goldConvertRatio: _goldConvertRatio, depositCount: _depositCount, lastDepositTime: _lastDepositTime };
+    return { $$type: 'TreasuryGold$Data' as const, owner: _owner, xautJetton: _xautJetton, dexRouter: _dexRouter, ptonMaster: _ptonMaster, ownXautJettonWallet: _ownXautJettonWallet, ownPtonJettonWallet: _ownPtonJettonWallet, routerXautWallet: _routerXautWallet, goldReserveXAUt: _goldReserveXAUt, totalTONReceived: _totalTONReceived, totalTONConvertedToGold: _totalTONConvertedToGold, totalOperationalSpent: _totalOperationalSpent, goldConvertRatio: _goldConvertRatio, depositCount: _depositCount, lastDepositTime: _lastDepositTime };
 }
 
 export function loadGetterTupleTreasuryGold$Data(source: TupleReader) {
     const _owner = source.readAddress();
     const _xautJetton = source.readAddress();
     const _dexRouter = source.readAddress();
+    const _ptonMaster = source.readAddress();
+    const _ownXautJettonWallet = source.readAddress();
+    const _ownPtonJettonWallet = source.readAddress();
+    const _routerXautWallet = source.readAddress();
     const _goldReserveXAUt = source.readBigNumber();
     const _totalTONReceived = source.readBigNumber();
     const _totalTONConvertedToGold = source.readBigNumber();
@@ -1182,7 +1458,7 @@ export function loadGetterTupleTreasuryGold$Data(source: TupleReader) {
     const _goldConvertRatio = source.readBigNumber();
     const _depositCount = source.readBigNumber();
     const _lastDepositTime = source.readBigNumber();
-    return { $$type: 'TreasuryGold$Data' as const, owner: _owner, xautJetton: _xautJetton, dexRouter: _dexRouter, goldReserveXAUt: _goldReserveXAUt, totalTONReceived: _totalTONReceived, totalTONConvertedToGold: _totalTONConvertedToGold, totalOperationalSpent: _totalOperationalSpent, goldConvertRatio: _goldConvertRatio, depositCount: _depositCount, lastDepositTime: _lastDepositTime };
+    return { $$type: 'TreasuryGold$Data' as const, owner: _owner, xautJetton: _xautJetton, dexRouter: _dexRouter, ptonMaster: _ptonMaster, ownXautJettonWallet: _ownXautJettonWallet, ownPtonJettonWallet: _ownPtonJettonWallet, routerXautWallet: _routerXautWallet, goldReserveXAUt: _goldReserveXAUt, totalTONReceived: _totalTONReceived, totalTONConvertedToGold: _totalTONConvertedToGold, totalOperationalSpent: _totalOperationalSpent, goldConvertRatio: _goldConvertRatio, depositCount: _depositCount, lastDepositTime: _lastDepositTime };
 }
 
 export function storeTupleTreasuryGold$Data(source: TreasuryGold$Data) {
@@ -1190,6 +1466,10 @@ export function storeTupleTreasuryGold$Data(source: TreasuryGold$Data) {
     builder.writeAddress(source.owner);
     builder.writeAddress(source.xautJetton);
     builder.writeAddress(source.dexRouter);
+    builder.writeAddress(source.ptonMaster);
+    builder.writeAddress(source.ownXautJettonWallet);
+    builder.writeAddress(source.ownPtonJettonWallet);
+    builder.writeAddress(source.routerXautWallet);
     builder.writeNumber(source.goldReserveXAUt);
     builder.writeNumber(source.totalTONReceived);
     builder.writeNumber(source.totalTONConvertedToGold);
@@ -1286,6 +1566,72 @@ export function dictValueParserGoldReserveData(): DictionaryValue<GoldReserveDat
     }
 }
 
+export type SwapWiring = {
+    $$type: 'SwapWiring';
+    ptonMaster: Address;
+    ownXautJettonWallet: Address;
+    ownPtonJettonWallet: Address;
+    routerXautWallet: Address;
+}
+
+export function storeSwapWiring(src: SwapWiring) {
+    return (builder: Builder) => {
+        const b_0 = builder;
+        b_0.storeAddress(src.ptonMaster);
+        b_0.storeAddress(src.ownXautJettonWallet);
+        b_0.storeAddress(src.ownPtonJettonWallet);
+        const b_1 = new Builder();
+        b_1.storeAddress(src.routerXautWallet);
+        b_0.storeRef(b_1.endCell());
+    };
+}
+
+export function loadSwapWiring(slice: Slice) {
+    const sc_0 = slice;
+    const _ptonMaster = sc_0.loadAddress();
+    const _ownXautJettonWallet = sc_0.loadAddress();
+    const _ownPtonJettonWallet = sc_0.loadAddress();
+    const sc_1 = sc_0.loadRef().beginParse();
+    const _routerXautWallet = sc_1.loadAddress();
+    return { $$type: 'SwapWiring' as const, ptonMaster: _ptonMaster, ownXautJettonWallet: _ownXautJettonWallet, ownPtonJettonWallet: _ownPtonJettonWallet, routerXautWallet: _routerXautWallet };
+}
+
+export function loadTupleSwapWiring(source: TupleReader) {
+    const _ptonMaster = source.readAddress();
+    const _ownXautJettonWallet = source.readAddress();
+    const _ownPtonJettonWallet = source.readAddress();
+    const _routerXautWallet = source.readAddress();
+    return { $$type: 'SwapWiring' as const, ptonMaster: _ptonMaster, ownXautJettonWallet: _ownXautJettonWallet, ownPtonJettonWallet: _ownPtonJettonWallet, routerXautWallet: _routerXautWallet };
+}
+
+export function loadGetterTupleSwapWiring(source: TupleReader) {
+    const _ptonMaster = source.readAddress();
+    const _ownXautJettonWallet = source.readAddress();
+    const _ownPtonJettonWallet = source.readAddress();
+    const _routerXautWallet = source.readAddress();
+    return { $$type: 'SwapWiring' as const, ptonMaster: _ptonMaster, ownXautJettonWallet: _ownXautJettonWallet, ownPtonJettonWallet: _ownPtonJettonWallet, routerXautWallet: _routerXautWallet };
+}
+
+export function storeTupleSwapWiring(source: SwapWiring) {
+    const builder = new TupleBuilder();
+    builder.writeAddress(source.ptonMaster);
+    builder.writeAddress(source.ownXautJettonWallet);
+    builder.writeAddress(source.ownPtonJettonWallet);
+    builder.writeAddress(source.routerXautWallet);
+    return builder.build();
+}
+
+export function dictValueParserSwapWiring(): DictionaryValue<SwapWiring> {
+    return {
+        serialize: (src, builder) => {
+            builder.storeRef(beginCell().store(storeSwapWiring(src)).endCell());
+        },
+        parse: (src) => {
+            return loadSwapWiring(src.loadRef().beginParse());
+        }
+    }
+}
+
  type TreasuryGold_init_args = {
     $$type: 'TreasuryGold_init_args';
     owner: Address;
@@ -1303,7 +1649,7 @@ function initTreasuryGold_init_args(src: TreasuryGold_init_args) {
 }
 
 async function TreasuryGold_init(owner: Address, xautJetton: Address, dexRouter: Address) {
-    const __code = Cell.fromHex('b5ee9c7241021b010005d9000114ff00f4a413f4bcf2c80b01020162021002d8d0eda2edfb01d072d721d200d200fa4021103450666f04f86102f862ed44d0d200018e22fa40fa40fa40fa00d401d0fa00fa00fa00d307d33fd33f30106a1069106810676c1a8e13fa40fa40fa40552003d1587054700080465311e20b925f0be029d749c21fe30009f90120030b03f609d31f2182105e08b85eba8e5831fa0030811e8df84228c705917f95f8422ac705e2f2f48200eecf21c200f2f415a01079106810570610354403c87f01ca005590509ace17ce15ce5003fa02c858fa0258fa0258fa0212cb0712cb3f12cb3fcdc9ed54db31e0218210867132d4bae302218210def20831bae3022104070802d231fa00fa40308200f7a7f8422bc705f2f4813bb3f8276f1082103b9aca00a15230bbf2f45131a07270881046103610246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb001079551605060034000000006f7065726174696f6e616c5f7769746864726177616c0056c87f01ca005590509ace17ce15ce5003fa02c858fa0258fa0258fa0212cb0712cb3f12cb3fcdc9ed54db31009e6c21d307308200f7a7f84229c705f2f48200ee0a21c2319321c1609170e2f2f410795516c87f01ca005590509ace17ce15ce5003fa02c858fa0258fa0258fa0212cb0712cb3f12cb3fcdc9ed54db3102ce8210a101de29ba8e48313605fa40308200f7a7f84229c705f2f4107910680710461035443012c87f01ca005590509ace17ce15ce5003fa02c858fa0258fa0258fa0212cb0712cb3f12cb3fcdc9ed54db31e0218210b8f87b26bae302018210946a98b6bae30209090a008e313706fa40308200f7a7f84229c705f2f41079081057104610354403c87f01ca005590509ace17ce15ce5003fa02c858fa0258fa0258fa0212cb0712cb3f12cb3fcdc9ed54db3100dcd33f30c8018210aff90f5758cb1fcb3fc9108a10791068105710461035443012f84270705003804201503304c8cf8580ca00cf8440ce01fa02806acf40f400c901fb00c87f01ca005590509ace17ce15ce5003fa02c858fa0258fa0258fa0212cb0712cb3f12cb3fcdc9ed54db31029e82f066d23e7744329745f6f26d2907874b52b0232e43983b1c95de8dc315bb45ba1fbae30282f018ad90bbbdc491f892ad61f676bcc7a3cae8e12b36b1d762dab3136918a284fdbae3025f0af2c0820c0d00b63039f8416f24135f03820afaf080a1811dc421c200f2f45133a008a4f823514aa88064a90413a01079106810570406455503c87f01ca005590509ace17ce15ce5003fa02c858fa0258fa0258fa0212cb0712cb3f12cb3fcdc9ed5402e08200f7a7f84229c705f2f4820094332382103b9aca00bcf2f48200d927f8276f102482103b9aca00a0bef2f470727f88290407552010246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb00107955160e0f002000000000737761705f746f5f786175740052c87f01ca005590509ace17ce15ce5003fa02c858fa0258fa0258fa0212cb0712cb3f12cb3fcdc9ed540201201113018dbe28ef6a268690000c7117d207d207d207d006a00e87d007d007d006983e99fe99f980835083488340833b60d4709fd207d207d202a9001e8ac382a380040232988f16d9e3650c120002290201581416018db6f69da89a1a400031c45f481f481f481f401a803a1f401f401f401a60fa67fa67e6020d420d220d020ced8351c27f481f481f480aa4007a2b0e0a8e001008ca623c5b678d9430150002220201201719018db086bb51343480006388be903e903e903e803500743e803e803e8034c1f4cff4cfcc041a841a441a0419db06a384fe903e903e90154800f4561c151c00201194c478b6cf1b29a018000c547654547543018db1e67b51343480006388be903e903e903e803500743e803e803e8034c1f4cff4cfcc041a841a441a0419db06a384fe903e903e90154800f4561c151c00201194c478b6cf1b28601a0008f8276f109a2a768b');
+    const __code = Cell.fromHex('b5ee9c724102260100095b000114ff00f4a413f4bcf2c80b01020162021603dcd0eda2edfb01d072d721d200d200fa4021103450666f04f86102f862ed44d0d200018e2bfa40fa40fa40d401d0fa40fa40fa40d430d0fa40fa00fa00fa00fa00d307d33fd33f3010be10bd10bc6c1e8e8bfa40fa40fa40552003d158e20f925f0fe02dd749c21f913ee30d0cf90123031404fe0dd31f218210787f28bbbae302218210f4e4f591ba8ed531d33f31fa00308130d8f8422ac705f2f48200c1e68d086000000000000000000000000000000000000000000000000000000000000000000452a0c705b3f2f415a010bd10ac109b108a1079106810570610354403e0218210867132d4bae302218210def20831ba0409070a02fe31fa00d31f308200f7a7f8422fc705f2f48200d6768d086000000000000000000000000000000000000000000000000000000000000000000452c0c705b3f2f48126548d086000000000000000000000000000000000000000000000000000000000000000000452a0c705b3f2f48152cf895290c705b3f2f4816a3d22c200240501fef2f4820094332582103b9aca00bcf2f48210127a39808200d927f8276f105372a0820afaf080a0bef2f470229832f823810384a002df6d6dc85006fa02f828cf1622fa0215f40021fa0214f4005230cb0f5230cb01c9c882106664de2a01cb1f2acf16f828cf16f828cf1613cb3f12ccc97fc88209f3835d01cb1f5240cb3f06019c27fa02f828cf16ca00ccc95055a0727f2a040710246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0010bd551a0902d231fa00fa40308200f7a7f8422fc705f2f4813bb3f8276f1082103b9aca00a15230bbf2f45131a07270881046103610246d50436d03c8cf8580ca00cf8440ce01fa028069cf40025c6e016eb0935bcf819d58cf8680cf8480f400f400cf81e2f400c901fb0010bd551a08090034000000006f7065726174696f6e616c5f7769746864726177616c006ac87f01ca0055d050dece1bce19ce07c8ce16ce14ce02c8ce01fa0258fa0258fa025003fa0213cb0713cb3f13cb3fcdcdc9ed54db3104f68e596c21d307308200f7a7f8422dc705f2f48200ee0a21c2319321c1609170e2f2f410bd551ac87f01ca0055d050dece1bce19ce07c8ce16ce14ce02c8ce01fa0258fa0258fa025003fa0213cb0713cb3f13cb3fcdcdc9ed54db31e0218210a101de29bae302218210b8f87b26bae302218210d01a8093bae302210b0c0d0e00b4313a09fa40308200f7a7f8422dc705f2f410bd10ac0b108a10791068105710461035443012c87f01ca0055d050dece1bce19ce07c8ce16ce14ce02c8ce01fa0258fa0258fa025003fa0213cb0713cb3f13cb3fcdcdc9ed54db3100b2313b0afa40308200f7a7f8422dc705f2f410bd0c109b108a107910681057104610354403c87f01ca0055d050dece1bce19ce07c8ce16ce14ce02c8ce01fa0258fa0258fa025003fa0213cb0713cb3f13cb3fcdcdc9ed54db3100b2313908fa40308200f7a7f8422dc705f2f410bd10ac109b0a107910681057104610354403c87f01ca0055d050dece1bce19ce07c8ce16ce14ce02c8ce01fa0258fa0258fa025003fa0213cb0713cb3f13cb3fcdcdc9ed54db3103fe82103bdba203ba8e5a313807fa40308200f7a7f8422dc705f2f410bd10ac109b108a091068105710461035443012c87f01ca0055d050dece1bce19ce07c8ce16ce14ce02c8ce01fa0258fa0258fa025003fa0213cb0713cb3f13cb3fcdcdc9ed54db31e0218210622753c7bae30221821024c36f89bae302018210946a98b60f101100b2313706fa40308200f7a7f8422dc705f2f410bd10ac109b108a1079081057104610354403c87f01ca0055d050dece1bce19ce07c8ce16ce14ce02c8ce01fa0258fa0258fa025003fa0213cb0713cb3f13cb3fcdcdc9ed54db3100b4313605fa40308200f7a7f8422dc705f2f410bd10ac109b108a107910680710461035443012c87f01ca0055d050dece1bce19ce07c8ce16ce14ce02c8ce01fa0258fa0258fa025003fa0213cb0713cb3f13cb3fcdcdc9ed54db31010cbae3023e10cd1201fcd33f30c8018210aff90f5758cb1fcb3fc910ce10bd10ac109b108a10791068105710461035443012f84270705003804201503304c8cf8580ca00cf8440ce01fa02806acf40f400c901fb00c87f01ca0055d050dece1bce19ce07c8ce16ce14ce02c8ce01fa0258fa0258fa025003fa0213cb0713cb3f13cb3fcdcdc9ed54130004db31015482f066d23e7744329745f6f26d2907874b52b0232e43983b1c95de8dc315bb45ba1fbae3025f0df2c0821500d4f8416f24135f03820afaf080a1811dc421c200f2f45133a00da4f823514da88064a90413a010bd10ac109b108a10791068105704466603c87f01ca0055d050dece1bce19ce07c8ce16ce14ce02c8ce01fa0258fa0258fa025003fa0213cb0713cb3f13cb3fcdcdc9ed54020120171c020120181a028fb83f5ed44d0d200018e2bfa40fa40fa40d401d0fa40fa40fa40d430d0fa40fa00fa00fa00fa00d307d33fd33f3010be10bd10bc6c1e8e8bfa40fa40fa40552003d158e2db3c6ce4823190008547a982a028fb851ded44d0d200018e2bfa40fa40fa40d401d0fa40fa40fa40d430d0fa40fa00fa00fa00fa00d307d33fd33f3010be10bd10bc6c1e8e8bfa40fa40fa40552003d158e2db3c6ce18231b00022d0201581d1f028fb6f69da89a1a400031c57f481f481f481a803a1f481f481f481a861a1f481f401f401f401f401a60fa67fa67e60217c217a2178d83d1d17f481f481f480aa4007a2b1c5b678d9c30231e0002220201202022028fb086bb5134348000638afe903e903e903500743e903e903e90350c343e903e803e803e803e8034c1f4cff4cfcc042f842f442f1b07a3a2fe903e903e90154800f45638b6cf1b39a02321000c547654547543028fb1e67b5134348000638afe903e903e903500743e903e903e90350c343e903e803e803e803e8034c1f4cff4cfcc042f842f442f1b07a3a2fe903e903e90154800f45638b6cf1b3860232501ea8d08600000000000000000000000000000000000000000000000000000000000000000048d08600000000000000000000000000000000000000000000000000000000000000000048d0860000000000000000000000000000000000000000000000000000000000000000004897054700080465311240043800000000000000000000000000000000000000000000000000000000000000000100008f8276f10eaa65a2b');
     const builder = beginCell();
     builder.storeUint(0, 1);
     initTreasuryGold_init_args({ $$type: 'TreasuryGold_init_args', owner, xautJetton, dexRouter })(builder);
@@ -1349,12 +1695,16 @@ export const TreasuryGold_errors = {
     136: { message: "Invalid standard address" },
     138: { message: "Not a basechain address" },
     7620: { message: "Deposit too small" },
-    7821: { message: "Only DEX router or DAO" },
+    9812: { message: "Own pTON wallet not configured" },
+    12504: { message: "Only our own verified XAUt wallet" },
     15283: { message: "Insufficient operational balance" },
+    21199: { message: "Router XAUt wallet not configured" },
+    27197: { message: "minAskAmount required for slippage protection" },
     37939: { message: "Insufficient gold fund" },
+    49638: { message: "Own XAUt wallet not configured" },
+    54902: { message: "pTON master not configured" },
     55591: { message: "Insufficient contract balance" },
     60938: { message: "Ratio must be 50-95%" },
-    61135: { message: "Amount must be positive" },
     63399: { message: "Only DAO" },
 } as const
 
@@ -1396,12 +1746,16 @@ export const TreasuryGold_errors_backward = {
     "Invalid standard address": 136,
     "Not a basechain address": 138,
     "Deposit too small": 7620,
-    "Only DEX router or DAO": 7821,
+    "Own pTON wallet not configured": 9812,
+    "Only our own verified XAUt wallet": 12504,
     "Insufficient operational balance": 15283,
+    "Router XAUt wallet not configured": 21199,
+    "minAskAmount required for slippage protection": 27197,
     "Insufficient gold fund": 37939,
+    "Own XAUt wallet not configured": 49638,
+    "pTON master not configured": 54902,
     "Insufficient contract balance": 55591,
     "Ratio must be 50-95%": 60938,
-    "Amount must be positive": 61135,
     "Only DAO": 63399,
 } as const
 
@@ -1424,10 +1778,16 @@ const TreasuryGold_types: ABIType[] = [
     {"name":"SetConvertRatio","header":3740403761,"fields":[{"name":"ratio","type":{"kind":"simple","type":"uint","optional":false,"format":8}}]},
     {"name":"SetDexRouter","header":2701254185,"fields":[{"name":"router","type":{"kind":"simple","type":"address","optional":false}}]},
     {"name":"WithdrawOperational","header":2255565524,"fields":[{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"destination","type":{"kind":"simple","type":"address","optional":false}}]},
-    {"name":"GoldSwapConfirmed","header":1577629790,"fields":[{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"txHash","type":{"kind":"simple","type":"uint","optional":false,"format":256}}]},
     {"name":"SetXautJetton","header":3103292198,"fields":[{"name":"xautAddr","type":{"kind":"simple","type":"address","optional":false}}]},
-    {"name":"TreasuryGold$Data","header":null,"fields":[{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"xautJetton","type":{"kind":"simple","type":"address","optional":false}},{"name":"dexRouter","type":{"kind":"simple","type":"address","optional":false}},{"name":"goldReserveXAUt","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalTONReceived","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalTONConvertedToGold","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalOperationalSpent","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"goldConvertRatio","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"depositCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"lastDepositTime","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
+    {"name":"SetPtonMaster","header":3491397779,"fields":[{"name":"ptonMaster","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"SetOwnXautJettonWallet","header":1004249603,"fields":[{"name":"wallet","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"SetOwnPtonJettonWallet","header":1646744519,"fields":[{"name":"wallet","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"SetRouterXautWallet","header":616787849,"fields":[{"name":"wallet","type":{"kind":"simple","type":"address","optional":false}}]},
+    {"name":"SwapGold","header":2021599419,"fields":[{"name":"minAskAmount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"deadline","type":{"kind":"simple","type":"uint","optional":false,"format":32}}]},
+    {"name":"TransferNotification","header":4108645777,"fields":[{"name":"queryId","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"amount","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"sender","type":{"kind":"simple","type":"address","optional":false}},{"name":"forwardPayload","type":{"kind":"simple","type":"slice","optional":false,"format":"remainder"}}]},
+    {"name":"TreasuryGold$Data","header":null,"fields":[{"name":"owner","type":{"kind":"simple","type":"address","optional":false}},{"name":"xautJetton","type":{"kind":"simple","type":"address","optional":false}},{"name":"dexRouter","type":{"kind":"simple","type":"address","optional":false}},{"name":"ptonMaster","type":{"kind":"simple","type":"address","optional":false}},{"name":"ownXautJettonWallet","type":{"kind":"simple","type":"address","optional":false}},{"name":"ownPtonJettonWallet","type":{"kind":"simple","type":"address","optional":false}},{"name":"routerXautWallet","type":{"kind":"simple","type":"address","optional":false}},{"name":"goldReserveXAUt","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalTONReceived","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalTONConvertedToGold","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalOperationalSpent","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"goldConvertRatio","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"depositCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"lastDepositTime","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
     {"name":"GoldReserveData","header":null,"fields":[{"name":"goldReserveXAUt","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalTONReceived","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"totalTONConvertedToGold","type":{"kind":"simple","type":"uint","optional":false,"format":"coins"}},{"name":"convertRatio","type":{"kind":"simple","type":"uint","optional":false,"format":8}},{"name":"depositCount","type":{"kind":"simple","type":"uint","optional":false,"format":64}},{"name":"lastDepositTime","type":{"kind":"simple","type":"uint","optional":false,"format":64}}]},
+    {"name":"SwapWiring","header":null,"fields":[{"name":"ptonMaster","type":{"kind":"simple","type":"address","optional":false}},{"name":"ownXautJettonWallet","type":{"kind":"simple","type":"address","optional":false}},{"name":"ownPtonJettonWallet","type":{"kind":"simple","type":"address","optional":false}},{"name":"routerXautWallet","type":{"kind":"simple","type":"address","optional":false}}]},
 ]
 
 const TreasuryGold_opcodes = {
@@ -1439,14 +1799,20 @@ const TreasuryGold_opcodes = {
     "SetConvertRatio": 3740403761,
     "SetDexRouter": 2701254185,
     "WithdrawOperational": 2255565524,
-    "GoldSwapConfirmed": 1577629790,
     "SetXautJetton": 3103292198,
+    "SetPtonMaster": 3491397779,
+    "SetOwnXautJettonWallet": 1004249603,
+    "SetOwnPtonJettonWallet": 1646744519,
+    "SetRouterXautWallet": 616787849,
+    "SwapGold": 2021599419,
+    "TransferNotification": 4108645777,
 }
 
 const TreasuryGold_getters: ABIGetter[] = [
     {"name":"get_gold_reserve","methodId":123418,"arguments":[],"returnType":{"kind":"simple","type":"GoldReserveData","optional":false}},
     {"name":"get_operational_balance","methodId":128921,"arguments":[],"returnType":{"kind":"simple","type":"int","optional":false,"format":257}},
     {"name":"get_convert_ratio","methodId":120756,"arguments":[],"returnType":{"kind":"simple","type":"int","optional":false,"format":257}},
+    {"name":"get_swap_wiring","methodId":66549,"arguments":[],"returnType":{"kind":"simple","type":"SwapWiring","optional":false}},
     {"name":"owner","methodId":83229,"arguments":[],"returnType":{"kind":"simple","type":"address","optional":false}},
 ]
 
@@ -1454,20 +1820,28 @@ export const TreasuryGold_getterMapping: { [key: string]: string } = {
     'get_gold_reserve': 'getGetGoldReserve',
     'get_operational_balance': 'getGetOperationalBalance',
     'get_convert_ratio': 'getGetConvertRatio',
+    'get_swap_wiring': 'getGetSwapWiring',
     'owner': 'getOwner',
 }
 
 const TreasuryGold_receivers: ABIReceiver[] = [
     {"receiver":"internal","message":{"kind":"text","text":"deposit"}},
-    {"receiver":"internal","message":{"kind":"text","text":"swap_gold"}},
-    {"receiver":"internal","message":{"kind":"typed","type":"GoldSwapConfirmed"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"SwapGold"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"TransferNotification"}},
     {"receiver":"internal","message":{"kind":"typed","type":"WithdrawOperational"}},
     {"receiver":"internal","message":{"kind":"typed","type":"SetConvertRatio"}},
     {"receiver":"internal","message":{"kind":"typed","type":"SetDexRouter"}},
     {"receiver":"internal","message":{"kind":"typed","type":"SetXautJetton"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"SetPtonMaster"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"SetOwnXautJettonWallet"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"SetOwnPtonJettonWallet"}},
+    {"receiver":"internal","message":{"kind":"typed","type":"SetRouterXautWallet"}},
     {"receiver":"internal","message":{"kind":"typed","type":"Deploy"}},
 ]
 
+export const STONFI_SWAP_OP = 1717886506n;
+export const PTON_TON_TRANSFER_OP = 32736093n;
+export const JETTON_TRANSFER_NOTIFICATION_OP = 1935855772n;
 
 export class TreasuryGold implements Contract {
     
@@ -1503,17 +1877,17 @@ export class TreasuryGold implements Contract {
         this.init = init;
     }
     
-    async send(provider: ContractProvider, via: Sender, args: { value: bigint, bounce?: boolean| null | undefined }, message: "deposit" | "swap_gold" | GoldSwapConfirmed | WithdrawOperational | SetConvertRatio | SetDexRouter | SetXautJetton | Deploy) {
+    async send(provider: ContractProvider, via: Sender, args: { value: bigint, bounce?: boolean| null | undefined }, message: "deposit" | SwapGold | TransferNotification | WithdrawOperational | SetConvertRatio | SetDexRouter | SetXautJetton | SetPtonMaster | SetOwnXautJettonWallet | SetOwnPtonJettonWallet | SetRouterXautWallet | Deploy) {
         
         let body: Cell | null = null;
         if (message === "deposit") {
             body = beginCell().storeUint(0, 32).storeStringTail(message).endCell();
         }
-        if (message === "swap_gold") {
-            body = beginCell().storeUint(0, 32).storeStringTail(message).endCell();
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'SwapGold') {
+            body = beginCell().store(storeSwapGold(message)).endCell();
         }
-        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'GoldSwapConfirmed') {
-            body = beginCell().store(storeGoldSwapConfirmed(message)).endCell();
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'TransferNotification') {
+            body = beginCell().store(storeTransferNotification(message)).endCell();
         }
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'WithdrawOperational') {
             body = beginCell().store(storeWithdrawOperational(message)).endCell();
@@ -1526,6 +1900,18 @@ export class TreasuryGold implements Contract {
         }
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'SetXautJetton') {
             body = beginCell().store(storeSetXautJetton(message)).endCell();
+        }
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'SetPtonMaster') {
+            body = beginCell().store(storeSetPtonMaster(message)).endCell();
+        }
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'SetOwnXautJettonWallet') {
+            body = beginCell().store(storeSetOwnXautJettonWallet(message)).endCell();
+        }
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'SetOwnPtonJettonWallet') {
+            body = beginCell().store(storeSetOwnPtonJettonWallet(message)).endCell();
+        }
+        if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'SetRouterXautWallet') {
+            body = beginCell().store(storeSetRouterXautWallet(message)).endCell();
         }
         if (message && typeof message === 'object' && !(message instanceof Slice) && message.$$type === 'Deploy') {
             body = beginCell().store(storeDeploy(message)).endCell();
@@ -1554,6 +1940,13 @@ export class TreasuryGold implements Contract {
         const builder = new TupleBuilder();
         const source = (await provider.get('get_convert_ratio', builder.build())).stack;
         const result = source.readBigNumber();
+        return result;
+    }
+    
+    async getGetSwapWiring(provider: ContractProvider) {
+        const builder = new TupleBuilder();
+        const source = (await provider.get('get_swap_wiring', builder.build())).stack;
+        const result = loadGetterTupleSwapWiring(source);
         return result;
     }
     

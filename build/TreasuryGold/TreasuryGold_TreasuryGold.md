@@ -1,9 +1,9 @@
 # Tact compilation report
 Contract: TreasuryGold
-BoC Size: 1509 bytes
+BoC Size: 2407 bytes
 
 ## Structures (Structs and Messages)
-Total structures: 22
+Total structures: 28
 
 ### DataSize
 TL-B: `_ cells:int257 bits:int257 refs:int257 = DataSize`
@@ -77,24 +77,48 @@ Signature: `SetDexRouter{router:address}`
 TL-B: `withdraw_operational#867132d4 amount:coins destination:address = WithdrawOperational`
 Signature: `WithdrawOperational{amount:coins,destination:address}`
 
-### GoldSwapConfirmed
-TL-B: `gold_swap_confirmed#5e08b85e amount:coins txHash:uint256 = GoldSwapConfirmed`
-Signature: `GoldSwapConfirmed{amount:coins,txHash:uint256}`
-
 ### SetXautJetton
 TL-B: `set_xaut_jetton#b8f87b26 xautAddr:address = SetXautJetton`
 Signature: `SetXautJetton{xautAddr:address}`
 
+### SetPtonMaster
+TL-B: `set_pton_master#d01a8093 ptonMaster:address = SetPtonMaster`
+Signature: `SetPtonMaster{ptonMaster:address}`
+
+### SetOwnXautJettonWallet
+TL-B: `set_own_xaut_jetton_wallet#3bdba203 wallet:address = SetOwnXautJettonWallet`
+Signature: `SetOwnXautJettonWallet{wallet:address}`
+
+### SetOwnPtonJettonWallet
+TL-B: `set_own_pton_jetton_wallet#622753c7 wallet:address = SetOwnPtonJettonWallet`
+Signature: `SetOwnPtonJettonWallet{wallet:address}`
+
+### SetRouterXautWallet
+TL-B: `set_router_xaut_wallet#24c36f89 wallet:address = SetRouterXautWallet`
+Signature: `SetRouterXautWallet{wallet:address}`
+
+### SwapGold
+TL-B: `swap_gold#787f28bb minAskAmount:coins deadline:uint32 = SwapGold`
+Signature: `SwapGold{minAskAmount:coins,deadline:uint32}`
+
+### TransferNotification
+TL-B: `transfer_notification#f4e4f591 queryId:uint64 amount:coins sender:address forwardPayload:remainder<slice> = TransferNotification`
+Signature: `TransferNotification{queryId:uint64,amount:coins,sender:address,forwardPayload:remainder<slice>}`
+
 ### TreasuryGold$Data
-TL-B: `_ owner:address xautJetton:address dexRouter:address goldReserveXAUt:coins totalTONReceived:coins totalTONConvertedToGold:coins totalOperationalSpent:coins goldConvertRatio:uint8 depositCount:uint64 lastDepositTime:uint64 = TreasuryGold`
-Signature: `TreasuryGold{owner:address,xautJetton:address,dexRouter:address,goldReserveXAUt:coins,totalTONReceived:coins,totalTONConvertedToGold:coins,totalOperationalSpent:coins,goldConvertRatio:uint8,depositCount:uint64,lastDepositTime:uint64}`
+TL-B: `_ owner:address xautJetton:address dexRouter:address ptonMaster:address ownXautJettonWallet:address ownPtonJettonWallet:address routerXautWallet:address goldReserveXAUt:coins totalTONReceived:coins totalTONConvertedToGold:coins totalOperationalSpent:coins goldConvertRatio:uint8 depositCount:uint64 lastDepositTime:uint64 = TreasuryGold`
+Signature: `TreasuryGold{owner:address,xautJetton:address,dexRouter:address,ptonMaster:address,ownXautJettonWallet:address,ownPtonJettonWallet:address,routerXautWallet:address,goldReserveXAUt:coins,totalTONReceived:coins,totalTONConvertedToGold:coins,totalOperationalSpent:coins,goldConvertRatio:uint8,depositCount:uint64,lastDepositTime:uint64}`
 
 ### GoldReserveData
 TL-B: `_ goldReserveXAUt:coins totalTONReceived:coins totalTONConvertedToGold:coins convertRatio:uint8 depositCount:uint64 lastDepositTime:uint64 = GoldReserveData`
 Signature: `GoldReserveData{goldReserveXAUt:coins,totalTONReceived:coins,totalTONConvertedToGold:coins,convertRatio:uint8,depositCount:uint64,lastDepositTime:uint64}`
 
+### SwapWiring
+TL-B: `_ ptonMaster:address ownXautJettonWallet:address ownPtonJettonWallet:address routerXautWallet:address = SwapWiring`
+Signature: `SwapWiring{ptonMaster:address,ownXautJettonWallet:address,ownPtonJettonWallet:address,routerXautWallet:address}`
+
 ## Get methods
-Total get methods: 4
+Total get methods: 5
 
 ## get_gold_reserve
 No arguments
@@ -103,6 +127,9 @@ No arguments
 No arguments
 
 ## get_convert_ratio
+No arguments
+
+## get_swap_wiring
 No arguments
 
 ## owner
@@ -146,12 +173,16 @@ No arguments
 * 136: Invalid standard address
 * 138: Not a basechain address
 * 7620: Deposit too small
-* 7821: Only DEX router or DAO
+* 9812: Own pTON wallet not configured
+* 12504: Only our own verified XAUt wallet
 * 15283: Insufficient operational balance
+* 21199: Router XAUt wallet not configured
+* 27197: minAskAmount required for slippage protection
 * 37939: Insufficient gold fund
+* 49638: Own XAUt wallet not configured
+* 54902: pTON master not configured
 * 55591: Insufficient contract balance
 * 60938: Ratio must be 50-95%
-* 61135: Amount must be positive
 * 63399: Only DAO
 
 ## Trait inheritance diagram

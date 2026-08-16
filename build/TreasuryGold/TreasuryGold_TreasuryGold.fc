@@ -21,10 +21,10 @@ builder $DeployOk$_store(builder build_0, (int) v) inline;
 cell $DeployOk$_store_cell((int) v, builder b) inline;
 
 ;; $TreasuryGold$_store
-builder $TreasuryGold$_store(builder build_0, (slice, slice, slice, int, int, int, int, int, int, int) v) inline;
+builder $TreasuryGold$_store(builder build_0, (slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) v) inline;
 
 ;; $TreasuryGold$_load
-(slice, ((slice, slice, slice, int, int, int, int, int, int, int))) $TreasuryGold$_load(slice sc_0) inline;
+(slice, ((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int))) $TreasuryGold$_load(slice sc_0) inline;
 
 ;; $Context$_get_value
 _ $Context$_get_value((int, slice, int, slice) v) inline;
@@ -32,38 +32,47 @@ _ $Context$_get_value((int, slice, int, slice) v) inline;
 ;; $GoldReserveData$_to_external
 (int, int, int, int, int, int) $GoldReserveData$_to_external(((int, int, int, int, int, int)) v) inline;
 
+;; $SwapWiring$_to_external
+(slice, slice, slice, slice) $SwapWiring$_to_external(((slice, slice, slice, slice)) v) inline;
+
 ;; $TreasuryGold$init$_load
 (slice, ((slice, slice, slice))) $TreasuryGold$init$_load(slice sc_0) inline;
 
 ;; $TreasuryGold$_contract_init
-(slice, slice, slice, int, int, int, int, int, int, int) $TreasuryGold$_contract_init(slice $owner, slice $xautJetton, slice $dexRouter) impure inline;
+(slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $TreasuryGold$_contract_init(slice $owner, slice $xautJetton, slice $dexRouter) impure inline;
 
 ;; $TreasuryGold$_contract_load
-(slice, slice, slice, int, int, int, int, int, int, int) $TreasuryGold$_contract_load() impure inline;
+(slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $TreasuryGold$_contract_load() impure inline;
 
 ;; $TreasuryGold$_contract_store
-() $TreasuryGold$_contract_store((slice, slice, slice, int, int, int, int, int, int, int) v) impure inline;
+() $TreasuryGold$_contract_store((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) v) impure inline;
 
 ;; $GoldReserveData$_constructor_goldReserveXAUt_totalTONReceived_totalTONConvertedToGold_convertRatio_depositCount_lastDepositTime
 ((int, int, int, int, int, int)) $GoldReserveData$_constructor_goldReserveXAUt_totalTONReceived_totalTONConvertedToGold_convertRatio_depositCount_lastDepositTime(int $goldReserveXAUt, int $totalTONReceived, int $totalTONConvertedToGold, int $convertRatio, int $depositCount, int $lastDepositTime) inline;
 
 ;; $TreasuryGold$_fun_get_gold_reserve
-((slice, slice, slice, int, int, int, int, int, int, int), (int, int, int, int, int, int)) $TreasuryGold$_fun_get_gold_reserve((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
+((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int), (int, int, int, int, int, int)) $TreasuryGold$_fun_get_gold_reserve((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
 
 ;; $TreasuryGold$_fun_get_operational_balance
-((slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_operational_balance((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
+((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_operational_balance((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
 
 ;; $TreasuryGold$_fun_get_convert_ratio
-((slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_convert_ratio((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
+((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_convert_ratio((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
+
+;; $SwapWiring$_constructor_ptonMaster_ownXautJettonWallet_ownPtonJettonWallet_routerXautWallet
+((slice, slice, slice, slice)) $SwapWiring$_constructor_ptonMaster_ownXautJettonWallet_ownPtonJettonWallet_routerXautWallet(slice $ptonMaster, slice $ownXautJettonWallet, slice $ownPtonJettonWallet, slice $routerXautWallet) inline;
+
+;; $TreasuryGold$_fun_get_swap_wiring
+((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int), (slice, slice, slice, slice)) $TreasuryGold$_fun_get_swap_wiring((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
 
 ;; $MessageParameters$_constructor_bounce_to_value_mode_body
 ((int, cell, int, slice, int)) $MessageParameters$_constructor_bounce_to_value_mode_body(int $bounce, slice $to, int $value, int $mode, cell $body) inline;
 
 ;; $TreasuryGold$_fun_notify
-((slice, slice, slice, int, int, int, int, int, int, int), ()) $TreasuryGold$_fun_notify((slice, slice, slice, int, int, int, int, int, int, int) $self, cell $body) impure inline;
+((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int), ()) $TreasuryGold$_fun_notify((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $self, cell $body) impure inline;
 
 ;; $TreasuryGold$_fun_owner
-((slice, slice, slice, int, int, int, int, int, int, int), slice) $TreasuryGold$_fun_owner((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
+((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int), slice) $TreasuryGold$_fun_owner((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref;
 
 ;; $SendParameters$_constructor_to_value_mode_bounce_body
 ((int, cell, cell, cell, int, slice, int)) $SendParameters$_constructor_to_value_mode_bounce_body(slice $to, int $value, int $mode, int $bounce, cell $body) inline;
@@ -85,6 +94,14 @@ global int __tact_randomized;
 slice __tact_context_get_sender() inline {
     return __tact_context_sender;
 }
+
+builder $global_beginCell() impure asm """
+    NEWC
+""";
+
+slice $global_myAddress() impure asm """
+    MYADDR
+""";
 
 int $global_myBalance() impure asm """
     BALANCE FIRST
@@ -193,8 +210,32 @@ int $global_now() impure asm """
     NOW
 """;
 
-((slice, slice, slice, int, int, int, int, int, int, int), ()) $TreasuryGold$_fun_notify((slice, slice, slice, int, int, int, int, int, int, int) $self, cell $body) impure inline {
-    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
+builder $Builder$_fun_storeBit(int $value, builder $self) impure asm """
+    1 STI
+""";
+
+builder $Builder$_fun_storeCoins(builder $self, int $value) impure asm """
+    STVARUINT16
+""";
+
+builder $Builder$_fun_storeRef(cell $cell, builder $self) impure asm """
+    STREF
+""";
+
+builder $Builder$_fun_storeMaybeRef(cell $cell, builder $self) impure asm """
+    STOPTREF
+""";
+
+cell $Builder$_fun_endCell(builder $self) impure asm """
+    ENDC
+""";
+
+builder $Builder$_fun_storeAddress(builder $self, slice $address) impure asm """
+    STSLICER
+""";
+
+((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int), ()) $TreasuryGold$_fun_notify((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $self, cell $body) impure inline {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
     slice $to = __tact_context_get_sender();
     int $bounce = false;
     if (false) {
@@ -203,28 +244,28 @@ int $global_now() impure asm """
         if (($balanceBeforeMessage < 0)) {
             $global_nativeReserve(0, 0);
             $global_message($MessageParameters$_constructor_bounce_to_value_mode_body($bounce, $to, 0, 130, $body));
-            return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), ());
+            return (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), ());
         }
     }
     $global_message($MessageParameters$_constructor_bounce_to_value_mode_body($bounce, $to, 0, 66, $body));
-    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), ());
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), ());
 }
 
-((slice, slice, slice, int, int, int, int, int, int, int), slice) $TreasuryGold$_fun_owner((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
-    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
-    var $fresh$ret_24 = $self'owner;
-    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_24);
+((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int), slice) $TreasuryGold$_fun_owner((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
+    var $fresh$ret_31 = $self'owner;
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_31);
 }
 
 ;; TreasuryGold_TreasuryGold.constants.fc
+;; EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c
+slice __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c() asm """
+    B{b5ee9c72410101010024000043800000000000000000000000000000000000000000000000000000000000000000104aec829d} B>boc <s PUSHSLICE
+""";
+
 ;; Cell GGhGDC6GNUswbuS3jZgSvTbGnQRyDU0YLM934NwXqUo=
 cell __gen_cell_cell_1868460c2e86354b306ee4b78d9812bd36c69d04720d4d182ccf77e0dc17a94a() asm """
     B{b5ee9c7241010101001c000034000000006f7065726174696f6e616c5f7769746864726177616c97d2878c} B>boc PUSHREF
-""";
-
-;; Cell 5F4RzDcC4eMa0N+tJkaJJ7g4Ysxx2mK9/qEKc8D0Wn4=
-cell __gen_cell_cell_e45e11cc3702e1e31ad0dfad26468927b83862cc71da62bdfea10a73c0f45a7e() asm """
-    B{b5ee9c7241010101001200002000000000737761705f746f5f7861757471124bde} B>boc PUSHREF
 """;
 
 ;; TreasuryGold_TreasuryGold.storage.fc
@@ -292,40 +333,65 @@ cell $DeployOk$_store_cell((int) v, builder b) inline {
 }
 
 ;;
-;; Type: TreasuryGold
-;; TLB: _ owner:address xautJetton:address dexRouter:address goldReserveXAUt:coins totalTONReceived:coins totalTONConvertedToGold:coins totalOperationalSpent:coins goldConvertRatio:uint8 depositCount:uint64 lastDepositTime:uint64 = TreasuryGold
+;; Type: SwapWiring
+;; TLB: _ ptonMaster:address ownXautJettonWallet:address ownPtonJettonWallet:address routerXautWallet:address = SwapWiring
 ;;
 
-builder $TreasuryGold$_store(builder build_0, (slice, slice, slice, int, int, int, int, int, int, int) v) inline {
-    var (v'owner, v'xautJetton, v'dexRouter, v'goldReserveXAUt, v'totalTONReceived, v'totalTONConvertedToGold, v'totalOperationalSpent, v'goldConvertRatio, v'depositCount, v'lastDepositTime) = v;
+(slice, slice, slice, slice) $SwapWiring$_to_external(((slice, slice, slice, slice)) v) inline {
+    var (v'ptonMaster, v'ownXautJettonWallet, v'ownPtonJettonWallet, v'routerXautWallet) = v; 
+    return (v'ptonMaster, v'ownXautJettonWallet, v'ownPtonJettonWallet, v'routerXautWallet);
+}
+
+((slice, slice, slice, slice)) $SwapWiring$_constructor_ptonMaster_ownXautJettonWallet_ownPtonJettonWallet_routerXautWallet(slice $ptonMaster, slice $ownXautJettonWallet, slice $ownPtonJettonWallet, slice $routerXautWallet) inline {
+    return ($ptonMaster, $ownXautJettonWallet, $ownPtonJettonWallet, $routerXautWallet);
+}
+
+;;
+;; Type: TreasuryGold
+;; TLB: _ owner:address xautJetton:address dexRouter:address ptonMaster:address ownXautJettonWallet:address ownPtonJettonWallet:address routerXautWallet:address goldReserveXAUt:coins totalTONReceived:coins totalTONConvertedToGold:coins totalOperationalSpent:coins goldConvertRatio:uint8 depositCount:uint64 lastDepositTime:uint64 = TreasuryGold
+;;
+
+builder $TreasuryGold$_store(builder build_0, (slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) v) inline {
+    var (v'owner, v'xautJetton, v'dexRouter, v'ptonMaster, v'ownXautJettonWallet, v'ownPtonJettonWallet, v'routerXautWallet, v'goldReserveXAUt, v'totalTONReceived, v'totalTONConvertedToGold, v'totalOperationalSpent, v'goldConvertRatio, v'depositCount, v'lastDepositTime) = v;
     build_0 = build_0.store_slice(v'owner);
     build_0 = build_0.store_slice(v'xautJetton);
     build_0 = build_0.store_slice(v'dexRouter);
-    build_0 = build_0.store_varuint16(v'goldReserveXAUt);
     var build_1 = begin_cell();
-    build_1 = build_1.store_varuint16(v'totalTONReceived);
-    build_1 = build_1.store_varuint16(v'totalTONConvertedToGold);
-    build_1 = build_1.store_varuint16(v'totalOperationalSpent);
-    build_1 = build_1.store_uint(v'goldConvertRatio, 8);
-    build_1 = build_1.store_uint(v'depositCount, 64);
-    build_1 = build_1.store_uint(v'lastDepositTime, 64);
+    build_1 = build_1.store_slice(v'ptonMaster);
+    build_1 = build_1.store_slice(v'ownXautJettonWallet);
+    build_1 = build_1.store_slice(v'ownPtonJettonWallet);
+    var build_2 = begin_cell();
+    build_2 = build_2.store_slice(v'routerXautWallet);
+    build_2 = build_2.store_varuint16(v'goldReserveXAUt);
+    build_2 = build_2.store_varuint16(v'totalTONReceived);
+    build_2 = build_2.store_varuint16(v'totalTONConvertedToGold);
+    build_2 = build_2.store_varuint16(v'totalOperationalSpent);
+    build_2 = build_2.store_uint(v'goldConvertRatio, 8);
+    build_2 = build_2.store_uint(v'depositCount, 64);
+    build_2 = build_2.store_uint(v'lastDepositTime, 64);
+    build_1 = store_builder_ref(build_1, build_2);
     build_0 = store_builder_ref(build_0, build_1);
     return build_0;
 }
 
-(slice, ((slice, slice, slice, int, int, int, int, int, int, int))) $TreasuryGold$_load(slice sc_0) inline {
+(slice, ((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int))) $TreasuryGold$_load(slice sc_0) inline {
     var v'owner = sc_0~load_msg_addr();
     var v'xautJetton = sc_0~load_msg_addr();
     var v'dexRouter = sc_0~load_msg_addr();
-    var v'goldReserveXAUt = sc_0~load_varuint16();
     slice sc_1 = sc_0~load_ref().begin_parse();
-    var v'totalTONReceived = sc_1~load_varuint16();
-    var v'totalTONConvertedToGold = sc_1~load_varuint16();
-    var v'totalOperationalSpent = sc_1~load_varuint16();
-    var v'goldConvertRatio = sc_1~load_uint(8);
-    var v'depositCount = sc_1~load_uint(64);
-    var v'lastDepositTime = sc_1~load_uint(64);
-    return (sc_0, (v'owner, v'xautJetton, v'dexRouter, v'goldReserveXAUt, v'totalTONReceived, v'totalTONConvertedToGold, v'totalOperationalSpent, v'goldConvertRatio, v'depositCount, v'lastDepositTime));
+    var v'ptonMaster = sc_1~load_msg_addr();
+    var v'ownXautJettonWallet = sc_1~load_msg_addr();
+    var v'ownPtonJettonWallet = sc_1~load_msg_addr();
+    slice sc_2 = sc_1~load_ref().begin_parse();
+    var v'routerXautWallet = sc_2~load_msg_addr();
+    var v'goldReserveXAUt = sc_2~load_varuint16();
+    var v'totalTONReceived = sc_2~load_varuint16();
+    var v'totalTONConvertedToGold = sc_2~load_varuint16();
+    var v'totalOperationalSpent = sc_2~load_varuint16();
+    var v'goldConvertRatio = sc_2~load_uint(8);
+    var v'depositCount = sc_2~load_uint(64);
+    var v'lastDepositTime = sc_2~load_uint(64);
+    return (sc_0, (v'owner, v'xautJetton, v'dexRouter, v'ptonMaster, v'ownXautJettonWallet, v'ownPtonJettonWallet, v'routerXautWallet, v'goldReserveXAUt, v'totalTONReceived, v'totalTONConvertedToGold, v'totalOperationalSpent, v'goldConvertRatio, v'depositCount, v'lastDepositTime));
 }
 
 (slice, ((slice, slice, slice))) $TreasuryGold$init$_load(slice sc_0) inline {
@@ -335,7 +401,7 @@ builder $TreasuryGold$_store(builder build_0, (slice, slice, slice, int, int, in
     return (sc_0, (v'owner, v'xautJetton, v'dexRouter));
 }
 
-(slice, slice, slice, int, int, int, int, int, int, int) $TreasuryGold$_contract_load() impure inline {
+(slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $TreasuryGold$_contract_load() impure inline {
     slice $sc = get_data().begin_parse();
     int $loaded = $sc~load_int(1);
     if ($loaded) {
@@ -348,7 +414,7 @@ builder $TreasuryGold$_store(builder build_0, (slice, slice, slice, int, int, in
     }
 }
 
-() $TreasuryGold$_contract_store((slice, slice, slice, int, int, int, int, int, int, int) v) impure inline {
+() $TreasuryGold$_contract_store((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) v) impure inline {
     builder b = begin_cell();
     b = b.store_int(true, 1);
     b = $TreasuryGold$_store(b, v);
@@ -359,11 +425,15 @@ builder $TreasuryGold$_store(builder build_0, (slice, slice, slice, int, int, in
 ;; Contract TreasuryGold functions
 ;;
 
-(slice, slice, slice, int, int, int, int, int, int, int) $TreasuryGold$_contract_init(slice $owner, slice $xautJetton, slice $dexRouter) impure inline {
-    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = (null(), null(), null(), null(), null(), null(), null(), null(), null(), null());
+(slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $TreasuryGold$_contract_init(slice $owner, slice $xautJetton, slice $dexRouter) impure inline {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = (null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null(), null());
     $self'owner = $owner;
     $self'xautJetton = $xautJetton;
     $self'dexRouter = $dexRouter;
+    $self'ptonMaster = __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c();
+    $self'ownXautJettonWallet = __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c();
+    $self'ownPtonJettonWallet = __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c();
+    $self'routerXautWallet = __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c();
     $self'goldReserveXAUt = 0;
     $self'totalTONReceived = 0;
     $self'totalTONConvertedToGold = 0;
@@ -371,25 +441,31 @@ builder $TreasuryGold$_store(builder build_0, (slice, slice, slice, int, int, in
     $self'goldConvertRatio = 70;
     $self'depositCount = 0;
     $self'lastDepositTime = 0;
-    return ($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime);
+    return ($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime);
 }
 
-((slice, slice, slice, int, int, int, int, int, int, int), (int, int, int, int, int, int)) $TreasuryGold$_fun_get_gold_reserve((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
-    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
-    var $fresh$ret_21 = $GoldReserveData$_constructor_goldReserveXAUt_totalTONReceived_totalTONConvertedToGold_convertRatio_depositCount_lastDepositTime($self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime);
-    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_21);
+((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int), (int, int, int, int, int, int)) $TreasuryGold$_fun_get_gold_reserve((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
+    var $fresh$ret_27 = $GoldReserveData$_constructor_goldReserveXAUt_totalTONReceived_totalTONConvertedToGold_convertRatio_depositCount_lastDepositTime($self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime);
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_27);
 }
 
-((slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_operational_balance((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
-    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
-    var $fresh$ret_22 = $global_myBalance();
-    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_22);
+((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_operational_balance((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
+    var $fresh$ret_28 = $global_myBalance();
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_28);
 }
 
-((slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_convert_ratio((slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
-    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
-    var $fresh$ret_23 = $self'goldConvertRatio;
-    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_23);
+((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int), int) $TreasuryGold$_fun_get_convert_ratio((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
+    var $fresh$ret_29 = $self'goldConvertRatio;
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_29);
+}
+
+((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int), (slice, slice, slice, slice)) $TreasuryGold$_fun_get_swap_wiring((slice, slice, slice, slice, slice, slice, slice, int, int, int, int, int, int, int) $self) impure inline_ref {
+    var (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)) = $self;
+    var $fresh$ret_30 = $SwapWiring$_constructor_ptonMaster_ownXautJettonWallet_ownPtonJettonWallet_routerXautWallet($self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet);
+    return (($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime), $fresh$ret_30);
 }
 
 ;;
@@ -412,6 +488,12 @@ _ %get_convert_ratio() method_id(120756) {
     var self = $TreasuryGold$_contract_load();
     var res = self~$TreasuryGold$_fun_get_convert_ratio();
     return res;
+}
+
+_ %get_swap_wiring() method_id(66549) {
+    var self = $TreasuryGold$_contract_load();
+    var res = self~$TreasuryGold$_fun_get_swap_wiring();
+    return $SwapWiring$_to_external(res);
 }
 
 _ %owner() method_id(83229) {
@@ -440,7 +522,7 @@ _ %owner() method_id(83229) {
     __tact_context_sender = msg_sender_addr;
     
     ;; Load contract data
-    var ($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime) = $TreasuryGold$_contract_load();
+    var ($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime) = $TreasuryGold$_contract_load();
     
     ;; Handle bounced messages
     if (msg_bounced) { return (); }
@@ -448,14 +530,42 @@ _ %owner() method_id(83229) {
     int in_msg_length = slice_bits(in_msg);
     if (in_msg_length >= 32) {
         op = in_msg~load_uint(32);
-        ;; Receive GoldSwapConfirmed message
-        if (op == 1577629790) {
+        ;; Receive SwapGold message
+        if (op == 2021599419) {
+            var $msg'minAskAmount = in_msg~load_varuint16();
+            var $msg'deadline = in_msg~load_uint(32);
+            throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+            throw_unless(54902, ( ~ equal_slices_bits($self'ptonMaster, __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c()) ));
+            throw_unless(9812, ( ~ equal_slices_bits($self'ownPtonJettonWallet, __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c()) ));
+            throw_unless(21199, ( ~ equal_slices_bits($self'routerXautWallet, __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c()) ));
+            throw_unless(27197, ($msg'minAskAmount > 0));
+            int $swapAmt = $self'totalTONConvertedToGold;
+            throw_unless(37939, ($swapAmt > 1000000000));
+            int $gasBudget = 310000000;
+            throw_unless(55591, ($global_myBalance() >= (($swapAmt + $gasBudget) + 50000000)));
+            $self'totalTONConvertedToGold = 0;
+            int $deadline = $msg'deadline;
+            ifnot ($deadline) {
+                $deadline = ($global_now() + 900);
+            }
+            cell $swapParams = $Builder$_fun_endCell(store_uint(store_uint($Builder$_fun_storeMaybeRef(null(), $Builder$_fun_storeCoins($Builder$_fun_storeMaybeRef(null(), $Builder$_fun_storeCoins($Builder$_fun_storeAddress($Builder$_fun_storeCoins($global_beginCell(), $msg'minAskAmount), $global_myAddress()), 0)), 0)), 0, 16), 0, 2));
+            cell $swapBody = $Builder$_fun_endCell($Builder$_fun_storeRef($swapParams, store_uint($Builder$_fun_storeAddress($Builder$_fun_storeAddress($Builder$_fun_storeAddress(store_uint($global_beginCell(), 1717886506, 32), $self'routerXautWallet), $global_myAddress()), $global_myAddress()), $deadline, 64)));
+            cell $ptonBody = $Builder$_fun_endCell($Builder$_fun_storeRef($swapBody, $Builder$_fun_storeBit(true, $Builder$_fun_storeAddress($Builder$_fun_storeCoins(store_uint(store_uint($global_beginCell(), 32736093, 32), 0, 64), $swapAmt), $global_myAddress()))));
+            $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'ownPtonJettonWallet, ($swapAmt + $gasBudget), 2, true, $ptonBody));
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            return ();
+        }
+        
+        ;; Receive TransferNotification message
+        if (op == 4108645777) {
+            var $msg'queryId = in_msg~load_uint(64);
             var $msg'amount = in_msg~load_varuint16();
-            var $msg'txHash = in_msg~load_uint(256);
-            throw_unless(7821, ( (( equal_slices_bits(__tact_context_get_sender(), $self'dexRouter) )) ? (true) : (( equal_slices_bits(__tact_context_get_sender(), $self'owner) )) ));
-            throw_unless(61135, ($msg'amount > 0));
+            var $msg'sender = in_msg~load_msg_addr();
+            var $msg'forwardPayload = in_msg;
+            throw_unless(12504, ( equal_slices_bits(__tact_context_get_sender(), $self'ownXautJettonWallet) ));
+            throw_unless(49638, ( ~ equal_slices_bits($self'ownXautJettonWallet, __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c()) ));
             $self'goldReserveXAUt = ($self'goldReserveXAUt + $msg'amount);
-            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
             return ();
         }
         
@@ -467,7 +577,7 @@ _ %owner() method_id(83229) {
             throw_unless(15283, ($msg'amount <= ($global_myBalance() - 1000000000)));
             $self'totalOperationalSpent = ($self'totalOperationalSpent + $msg'amount);
             $global_send($SendParameters$_constructor_to_value_mode_bounce_body($msg'destination, $msg'amount, 2, false, __gen_cell_cell_1868460c2e86354b306ee4b78d9812bd36c69d04720d4d182ccf77e0dc17a94a()));
-            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
             return ();
         }
         
@@ -477,7 +587,7 @@ _ %owner() method_id(83229) {
             throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
             throw_unless(60938, ( (($msg'ratio >= 50)) ? (($msg'ratio <= 95)) : (false) ));
             $self'goldConvertRatio = $msg'ratio;
-            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
             return ();
         }
         
@@ -486,7 +596,7 @@ _ %owner() method_id(83229) {
             var $msg'router = in_msg~load_msg_addr();
             throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
             $self'dexRouter = $msg'router;
-            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
             return ();
         }
         
@@ -495,15 +605,51 @@ _ %owner() method_id(83229) {
             var $msg'xautAddr = in_msg~load_msg_addr();
             throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
             $self'xautJetton = $msg'xautAddr;
-            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            return ();
+        }
+        
+        ;; Receive SetPtonMaster message
+        if (op == 3491397779) {
+            var $msg'ptonMaster = in_msg~load_msg_addr();
+            throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+            $self'ptonMaster = $msg'ptonMaster;
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            return ();
+        }
+        
+        ;; Receive SetOwnXautJettonWallet message
+        if (op == 1004249603) {
+            var $msg'wallet = in_msg~load_msg_addr();
+            throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+            $self'ownXautJettonWallet = $msg'wallet;
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            return ();
+        }
+        
+        ;; Receive SetOwnPtonJettonWallet message
+        if (op == 1646744519) {
+            var $msg'wallet = in_msg~load_msg_addr();
+            throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+            $self'ownPtonJettonWallet = $msg'wallet;
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            return ();
+        }
+        
+        ;; Receive SetRouterXautWallet message
+        if (op == 616787849) {
+            var $msg'wallet = in_msg~load_msg_addr();
+            throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
+            $self'routerXautWallet = $msg'wallet;
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
             return ();
         }
         
         ;; Receive Deploy message
         if (op == 0x946a98b6) {
             var $deploy'queryId = in_msg~load_uint(64);
-            ($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)~$TreasuryGold$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId), begin_cell()));
-            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+            ($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime)~$TreasuryGold$_fun_notify($DeployOk$_store_cell($DeployOk$_constructor_queryId($deploy'queryId), begin_cell()));
+            $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
             return ();
         }
         
@@ -519,18 +665,7 @@ _ %owner() method_id(83229) {
         $self'lastDepositTime = $global_now();
         int $goldAmt = (($amount * $self'goldConvertRatio) / 100);
         $self'totalTONConvertedToGold = ($self'totalTONConvertedToGold + $goldAmt);
-        $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
-        return ();
-    }
-    ;; Receive "swap_gold" message
-    if (text_op == 0x18ad90bbbdc491f892ad61f676bcc7a3cae8e12b36b1d762dab3136918a284fd) {
-        throw_unless(63399, ( equal_slices_bits(__tact_context_get_sender(), $self'owner) ));
-        int $swapAmt = $self'totalTONConvertedToGold;
-        throw_unless(37939, ($swapAmt > 1000000000));
-        throw_unless(55591, ($global_myBalance() >= ($swapAmt + 1000000000)));
-        $self'totalTONConvertedToGold = 0;
-        $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'dexRouter, $swapAmt, 2, true, __gen_cell_cell_e45e11cc3702e1e31ad0dfad26468927b83862cc71da62bdfea10a73c0f45a7e()));
-        $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
+        $TreasuryGold$_contract_store(($self'owner, $self'xautJetton, $self'dexRouter, $self'ptonMaster, $self'ownXautJettonWallet, $self'ownPtonJettonWallet, $self'routerXautWallet, $self'goldReserveXAUt, $self'totalTONReceived, $self'totalTONConvertedToGold, $self'totalOperationalSpent, $self'goldConvertRatio, $self'depositCount, $self'lastDepositTime));
         return ();
     }
     ;; Throw if not handled
