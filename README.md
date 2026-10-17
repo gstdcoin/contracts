@@ -1,13 +1,15 @@
 # GSTD Smart Contracts
 
-> The on-chain backbone of the GSTD decentralized compute network.  
-> Built on TON blockchain in [Tact](https://tact-lang.org) — compiled, auditable, unstoppable.
+> TON smart-contract source and deployment records for GSTD.
+> Built with [Tact](https://tact-lang.org). The contracts have not received an independent security audit.
+
+> **Deployment status:** some contracts are deployed, but this does not mean the platform task queue is connected to settlement or that users currently receive task payouts. Ownership transfers, newer contract versions, and other integrations remain outstanding. See [`deployment-mainnet.json`](deployment-mainnet.json) and the status notes below. Do not treat this repository as financial advice or production-ready infrastructure.
 
 ---
 
 ## What is GSTD?
 
-GSTD is an open-source decentralized network where anyone can run a node, earn tokens, and own a piece of the AI + blockchain infrastructure of the future. No central servers. No gatekeepers. The protocol is governed entirely by GSTD token holders.
+GSTD is an open-source project developing smart contracts for token settlement, node identity, and governance. Some components are deployed and others remain source code or planned integrations; the protocol is not currently governed entirely by token holders.
 
 **The token is the network. The network is the token.**
 
@@ -72,7 +74,7 @@ GSTD is an open-source decentralized network where anyone can run a node, earn t
 
 | Contract | File | Description |
 |---|---|---|
-| **DAOVoting** | `DAOVoting.tact` | Token-weighted DAO, 10% quorum, 48h timelock on all changes |
+| **DAOVoting** | `DAOVoting.tact` | Legacy token-weighted governance contract; quorum limitation blocks intended operation |
 | **SovereignVault** | `SovereignVault.tact` | Node liquidity vault — JIT liquidity provision for swaps |
 
 ### Node Infrastructure
@@ -99,25 +101,27 @@ GSTD is an open-source decentralized network where anyone can run a node, earn t
 
 ## Token Economics
 
+The economics below describe design intent. They do not imply that the platform currently routes service payments through these contracts or that rewards are being paid.
+
 ### GSTD as the Base Routing Asset
 
-Every payment made to use the network (AI inference, RPC endpoints, compute jobs) is routed through `SettlementRouter`, which swaps it to GSTD on-chain before settling. This means:
+The intended design is to route supported service payments through `SettlementRouter` and swap them to GSTD before settlement. Production routing and integration with platform tasks are not verified. The intended effects are:
 
 - **Every service use creates buy pressure on GSTD**
 - No dependency on manual buybacks — it is structural and automatic
 - Users can pay in any asset (TON, USDT, SOL, XRP); GSTD absorbs it all
 
-### Revenue Split
+### Intended Revenue Split
 
 ```
-User pays 1 TON for AI inference
+Illustrative only — not a live production payment
          │
          ├── 85% (0.85 TON) → Node operator (immediate payment)
          ├── 10% (0.10 TON) → EcosystemTreasury (buybacks)
          └──  5% (0.05 TON) → Buy GSTD on DEX → BURN
 ```
 
-### NaaS Staking Tiers
+### Planned NaaS Staking Tiers
 
 | Tier | Stake | Chains | Reward multiplier |
 |---|---|---|---|
@@ -126,9 +130,11 @@ User pays 1 TON for AI inference
 | Validator | 50,000 GSTD | 25 chains | 2× |
 | Sovereign | 500,000 GSTD | 50+ chains | 3× |
 
-Higher tiers also increase governance voting weight and receive priority task routing.
+ProviderRegistry is not deployed. These tiers and multipliers are not currently available on mainnet.
 
-### Slashing (NaaS)
+### Planned Slashing (NaaS)
+
+SlashMechanics is not deployed. The following table is a design specification, not active enforcement.
 
 | Condition | Slash | Note |
 |---|---|---|
@@ -140,16 +146,10 @@ Higher tiers also increase governance voting weight and receive priority task ro
 
 ### Governance
 
-- **Minimum proposal stake:** 10,000 GSTD
-- **Quorum:** 10% of staked supply must vote
-- **Timelock:** 48 hours between passing and execution
-- **What DAO controls (once ownership transfer below is done):** Revenue split percentages, base rates, contract addresses, slash parameters, new feature activation
-- **What DAO cannot do:** Take funds from workers, freeze individual wallets
-- **Current status:** DAOVoting is deployed, but `SettlementMaster.owner` and
-  `EcosystemTreasury.owner` still point to the original deployer wallet
-  (verified on-chain 2026-08-13) — the ownership transfer to DAOVoting has
-  not happened yet, so the DAO cannot actually control those two contracts
-  yet. See `deployment-mainnet.json`'s `phase2_todo`.
+- The legacy DAOVoting contract is deployed, but its effective quorum is unreachable; it cannot currently provide the intended governance.
+- DAOVotingV2 fixes known quorum and proposal-address issues in source and tests, but is **not deployed**.
+- SettlementMaster and EcosystemTreasury ownership has not been transferred to a functioning DAO. See `deployment-mainnet.json`'s `phase2_todo`.
+- Governance parameters documented in contract source do not imply active community control.
 
 ---
 
