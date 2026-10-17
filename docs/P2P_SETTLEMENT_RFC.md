@@ -2,7 +2,7 @@
 
 # RFC: P2P Task Routing + Fully On-Chain Settlement
 
-**Status:** Design proposal, not implemented. Written for review before any code lands in `gstdbot` or `contracts`.
+**Status:** Partially implemented in `gstdbot` and the `SettlementMaster.tact` source. The deployed SettlementMasterV2 bytecode has not been verified against the current source; do not assume this source fix is active on mainnet.
 **Scope:** Replace the centralized `app.gstdtoken.com` task queue and Redis reward ledger with peer-to-peer task routing and settlement that any node can trigger directly on TON — no backend in the trust path.
 **Constraint from the audit:** every claim below is scoped to what the code in `gstdbot`, `contracts`, and `ai` actually contains today (see prior research turn). Nothing here assumes unfinished code already works.
 
@@ -74,10 +74,10 @@ message SettleBatch {
 
 ```tact
 // was: require(sender() == self.owner || sender() == self.gateway, ...)
-require(verifyQuorum(attestations, quorumThreshold, taskId, workerAddr, resultHash), "Insufficient attested quorum");
+require(verifyQuorum(attestations, quorumThreshold, taskId, workerAddr, resultHash, gstdBonusAmount, computeUnits), "Insufficient attested quorum");
 ```
 
-`verifyQuorum` checks each signature is a valid Ed25519 signature over `(taskId, workerAddr, resultHash)` from a **distinct address registered in `AgentRegistry`** (prerequisite: `AgentRegistry` must actually be deployed — it's written but per `deployment-mainnet.json` is still `phase2_todo`). Bounding K=3 keeps this to 2-3 signature checks per call, not unbounded gas growth.
+`verifyQuorum` checks each signature is a valid Ed25519 signature over `(taskId, workerAddr, resultHash, gstdBonusAmount, computeUnits)` from a **distinct key registered in the contract allowlist**. All payout-determining inputs are bound by the quorum; the contract still caps compute units and the resulting GSTD bonus. Bounding K=3 keeps this to 2-3 signature checks per call, not unbounded gas growth.
 
 `sender()` becomes irrelevant to trust — any node (or even a third party) can submit the transaction; only the attached signatures matter. This is what lets a node settle its own work.
 
@@ -142,13 +142,13 @@ Updated after implementation work in this session. Read this section before assu
 
 **Done and verified:**
 - `SettleTaskWithProof`, `SettleBatch`, `RegisterAttestorKey`, `SetQuorumThreshold`, and `verifyQuorum` added to `SettlementMaster.tact`, compiled successfully with the real Tact compiler. The existing `SettleTask`/gateway path is untouched and still works (regression-tested).
-- 8 automated sandbox tests (`@ton/sandbox`, real TON contract emulator, not mocks) in `tests/SettlementMaster.spec.ts`, covering: valid 2-of-3 quorum settling correctly with an 85% worker payout; rejection of below-threshold quorum; rejection of a duplicated signature counted as two attestations; rejection of an unregistered signer; rejection of a forged/tampered `resultHash`; replay protection on `taskId`; `SettleBatch` settling multiple tasks in one call; and the original gateway path still working unmodified. All 8 pass.
+- 9 automated sandbox tests (`@ton/sandbox`, real TON contract emulator, not mocks) in `tests/SettlementMaster.spec.ts`, covering: valid 2-of-3 quorum settling correctly with an 85% worker payout; rejection of below-threshold quorum; rejection of a duplicated signature counted as two attestations; rejection of an unregistered signer; rejection of a forged/tampered `resultHash`; rejection when `gstdBonusAmount` or `computeUnits` is altered after signing; replay protection on `taskId`; `SettleBatch` settling multiple tasks in one call; and the original gateway path still working unmodified. Re-run these tests whenever the contract or signing format changes.
 - Three real, previously-undiscovered libp2p compatibility bugs found and fixed in `gstdbot`'s `src/p2p/node.ts` — the P2P layer's send/receive path did not actually work with the pinned `libp2p ^3.1.6`:
   1. `connectToPeer()` passed a raw multiaddr string to `node.dial()`, which this libp2p version rejects — needs a parsed `Multiaddr`.
   2. `getConnections(peerId)` was called with a plain string everywhere (heartbeat, task, and the new task-response/attestation sends) — this version requires a real `PeerId` object.
   3. Every protocol handler used the pre-v3 `stream.sink()`/`stream.source` duplex API, which no longer exists — v3's `Stream` is itself a `send()`/`close()` + directly-async-iterable `MessageStream`. Handlers were also destructuring `{ stream }` from what libp2p actually passes as two positional arguments, `(stream, connection)` — so `stream` was `undefined` in every handler.
   All four are fixed; without this, no P2P message of any kind (heartbeat included) could have been sent or received on the currently pinned libp2p version.
-- `src/p2p/identity.ts`, `src/p2p/attestation.ts`, `src/p2p/quorum-coordinator.ts` added: persistent Ed25519 attestor identity (separate from the transport PeerId and the TON wallet), message hashing/signing that exactly mirrors the Tact contract's `verifyQuorum()` cell layout, and a two-way cross-signing coordinator (a peer's self-signed reveal only proves its own claim by construction — reaching quorum requires peers to counter-sign a message addressed to *your* worker address once they independently confirm your result matches theirs).
+- `src/p2p/identity.ts`, `src/p2p/attestation.ts`, `src/p2p/quorum-coordinator.ts` added: persistent Ed25519 attestor identity (separate from the transport PeerId and the TON wallet), message hashing/signing that exactly mirrors the Tact contract's `verifyQuorum()` cell layout, including `gstdBonusAmount` and `computeUnits`, and a two-way cross-signing coordinator (a peer's self-signed reveal only proves its own claim by construction — reaching quorum requires peers to counter-sign a message addressed to *your* worker address once they independently confirm your result matches theirs).
 - `GstdP2PNode` extended with the `/gstd/task-response/1.0.0` and `/gstd/attestation/1.0.0` protocols (`TaskResponseSchema` was previously declared but never wired to anything).
 - **Live end-to-end test** (`tests/p2p-quorum-live.ts`, real processes, real TCP sockets, real Ed25519 keys — nothing mocked): 3 real `GstdP2PNode` instances connect over genuine libp2p transport; 2 nodes independently compute the same result and correctly reach 2-of-3 quorum via real cross-signed network messages; the 1 dissenting node correctly fails to reach quorum for its own (minority) result. Passing.
 - **Cross-repo integration proof** (`contracts/scripts/verify-p2p-proof.ts`): the exact attestations produced by the live gstdbot P2P run above were fed into the real compiled `SettlementMaster` contract in the TON sandbox and were accepted, settling correctly. This confirms the P2P signing format and the on-chain `verifyQuorum()` are genuinely bit-for-bit compatible, not just independently plausible.
@@ -158,6 +158,7 @@ Updated after implementation work in this session. Read this section before assu
 - **`RegisterAttestorKey` population from real node operators** — currently a manual DAO action per the interim design in §5; wiring it to an automatic on-chain relay from `AgentRegistry` registrations is still open, as noted in §6.
 - **TON testnet trial** — the sandbox tests are a local TON emulator (`@ton/sandbox`), not a real testnet deployment. Real testnet latency/fee behavior is unverified.
 - **External security audit** — not done. Do not deploy the new settlement messages to mainnet without one; this is unaudited code handling real fund movement, same caution that applies to any new financial contract.
+- **Mainnet SettlementMasterV2 verification/redeployment** — the deployed V2 source/bytecode has not been verified against the hardened source. This source change and sandbox tests do not fix or prove the deployed contract; keep P2P settlement blocked until a reviewed replacement is deployed and verified.
 - **NAT traversal / bootstrap redesign** (§5, last row) — `circuit-relay-v2`/AutoNAT wiring and moving bootstrap off the GitHub-hosted seed file are still just proposed, not implemented.
 - **Redundant-execution dispatch wiring into `swarm/agent.ts`'s actual task loop** — the live test drives the coordinator directly with pre-computed results (standing in for real inference output) to prove the protocol; it is not yet wired into the real task-polling/execution pipeline.
 

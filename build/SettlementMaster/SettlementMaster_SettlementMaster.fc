@@ -78,7 +78,7 @@ _ $Context$_get_value((int, slice, int, slice) v) inline;
 ((slice, slice, slice, slice, slice, int, int, int, int, int, int, int, slice, cell, int, int, cell, int, int, cell), ()) $SettlementMaster$_fun_settlePayout((slice, slice, slice, slice, slice, int, int, int, int, int, int, int, slice, cell, int, int, cell, int, int, cell) $self, int $taskId, slice $workerAddr, int $total, int $gstdBonusAmount, int $computeUnits) impure inline_ref;
 
 ;; $SettlementMaster$_fun_verifyQuorum
-((slice, slice, slice, slice, slice, int, int, int, int, int, int, int, slice, cell, int, int, cell, int, int, cell), int) $SettlementMaster$_fun_verifyQuorum((slice, slice, slice, slice, slice, int, int, int, int, int, int, int, slice, cell, int, int, cell, int, int, cell) $self, int $taskId, slice $workerAddr, int $resultHash, int $count, cell $attestations) impure inline_ref;
+((slice, slice, slice, slice, slice, int, int, int, int, int, int, int, slice, cell, int, int, cell, int, int, cell), int) $SettlementMaster$_fun_verifyQuorum((slice, slice, slice, slice, slice, int, int, int, int, int, int, int, slice, cell, int, int, cell, int, int, cell) $self, int $taskId, slice $workerAddr, int $resultHash, int $gstdBonusAmount, int $computeUnits, int $count, cell $attestations) impure inline_ref;
 
 ;; $SettlementStats$_constructor_totalSettled_totalGSTDMinted_taskCount_baseRate
 ((int, int, int, int)) $SettlementStats$_constructor_totalSettled_totalGSTDMinted_taskCount_baseRate(int $totalSettled, int $totalGSTDMinted, int $taskCount, int $baseRate) inline;
@@ -292,6 +292,10 @@ builder $Builder$_fun_storeAddress(builder $self, slice $address) impure asm """
 
 (slice, cell) $Slice$_fun_loadRef(slice $self) impure asm( -> 1 0) """
     LDREF
+""";
+
+(slice, int) $Slice$_fun_loadCoins(slice $self) impure asm( -> 1 0) """
+    LDVARUINT16
 """;
 
 (slice, ()) $Slice$_fun_skipBits(slice $self, int $l) impure asm """
@@ -611,7 +615,7 @@ builder $SettlementMaster$_store(builder build_0, (slice, slice, slice, slice, s
     $self'totalSettled = $self'totalSettled + $total;
     $self'totalGSTDMinted = $self'totalGSTDMinted + $actualBonus;
     $self'taskCount = $self'taskCount + 1;
-    $global_send($SendParameters$_constructor_to_value_mode_bounce_body($workerAddr, $workerAmt, 2, true, $WorkerPayment$_store_cell($WorkerPayment$_constructor_taskId_amount_bonusGSTD($taskId, $workerAmt, $gstdBonusAmount), begin_cell())));
+    $global_send($SendParameters$_constructor_to_value_mode_bounce_body($workerAddr, $workerAmt, 2, true, $WorkerPayment$_store_cell($WorkerPayment$_constructor_taskId_amount_bonusGSTD($taskId, $workerAmt, $actualBonus), begin_cell())));
     $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'treasury, $treasuryAmt, 2, false, __gen_cell_cell_6c7f095b2834dcd10181b530fba875659e91af767b1d084243958c07bfe40df5()));
     $global_send($SendParameters$_constructor_to_value_mode_bounce_body($self'protocolFee, $protocolAmt, 2, false, __gen_cell_cell_a537636aa5fc3c2d44d23d8823f0a46ea660ebe768ba768596c3046cd297304b()));
     if (( (($actualBonus > 0)) ? (( ~ equal_slices_bits($self'ownJettonWallet, __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c()) )) : (false) )) {
@@ -620,7 +624,7 @@ builder $SettlementMaster$_store(builder build_0, (slice, slice, slice, slice, s
     return (($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'ownJettonWallet, $self'settledTasks, $self'paused, $self'minPayment, $self'attestorKeys, $self'quorumThreshold, $self'claimVerifierPubkey, $self'usedClaimNonces), ());
 }
 
-((slice, slice, slice, slice, slice, int, int, int, int, int, int, int, slice, cell, int, int, cell, int, int, cell), int) $SettlementMaster$_fun_verifyQuorum((slice, slice, slice, slice, slice, int, int, int, int, int, int, int, slice, cell, int, int, cell, int, int, cell) $self, int $taskId, slice $workerAddr, int $resultHash, int $count, cell $attestations) impure inline_ref {
+((slice, slice, slice, slice, slice, int, int, int, int, int, int, int, slice, cell, int, int, cell, int, int, cell), int) $SettlementMaster$_fun_verifyQuorum((slice, slice, slice, slice, slice, int, int, int, int, int, int, int, slice, cell, int, int, cell, int, int, cell) $self, int $taskId, slice $workerAddr, int $resultHash, int $gstdBonusAmount, int $computeUnits, int $count, cell $attestations) impure inline_ref {
     var (($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'ownJettonWallet, $self'settledTasks, $self'paused, $self'minPayment, $self'attestorKeys, $self'quorumThreshold, $self'claimVerifierPubkey, $self'usedClaimNonces)) = $self;
     if (($count < $self'quorumThreshold)) {
         var $fresh$ret_16 = false;
@@ -630,7 +634,7 @@ builder $SettlementMaster$_store(builder build_0, (slice, slice, slice, slice, s
         var $fresh$ret_17 = false;
         return (($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'ownJettonWallet, $self'settledTasks, $self'paused, $self'minPayment, $self'attestorKeys, $self'quorumThreshold, $self'claimVerifierPubkey, $self'usedClaimNonces), $fresh$ret_17);
     }
-    int $msgHash = $Cell$_fun_hash($Builder$_fun_endCell(store_uint($Builder$_fun_storeAddress(store_uint($global_beginCell(), $taskId, 64), $workerAddr), $resultHash, 256)));
+    int $msgHash = $Cell$_fun_hash($Builder$_fun_endCell(store_uint($Builder$_fun_storeCoins(store_uint($Builder$_fun_storeAddress(store_uint($global_beginCell(), $taskId, 64), $workerAddr), $resultHash, 256), $gstdBonusAmount), $computeUnits, 64)));
     int $seen1 = -1;
     int $seen2 = -1;
     int $seen3 = -1;
@@ -849,7 +853,7 @@ _ %owner() method_id(83229) {
         throw_unless(38610, (~ $self'paused));
         throw_unless(32292, ( ~ equal_slices_bits($msg'workerAddr, __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c()) ));
         throw_unless(54291, null?(__tact_dict_get_int_int($self'settledTasks, 257, $msg'taskId, 1)));
-        throw_unless(49269, ($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'ownJettonWallet, $self'settledTasks, $self'paused, $self'minPayment, $self'attestorKeys, $self'quorumThreshold, $self'claimVerifierPubkey, $self'usedClaimNonces)~$SettlementMaster$_fun_verifyQuorum($msg'taskId, $msg'workerAddr, $msg'resultHash, $msg'attestationCount, $msg'attestations));
+        throw_unless(49269, ($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'ownJettonWallet, $self'settledTasks, $self'paused, $self'minPayment, $self'attestorKeys, $self'quorumThreshold, $self'claimVerifierPubkey, $self'usedClaimNonces)~$SettlementMaster$_fun_verifyQuorum($msg'taskId, $msg'workerAddr, $msg'resultHash, $msg'gstdBonusAmount, $msg'computeUnits, $msg'attestationCount, $msg'attestations));
         $self'settledTasks~__tact_dict_set_int_int(257, $msg'taskId, true, 1);
         throw_unless(16246, ($Context$_get_value(__tact_context_get()) > 100000000));
         int $total = ($Context$_get_value(__tact_context_get()) - 100000000);
@@ -875,23 +879,27 @@ _ %owner() method_id(83229) {
         cell $cursor = $msg'entries;
         int $i = 0;
         int $acceptedComputeUnits = 0;
+        int $acceptedBonusAmount = 0;
         while (($i < $msg'entryCount)) {
             slice $es = $Cell$_fun_beginParse($cursor);
             int $taskId = $es~load_uint(64);
             int $resultHash = $es~load_uint(256);
             int $attestationCount = $es~load_uint(8);
             int $computeUnits = $es~load_uint(64);
+            int $gstdBonusAmount = $es~$Slice$_fun_loadCoins();
             cell $attestations = $es~$Slice$_fun_loadRef();
             throw_unless(54291, null?(__tact_dict_get_int_int($self'settledTasks, 257, $taskId, 1)));
-            throw_unless(17839, ($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'ownJettonWallet, $self'settledTasks, $self'paused, $self'minPayment, $self'attestorKeys, $self'quorumThreshold, $self'claimVerifierPubkey, $self'usedClaimNonces)~$SettlementMaster$_fun_verifyQuorum($taskId, $msg'workerAddr, $resultHash, $attestationCount, $attestations));
+            throw_unless(17839, ($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'ownJettonWallet, $self'settledTasks, $self'paused, $self'minPayment, $self'attestorKeys, $self'quorumThreshold, $self'claimVerifierPubkey, $self'usedClaimNonces)~$SettlementMaster$_fun_verifyQuorum($taskId, $msg'workerAddr, $resultHash, $gstdBonusAmount, $computeUnits, $attestationCount, $attestations));
             $self'settledTasks~__tact_dict_set_int_int(257, $taskId, true, 1);
             $acceptedComputeUnits = $acceptedComputeUnits + $computeUnits;
+            $acceptedBonusAmount = $acceptedBonusAmount + $gstdBonusAmount;
             if (($Slice$_fun_refs($es) > 0)) {
                 $cursor = $es~$Slice$_fun_loadRef();
             }
             $i = $i + 1;
         }
-        ($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'ownJettonWallet, $self'settledTasks, $self'paused, $self'minPayment, $self'attestorKeys, $self'quorumThreshold, $self'claimVerifierPubkey, $self'usedClaimNonces)~$SettlementMaster$_fun_settlePayout(0, $msg'workerAddr, $totalValue, $msg'totalGstdBonusAmount, $acceptedComputeUnits);
+        throw_unless(60006, ($msg'totalGstdBonusAmount == $acceptedBonusAmount));
+        ($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'ownJettonWallet, $self'settledTasks, $self'paused, $self'minPayment, $self'attestorKeys, $self'quorumThreshold, $self'claimVerifierPubkey, $self'usedClaimNonces)~$SettlementMaster$_fun_settlePayout(0, $msg'workerAddr, $totalValue, $acceptedBonusAmount, $acceptedComputeUnits);
         $SettlementMaster$_contract_store(($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'ownJettonWallet, $self'settledTasks, $self'paused, $self'minPayment, $self'attestorKeys, $self'quorumThreshold, $self'claimVerifierPubkey, $self'usedClaimNonces));
         return ();
     }

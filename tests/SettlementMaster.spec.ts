@@ -15,19 +15,34 @@ function pubkeyToBigInt(pubkey: Buffer): bigint {
   return BigInt('0x' + pubkey.toString('hex'));
 }
 
-// Mirrors the Tact contract's msgHash computation exactly:
-// beginCell().storeUint(taskId,64).storeAddress(workerAddr).storeUint(resultHash,256).endCell().hash()
-function computeMsgHash(taskId: bigint, workerAddr: Address, resultHash: bigint): Buffer {
+// Mirrors the Tact contract's msgHash computation exactly, including both
+// payout values so tests catch signature/contract layout drift.
+function computeMsgHash(
+  taskId: bigint,
+  workerAddr: Address,
+  resultHash: bigint,
+  gstdBonusAmount = 0n,
+  computeUnits = 100n,
+): Buffer {
   return beginCell()
     .storeUint(taskId, 64)
     .storeAddress(workerAddr)
     .storeUint(resultHash, 256)
+    .storeCoins(gstdBonusAmount)
+    .storeUint(computeUnits, 64)
     .endCell()
     .hash();
 }
 
-function signAttestation(taskId: bigint, workerAddr: Address, resultHash: bigint, kp: KeyPair): Buffer {
-  const hash = computeMsgHash(taskId, workerAddr, resultHash);
+function signAttestation(
+  taskId: bigint,
+  workerAddr: Address,
+  resultHash: bigint,
+  kp: KeyPair,
+  gstdBonusAmount = 0n,
+  computeUnits = 100n,
+): Buffer {
+  const hash = computeMsgHash(taskId, workerAddr, resultHash, gstdBonusAmount, computeUnits);
   return sign(hash, kp.secretKey); // 64-byte Ed25519 signature
 }
 
@@ -100,6 +115,37 @@ describe('SettlementMaster — P2P quorum settlement', () => {
       { $$type: 'SetQuorumThreshold', threshold: 2n },
     );
     expect(qRes.transactions).toHaveTransaction({ to: settlement.address, success: true });
+  });
+
+  it('rejects payout fields changed after the quorum signatures were created', async () => {
+    const taskId = 1007n;
+    const resultHash = 73n;
+    const attestations = buildAttestationsChain([
+      { pubkey: pubkeyToBigInt(nodeKeys[0].publicKey), signature: signAttestation(taskId, worker.address, resultHash, nodeKeys[0]) },
+      { pubkey: pubkeyToBigInt(nodeKeys[1].publicKey), signature: signAttestation(taskId, worker.address, resultHash, nodeKeys[1]) },
+    ]);
+    const signedMessage = {
+      $$type: 'SettleTaskWithProof' as const,
+      taskId,
+      workerAddr: worker.address,
+      resultHash,
+      attestationCount: 2n,
+      attestations,
+      gstdBonusAmount: 0n,
+      computeUnits: 100n,
+    };
+
+    const bonusChanged = await settlement.send(deployer.getSender(), { value: toNano('1') }, {
+      ...signedMessage,
+      gstdBonusAmount: 1n,
+    });
+    expect(bonusChanged.transactions).toHaveTransaction({ to: settlement.address, success: false });
+
+    const unitsChanged = await settlement.send(deployer.getSender(), { value: toNano('1') }, {
+      ...signedMessage,
+      computeUnits: 101n,
+    });
+    expect(unitsChanged.transactions).toHaveTransaction({ to: settlement.address, success: false });
   });
 
   it('accepts settlement with a valid 2-of-3 quorum and pays the worker 85%', async () => {
@@ -285,24 +331,25 @@ describe('SettlementMaster — P2P quorum settlement', () => {
   it('SettleBatch settles multiple attested tasks for one worker in a single call', async () => {
     const workerAddr = worker.address;
     const entries = [
-      { taskId: 2001n, resultHash: 10n, computeUnits: 50n },
-      { taskId: 2002n, resultHash: 20n, computeUnits: 75n },
+      { taskId: 2001n, resultHash: 10n, computeUnits: 50n, gstdBonusAmount: 0n },
+      { taskId: 2002n, resultHash: 20n, computeUnits: 75n, gstdBonusAmount: 0n },
     ];
 
     // Build the entries chain: each BatchEntry cell is
-    // {taskId:64, resultHash:256, attestationCount:8, computeUnits:64}, ref[0]=attestations, ref[1]=next entry (or none)
+    // {taskId:64, resultHash:256, attestationCount:8, computeUnits:64, gstdBonusAmount:coins}, ref[0]=attestations, ref[1]=next entry (or none)
     let chain: Cell | null = null;
     for (let i = entries.length - 1; i >= 0; i--) {
       const e = entries[i];
       const attestations = buildAttestationsChain([
-        { pubkey: pubkeyToBigInt(nodeKeys[0].publicKey), signature: signAttestation(e.taskId, workerAddr, e.resultHash, nodeKeys[0]) },
-        { pubkey: pubkeyToBigInt(nodeKeys[1].publicKey), signature: signAttestation(e.taskId, workerAddr, e.resultHash, nodeKeys[1]) },
+        { pubkey: pubkeyToBigInt(nodeKeys[0].publicKey), signature: signAttestation(e.taskId, workerAddr, e.resultHash, nodeKeys[0], e.gstdBonusAmount, e.computeUnits) },
+        { pubkey: pubkeyToBigInt(nodeKeys[1].publicKey), signature: signAttestation(e.taskId, workerAddr, e.resultHash, nodeKeys[1], e.gstdBonusAmount, e.computeUnits) },
       ]);
       const b = beginCell()
         .storeUint(e.taskId, 64)
         .storeUint(e.resultHash, 256)
         .storeUint(2, 8) // attestationCount
         .storeUint(e.computeUnits, 64)
+        .storeCoins(e.gstdBonusAmount)
         .storeRef(attestations);
       if (chain) b.storeRef(chain);
       chain = b.endCell();
@@ -317,7 +364,7 @@ describe('SettlementMaster — P2P quorum settlement', () => {
         workerAddr,
         entryCount: BigInt(entries.length),
         entries: chain!,
-        totalGstdBonusAmount: 0n,
+        totalGstdBonusAmount: entries.reduce((sum, entry) => sum + entry.gstdBonusAmount, 0n),
       },
     );
 

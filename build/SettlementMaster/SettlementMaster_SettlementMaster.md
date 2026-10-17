@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: SettlementMaster
-BoC Size: 4920 bytes
+BoC Size: 4958 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 34
@@ -228,6 +228,7 @@ No arguments
 * 57920: Owner only
 * 58387: Attach 0.15 TON
 * 59457: Paused
+* 60006: Batch bonus mismatch
 * 63399: Only DAO
 
 ## Trait inheritance diagram

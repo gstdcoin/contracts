@@ -100,8 +100,8 @@ message SetQuorumThreshold {
 // One task's completion, attested by a quorum of other nodes instead of
 // trusted-gateway-only. `attestations` is a chain of cells, one per
 // attestation: 256-bit pubkey + 512-bit Ed25519 signature over
-// sha256(taskId . workerAddr . resultHash), each cell holding a single ref
-// to the next attestation (or no ref for the last one).
+// sha256(taskId . workerAddr . resultHash . gstdBonusAmount . computeUnits),
+// each cell holding a single ref to the next attestation (or no ref for the last one).
 message SettleTaskWithProof {
     taskId: Int as uint64;
     workerAddr: Address;
@@ -224,7 +224,15 @@ contract SettlementMaster with Deployable, Ownable {
         require(self.settledTasks.get(msg.taskId) == null, "Task already settled");
 
         require(
-            self.verifyQuorum(msg.taskId, msg.workerAddr, msg.resultHash, msg.attestationCount, msg.attestations),
+            self.verifyQuorum(
+                msg.taskId,
+                msg.workerAddr,
+                msg.resultHash,
+                msg.gstdBonusAmount,
+                msg.computeUnits,
+                msg.attestationCount,
+                msg.attestations,
+            ),
             "Insufficient attested quorum",
         );
 
@@ -253,31 +261,43 @@ contract SettlementMaster with Deployable, Ownable {
         let cursor: Cell = msg.entries;
         let i: Int = 0;
         let acceptedComputeUnits: Int = 0;
+        let acceptedBonusAmount: Int = 0;
         while (i < msg.entryCount) {
             let es: Slice = cursor.beginParse();
             let taskId: Int = es.loadUint(64);
             let resultHash: Int = es.loadUint(256);
             let attestationCount: Int = es.loadUint(8);
             let computeUnits: Int = es.loadUint(64);
+            let gstdBonusAmount: Int = es.loadCoins();
             let attestations: Cell = es.loadRef();
 
             require(self.settledTasks.get(taskId) == null, "Task already settled");
             require(
-                self.verifyQuorum(taskId, msg.workerAddr, resultHash, attestationCount, attestations),
+                self.verifyQuorum(
+                    taskId,
+                    msg.workerAddr,
+                    resultHash,
+                    gstdBonusAmount,
+                    computeUnits,
+                    attestationCount,
+                    attestations,
+                ),
                 "Insufficient attested quorum for batch entry",
             );
             self.settledTasks.set(taskId, true);
             acceptedComputeUnits += computeUnits;
+            acceptedBonusAmount += gstdBonusAmount;
 
             if (es.refs() > 0) {
                 cursor = es.loadRef(); // link to next BatchEntry
             }
             i += 1;
         }
+        require(msg.totalGstdBonusAmount == acceptedBonusAmount, "Batch bonus mismatch");
 
         // Single combined payout for the whole batch — this is the point of
         // batching: one 0.1 TON gas reserve for up to 5 tasks, not five.
-        self.settlePayout(0, msg.workerAddr, totalValue, msg.totalGstdBonusAmount, acceptedComputeUnits);
+        self.settlePayout(0, msg.workerAddr, totalValue, acceptedBonusAmount, acceptedComputeUnits);
     }
 
     // ── Shared payout logic (worker/treasury/protocol split + GSTD bonus) ─
@@ -313,7 +333,7 @@ contract SettlementMaster with Deployable, Ownable {
             body: WorkerPayment {
                 taskId: taskId,
                 amount: workerAmt,
-                bonusGSTD: gstdBonusAmount,
+                bonusGSTD: actualBonus,
             }.toCell(),
         });
 
@@ -358,10 +378,17 @@ contract SettlementMaster with Deployable, Ownable {
         }
     }
 
-    // ── Verify a quorum of distinct, registered-attestor signatures over
-    // sha256(taskId . workerAddr . resultHash). Bounded to <= 5 entries so
-    // gas cost stays predictable regardless of attestationCount claims. ──
-    fun verifyQuorum(taskId: Int, workerAddr: Address, resultHash: Int, count: Int, attestations: Cell): Bool {
+    // ── Verify a quorum of distinct, registered-attestor signatures over all
+    // payout-determining values. Bounded to <= 5 entries to keep gas predictable.
+    fun verifyQuorum(
+        taskId: Int,
+        workerAddr: Address,
+        resultHash: Int,
+        gstdBonusAmount: Int,
+        computeUnits: Int,
+        count: Int,
+        attestations: Cell,
+    ): Bool {
         if (count < self.quorumThreshold) { return false; }
         if (count > 5) { return false; } // MaxAttestations
 
@@ -369,6 +396,8 @@ contract SettlementMaster with Deployable, Ownable {
             .storeUint(taskId, 64)
             .storeAddress(workerAddr)
             .storeUint(resultHash, 256)
+            .storeCoins(gstdBonusAmount)
+            .storeUint(computeUnits, 64)
             .endCell()
             .hash();
 

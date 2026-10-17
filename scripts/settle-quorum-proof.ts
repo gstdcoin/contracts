@@ -54,7 +54,7 @@ interface QuorumProof {
     workerAddr: string;
     resultHash: string;
     attestations: AttestationEntry[];
-    gstdBonusAmount: number;
+    gstdBonusAmount: string;
     computeUnits: number;
 }
 
@@ -134,7 +134,7 @@ async function main() {
             const taskIdU64 = taskIdToUint64(p.taskId);
             const resultHashBig = BigInt('0x' + p.resultHash);
             const attestationsCell = buildAttestationsChain(p.attestations);
-            const gstdBonusNano = BigInt(Math.round((p.gstdBonusAmount || 0) * 1e9));
+            const gstdBonusNano = BigInt(p.gstdBonusAmount);
 
             await settlement.send(
                 provider.sender(keyPair.secretKey),
@@ -147,7 +147,7 @@ async function main() {
                     attestationCount: BigInt(p.attestations.length),
                     attestations: attestationsCell,
                     gstdBonusAmount: gstdBonusNano,
-                    computeUnits: BigInt(p.computeUnits || 1),
+                    computeUnits: BigInt(p.computeUnits),
                 },
             );
             await waitSeqno(provider, seqno++);

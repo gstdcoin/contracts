@@ -87,8 +87,8 @@ async function main() {
             resultHash,
             attestationCount: BigInt(proof.attestations.length),
             attestations,
-            gstdBonusAmount: 0n,
-            computeUnits: 100n,
+            gstdBonusAmount: BigInt(proof.gstdBonusAmount),
+            computeUnits: BigInt(proof.computeUnits),
         },
     );
 
