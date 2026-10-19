@@ -14,7 +14,7 @@
  *   TON_API_KEY          — toncenter API key
  *
  * Optional:
- *   PLATFORM_API         — defaults to https://platform.gstdtoken.com/api/v1
+ *   PLATFORM_API         — defaults to https://app.gstdtoken.com/api/v1
  *   MIN_SETTLE_GSTD      — min per-wallet threshold, defaults to 0.01
  */
 
@@ -27,7 +27,7 @@ const MNEMONIC       = process.env.DEPLOYER_MNEMONIC || '';
 const SETTLE_ADDR    = process.env.SETTLEMENT_ADDRESS || '';
 const API_SECRET     = process.env.TREASURY_SECRET || '';
 const TON_API_KEY    = process.env.TON_API_KEY || '';
-const PLATFORM_API   = (process.env.PLATFORM_API || 'https://platform.gstdtoken.com/api/v1').replace(/\/$/, '');
+const PLATFORM_API   = (process.env.PLATFORM_API || 'https://app.gstdtoken.com/api/v1').replace(/\/$/, '');
 const MIN_GSTD       = parseFloat(process.env.MIN_SETTLE_GSTD || '0.01');
 const NANO_FACTOR    = BigInt('1000000000');
 
