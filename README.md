@@ -173,6 +173,27 @@ contracts are correctly wired together. `npm run verify` performs read-only
 account-code checks and verifies the GSTD Jetton master getter; ownership,
 permissions, settlement, and wallet flows still require separate checks.
 
+### Audit status (read before relying on this code)
+
+This is an internal review, not an independent audit. Findings from reading the
+sources and the on-chain state (`node scripts/onchain-status.mjs`):
+
+- **GSTD token**: a standard TEP-74 jetton, supply fixed at 1,000,000,000 GSTD,
+  minting closed (`mintable=false`). `GSTDJetton.tact` in this repo is **not** its
+  source and must not be deployed (non-standard opcodes, no TEP-89).
+- **SettlementMasterV2** (on-chain) is not verified against the current
+  `SettlementMaster.tact` source. The source now binds attestation signatures to the
+  contract address and reserves gas for the GSTD bonus transfer; using these fixes
+  needs a **new deployment signed by the owner wallet**. No settled tasks exist
+  on-chain yet, and nothing outside this repo currently submits settlements.
+- **Trust model**: the owner is an EOA admin (DAO transfer is blocked until
+  DAOVotingV2 is deployed); the bonus pool is bounded by its balance; quorum
+  attestations are only as independent as the registered signer keys.
+- **Escrow** is custodial (owner authorizes payouts and `EmergencyWithdraw`);
+  `EcosystemTreasury` owner can withdraw funds. Neither provides per-task accounting.
+- Not deployed yet: DAOVotingV2, AgentRegistryV2, bridge, slashing.
+- Known dependency advisories in the Tact toolchain have no upstream fix.
+
 ---
 
 ## Build

@@ -167,6 +167,10 @@ int $global_checkSignature(int $hash, slice $signature, int $publicKey) impure a
     CHKSIGNU
 """;
 
+slice $global_myAddress() impure asm """
+    MYADDR
+""";
+
 int $global_myBalance() impure asm """
     BALANCE FIRST
 """;
@@ -600,9 +604,15 @@ builder $SettlementMaster$_store(builder build_0, (slice, slice, slice, slice, s
 
 ((slice, slice, slice, slice, slice, int, int, int, int, int, int, int, slice, cell, int, int, cell, int, int, cell), ()) $SettlementMaster$_fun_settlePayout((slice, slice, slice, slice, slice, int, int, int, int, int, int, int, slice, cell, int, int, cell, int, int, cell) $self, int $taskId, slice $workerAddr, int $total, int $gstdBonusAmount, int $computeUnits) impure inline_ref {
     var (($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'ownJettonWallet, $self'settledTasks, $self'paused, $self'minPayment, $self'attestorKeys, $self'quorumThreshold, $self'claimVerifierPubkey, $self'usedClaimNonces)) = $self;
-    int $workerAmt = (($total * $self'workerShare) / 100);
-    int $treasuryAmt = (($total * $self'treasuryShare) / 100);
-    int $protocolAmt = (($total - $workerAmt) - $treasuryAmt);
+    int $bonusGas = 0;
+    if (( (($gstdBonusAmount > 0)) ? (( ~ equal_slices_bits($self'ownJettonWallet, __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c()) )) : (false) )) {
+        $bonusGas = 120000000;
+    }
+    throw_unless(46581, ($total >= ($bonusGas + $self'minPayment)));
+    int $distributable = ($total - $bonusGas);
+    int $workerAmt = (($distributable * $self'workerShare) / 100);
+    int $treasuryAmt = (($distributable * $self'treasuryShare) / 100);
+    int $protocolAmt = (($distributable - $workerAmt) - $treasuryAmt);
     int $safeComputeUnits = $computeUnits;
     if (($safeComputeUnits > 1000000000)) {
         $safeComputeUnits = 1000000000;
@@ -612,7 +622,7 @@ builder $SettlementMaster$_store(builder build_0, (slice, slice, slice, slice, s
     if (($actualBonus > $maxAllowedBonus)) {
         $actualBonus = $maxAllowedBonus;
     }
-    $self'totalSettled = $self'totalSettled + $total;
+    $self'totalSettled = $self'totalSettled + $distributable;
     $self'totalGSTDMinted = $self'totalGSTDMinted + $actualBonus;
     $self'taskCount = $self'taskCount + 1;
     $global_send($SendParameters$_constructor_to_value_mode_bounce_body($workerAddr, $workerAmt, 2, true, $WorkerPayment$_store_cell($WorkerPayment$_constructor_taskId_amount_bonusGSTD($taskId, $workerAmt, $actualBonus), begin_cell())));
@@ -634,7 +644,7 @@ builder $SettlementMaster$_store(builder build_0, (slice, slice, slice, slice, s
         var $fresh$ret_17 = false;
         return (($self'owner, $self'gateway, $self'gstdJetton, $self'treasury, $self'protocolFee, $self'workerShare, $self'treasuryShare, $self'protocolShare, $self'baseRate, $self'totalSettled, $self'totalGSTDMinted, $self'taskCount, $self'ownJettonWallet, $self'settledTasks, $self'paused, $self'minPayment, $self'attestorKeys, $self'quorumThreshold, $self'claimVerifierPubkey, $self'usedClaimNonces), $fresh$ret_17);
     }
-    int $msgHash = $Cell$_fun_hash($Builder$_fun_endCell(store_uint($Builder$_fun_storeCoins(store_uint($Builder$_fun_storeAddress(store_uint($global_beginCell(), $taskId, 64), $workerAddr), $resultHash, 256), $gstdBonusAmount), $computeUnits, 64)));
+    int $msgHash = $Cell$_fun_hash($Builder$_fun_endCell(store_uint($Builder$_fun_storeCoins(store_uint($Builder$_fun_storeAddress(store_uint($Builder$_fun_storeAddress($global_beginCell(), $global_myAddress()), $taskId, 64), $workerAddr), $resultHash, 256), $gstdBonusAmount), $computeUnits, 64)));
     int $seen1 = -1;
     int $seen2 = -1;
     int $seen3 = -1;
@@ -950,6 +960,7 @@ _ %owner() method_id(83229) {
         var $msg'expiry = in_msg~load_uint(64);
         var $msg'sigCell = in_msg~load_ref();
         throw_unless(7212, ($self'claimVerifierPubkey != 0));
+        throw_unless(28250, ( ~ equal_slices_bits($self'ownJettonWallet, __gen_slice_address_61ab4641fa30d9310391025086eec65d200d79268e1b7cd402565e01ba64be3c()) ));
         throw_unless(59457, (~ $self'paused));
         throw_unless(34480, ( equal_slices_bits(__tact_context_get_sender(), $msg'wallet) ));
         throw_unless(13152, ($msg'expiry > $global_now()));

@@ -17,6 +17,9 @@ function pubkeyToBigInt(pubkey: Buffer): bigint {
 
 // Mirrors the Tact contract's msgHash computation exactly, including both
 // payout values so tests catch signature/contract layout drift.
+// Set in beforeEach: signatures are bound to the settlement contract's own address.
+let settlementAddr: Address;
+
 function computeMsgHash(
   taskId: bigint,
   workerAddr: Address,
@@ -25,6 +28,7 @@ function computeMsgHash(
   computeUnits = 100n,
 ): Buffer {
   return beginCell()
+    .storeAddress(settlementAddr)
     .storeUint(taskId, 64)
     .storeAddress(workerAddr)
     .storeUint(resultHash, 256)
@@ -86,6 +90,7 @@ describe('SettlementMaster — P2P quorum settlement', () => {
       await SettlementMaster.fromInit(deployer.address, jetton.address, treasury.address, protocolFee.address),
     );
 
+    settlementAddr = settlement.address;
     const deployResult = await settlement.send(
       deployer.getSender(),
       { value: toNano('0.5') },
@@ -409,5 +414,66 @@ describe('SettlementMaster — P2P quorum settlement', () => {
       },
     );
     expect(rejected.transactions).toHaveTransaction({ to: settlement.address, success: false });
+  });
+
+  it('rejects attestations signed for a different settlement contract (no cross-deployment replay)', async () => {
+    const taskId = 4001n;
+    const resultHash = 11n;
+    const realAddr = settlementAddr;
+    settlementAddr = deployer.address; // sign as if for another deployment
+    const attestations = buildAttestationsChain([
+      { pubkey: pubkeyToBigInt(nodeKeys[0].publicKey), signature: signAttestation(taskId, worker.address, resultHash, nodeKeys[0]) },
+      { pubkey: pubkeyToBigInt(nodeKeys[1].publicKey), signature: signAttestation(taskId, worker.address, resultHash, nodeKeys[1]) },
+    ]);
+    settlementAddr = realAddr;
+
+    const result = await settlement.send(deployer.getSender(), { value: toNano('1') }, {
+      $$type: 'SettleTaskWithProof', taskId, workerAddr: worker.address, resultHash,
+      attestationCount: 2n, attestations, gstdBonusAmount: 0n, computeUnits: 100n,
+    });
+    expect(result.transactions).toHaveTransaction({ to: settlement.address, success: false });
+    expect(await settlement.getIsTaskSettled(taskId)).toBe(false);
+  });
+
+  it('takes the GSTD bonus transfer gas out of the split so the contract balance does not drain', async () => {
+    const jettonWallet = await blockchain.treasury('jettonWallet');
+    await settlement.send(deployer.getSender(), { value: toNano('0.05') }, { $$type: 'SetOwnJettonWallet', wallet: jettonWallet.address });
+    const taskId = 4002n;
+    const resultHash = 12n;
+    const bonus = 1000n;
+    const attestations = buildAttestationsChain([
+      { pubkey: pubkeyToBigInt(nodeKeys[0].publicKey), signature: signAttestation(taskId, worker.address, resultHash, nodeKeys[0], bonus, 100n) },
+      { pubkey: pubkeyToBigInt(nodeKeys[1].publicKey), signature: signAttestation(taskId, worker.address, resultHash, nodeKeys[1], bonus, 100n) },
+    ]);
+    const msg = {
+      $$type: 'SettleTaskWithProof' as const, taskId, workerAddr: worker.address, resultHash,
+      attestationCount: 2n, attestations, gstdBonusAmount: bonus, computeUnits: 100n,
+    };
+
+    const before = (await blockchain.getContract(settlement.address)).balance;
+    const ok = await settlement.send(deployer.getSender(), { value: toNano('1') }, msg);
+    expect(ok.transactions).toHaveTransaction({ to: settlement.address, success: true });
+    expect(ok.transactions).toHaveTransaction({ from: settlement.address, to: jettonWallet.address });
+    const after = (await blockchain.getContract(settlement.address)).balance;
+    // The reserve stays with the contract: balance must not shrink by more than a small fee.
+    expect(before - after).toBeLessThan(toNano('0.02'));
+
+    // Too little TON to also pay for the bonus transfer is rejected instead of silently draining.
+    const task2 = 4003n;
+    const att2 = buildAttestationsChain([
+      { pubkey: pubkeyToBigInt(nodeKeys[0].publicKey), signature: signAttestation(task2, worker.address, resultHash, nodeKeys[0], bonus, 100n) },
+      { pubkey: pubkeyToBigInt(nodeKeys[1].publicKey), signature: signAttestation(task2, worker.address, resultHash, nodeKeys[1], bonus, 100n) },
+    ]);
+    const low = await settlement.send(deployer.getSender(), { value: toNano('0.2') }, { ...msg, taskId: task2, attestations: att2 });
+    expect(low.transactions).toHaveTransaction({ to: settlement.address, success: false });
+  });
+
+  it('refuses uptime claims while the reward pool wallet is not configured', async () => {
+    await settlement.send(deployer.getSender(), { value: toNano('0.05') }, { $$type: 'SetClaimVerifier', pubkey: pubkeyToBigInt(nodeKeys[0].publicKey) });
+    const r = await settlement.send(worker.getSender(), { value: toNano('0.2') }, {
+      $$type: 'ClaimUptime', wallet: worker.address, amount: 1n, nonce: 1n,
+      expiry: BigInt(Math.floor(Date.now() / 1000) + 3600), sigCell: beginCell().storeBuffer(Buffer.alloc(64)).endCell(),
+    });
+    expect(r.transactions).toHaveTransaction({ to: settlement.address, success: false });
   });
 });

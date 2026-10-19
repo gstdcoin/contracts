@@ -305,10 +305,17 @@ contract SettlementMaster with Deployable, Ownable {
     // SettleBatch it's 0 since a batch settles many taskIds at once (each
     // already recorded individually in settledTasks above).
     fun settlePayout(taskId: Int, workerAddr: Address, total: Int, gstdBonusAmount: Int, computeUnits: Int) {
+        // The bonus transfer is paid from this contract's balance, so its gas is taken
+        // out of the TON being split; otherwise every bonus drains the 0.1 TON reserve.
+        let bonusGas: Int = 0;
+        if (gstdBonusAmount > 0 && self.ownJettonWallet != newAddress(0, 0)) { bonusGas = ton("0.12"); }
+        require(total >= bonusGas + self.minPayment, "Attach more TON to cover the GSTD bonus transfer");
+        let distributable: Int = total - bonusGas;
+
         // Calculate shares
-        let workerAmt: Int = total * self.workerShare / 100;
-        let treasuryAmt: Int = total * self.treasuryShare / 100;
-        let protocolAmt: Int = total - workerAmt - treasuryAmt; // remainder
+        let workerAmt: Int = distributable * self.workerShare / 100;
+        let treasuryAmt: Int = distributable * self.treasuryShare / 100;
+        let protocolAmt: Int = distributable - workerAmt - treasuryAmt; // remainder
 
         // ── Cap computeUnits to prevent overflow in bonus calculation ────
         let safeComputeUnits: Int = computeUnits;
@@ -320,7 +327,7 @@ contract SettlementMaster with Deployable, Ownable {
         if (actualBonus > maxAllowedBonus) { actualBonus = maxAllowedBonus; }
 
         // ── Update statistics BEFORE sends (prevent race conditions) ────
-        self.totalSettled += total;
+        self.totalSettled += distributable;
         self.totalGSTDMinted += actualBonus;
         self.taskCount += 1;
 
@@ -393,6 +400,7 @@ contract SettlementMaster with Deployable, Ownable {
         if (count > 5) { return false; } // MaxAttestations
 
         let msgHash: Int = beginCell()
+            .storeAddress(myAddress()) // bind to this contract: no cross-deployment replay
             .storeUint(taskId, 64)
             .storeAddress(workerAddr)
             .storeUint(resultHash, 256)
@@ -481,6 +489,7 @@ contract SettlementMaster with Deployable, Ownable {
     // Signature: Ed25519 over SHA-256(wallet_hash_256 ++ amount_u64 ++ nonce_u64 ++ expiry_u64)
     receive(msg: ClaimUptime) {
         require(self.claimVerifierPubkey != 0, "Claims disabled");
+        require(self.ownJettonWallet != newAddress(0, 0), "Reward pool not configured");
         require(!self.paused, "Paused");
         require(sender() == msg.wallet, "Wallet mismatch — send from wallet in voucher");
         require(msg.expiry > now(), "Voucher expired");

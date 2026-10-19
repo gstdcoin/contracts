@@ -1,4 +1,4 @@
-// automatically generated from `@stdlib/std/stdlib.fc` `D:/gstd/upstream/contracts/build/SettlementMaster/SettlementMaster_SettlementMaster.fc`
+// automatically generated from `@stdlib/std/stdlib.fc` `D:/gstd/upstream/contracts/build/SettlementMaster/SettlementMaster_SettlementMaster.fc` 
 PROGRAM{
   DECLPROC __tact_context_get
   DECLPROC __tact_context_get_sender
@@ -308,29 +308,52 @@ PROGRAM{
   $WorkerPayment$_constructor_taskId_amount_bonusGSTD PROCINLINE:<{
   }>
   $SettlementMaster$_fun_settlePayout PROCREF:<{
+    0 PUSHINT
     s2 PUSH
+    0 GTINT
+    IF:<{
+          B{b5ee9c72410101010024000043800000000000000000000000000000000000000000000000000000000000000000104aec829d} B>boc <s PUSHSLICE
+      s14 s(-1) PUXC
+      SDEQ
+      NOT
+    }>ELSE<{
+      FALSE
+    }>
+    IF:<{
+      DROP
+      120000000 PUSHINT
+    }>
+    46581 PUSHINT
+    s1 s11 PUSH2
+    ADD
+    s5 s(-1) PUXC
+    GEQ
+    THROWANYIFNOT
+    s1 s3 XCHG
+    SUB
+    DUP
     20 s() PUSH
     MUL
     100 PUSHINT
     DIV
-    s3 PUSH
+    OVER
     20 s() PUSH
     MUL
     100 PUSHINT
     DIV
-    s4 s1 PUSH2
+    s2 s1 PUSH2
     SUB
     OVER
     SUB
-    s3 PUSH
+    s5 PUSH
     1000000000 PUSHINT
     GREATER
     IF:<{
       1000000000 PUSHINT
-      s4 POP
+      s6 POP
     }>
     19 s() PUSH
-    s0 s4 XCHG2
+    s0 s6 XCHG2
     MUL
     s4 s0 PUSH2
     GREATER
@@ -340,7 +363,7 @@ PROGRAM{
       DROP
     }>
     s1 17 s() XCHG
-    s0 s4 XCHG
+    s0 s2 XCHG
     ADD
     s15 s2 XCPU
     ADD
@@ -429,9 +452,7 @@ PROGRAM{
     FALSE
         B{b5ee9c7241010101000d000016000000006465706f736974b5adf9ec} B>boc PUSHREF
     24 s() PUSH
-    s0 s4 XCHG
-    s0 s6 XCHG
-    3 -ROLL
+    4 -ROLL
     $SendParameters$_constructor_to_value_mode_bounce_body INLINECALLDICT
         NEWC
         b{01} STSLICECONST  // store tag = $0 and ihr_disabled = true
@@ -698,6 +719,8 @@ PROGRAM{
       FALSE
     }>
         NEWC
+        MYADDR
+        STSLICER
     s1 s7 XCHG
     64 STU
     s0 s5 XCHG2
@@ -1638,6 +1661,12 @@ PROGRAM{
       7212 PUSHINT
       24 s() PUSH
       0 NEQINT
+      THROWANYIFNOT
+      28250 PUSHINT
+          B{b5ee9c72410101010024000043800000000000000000000000000000000000000000000000000000000000000000104aec829d} B>boc <s PUSHSLICE
+      s12 s(-1) PUXC
+      SDEQ
+      NOT
       THROWANYIFNOT
       59457 PUSHINT
       s9 PUSH

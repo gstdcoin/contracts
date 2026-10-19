@@ -1,4 +1,11 @@
 // ============================================================================
+// AUDIT NOTICE: this source is NOT the deployed GSTD token and must not be deployed.
+// The mainnet token (EQDv6cYW...tZskTO) is a standard TEP-74 jetton with minting closed
+// (mintable=false, supply 1e18). This file leaves Transfer/InternalTransfer/Burn without
+// explicit TEP-74 opcodes (Tact would generate non-standard ones, so wallets/DEXes would not
+// interoperate), has no TEP-89 discovery, and does not check that Transfer value covers
+// forwardTonAmount. Kept only as design history.
+// ----------------------------------------------------------------------------
 // GSTD Jetton Contract — Core Token (TEP-74 Standard)
 // ============================================================================
 // Total supply: 1,000,000,000 GSTD (1B)

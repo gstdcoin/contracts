@@ -1,6 +1,6 @@
 # Tact compilation report
 Contract: SettlementMaster
-BoC Size: 4958 bytes
+BoC Size: 5088 bytes
 
 ## Structures (Structs and Messages)
 Total structures: 34
@@ -216,11 +216,13 @@ No arguments
 * 20709: Batch too large
 * 22722: Must sum to 100
 * 27818: Rate must be positive
+* 28250: Reward pool not configured
 * 32292: Worker address cannot be zero
 * 34480: Wallet mismatch — send from wallet in voucher
 * 38610: Settlement paused
 * 40616: Threshold must be at least 1
 * 45933: Worker share minimum 50%
+* 46581: Attach more TON to cover the GSTD bonus transfer
 * 48401: Invalid signature
 * 49269: Insufficient attested quorum
 * 50353: Only DAO or Gateway can settle
