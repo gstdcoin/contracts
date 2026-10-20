@@ -1,6 +1,7 @@
 {
     "name": "gstd-contracts",
     "version": "1.0.0",
+    "license": "SEE LICENSE IN LICENSE",
     "description": "GSTD TON Smart Contract Deployment",
     "scripts": {
         "build": "./node_modules/.bin/tact --config tact.config.json",

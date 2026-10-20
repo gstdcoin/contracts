@@ -9,7 +9,7 @@
 
 ## What is GSTD?
 
-GSTD is an open-source project developing smart contracts for token settlement, node identity, and governance. Some components are deployed and others remain source code or planned integrations; the protocol is not currently governed entirely by token holders.
+GSTD is a source-available project developing smart contracts for token settlement, node identity, and governance. Some components are deployed and others remain source code or planned integrations; the protocol is not currently governed entirely by token holders.
 
 **The token is the network. The network is the token.**
 
@@ -239,4 +239,4 @@ they were originally deployed, it wasn't via a script that's still here.
 
 ## License
 
-MIT — free to use, fork, and deploy. The contracts are yours as much as ours.
+PolyForm Noncommercial License 1.0.0 with an added permission for taking part in the GSTD network — see [LICENSE](LICENSE). The source is public and free for noncommercial use; commercial use by companies needs a separate license. Not an OSI open-source license. Earlier copies released under MIT remain under MIT.
