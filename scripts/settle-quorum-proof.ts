@@ -37,7 +37,7 @@
 
 import 'dotenv/config';
 import { Address, beginCell, Cell, toNano, TonClient, WalletContractV4 } from '@ton/ton';
-import { mnemonicToPrivateKey } from '@ton/crypto';
+import { mnemonicToPrivateKey, signVerify } from '@ton/crypto';
 import { SettlementMaster } from '../build/SettlementMaster/SettlementMaster_SettlementMaster';
 
 const MNEMONIC     = process.env.DEPLOYER_MNEMONIC || '';
@@ -127,14 +127,56 @@ async function main() {
 
     for (let i = 0; i < proofs.length; i++) {
         const p = proofs[i];
-        console.log(`  [${i + 1}/${proofs.length}] task ${p.taskId.slice(0, 8)}... → ${p.workerAddr.slice(0, 20)}... (${p.attestations.length} attestations)`);
 
         try {
-            const workerAddr = Address.parse(p.workerAddr);
+            if (!p || typeof p !== 'object' || typeof p.id !== 'string'
+                || typeof p.taskId !== 'string' || p.taskId.length > 128
+                || !/^[0-9a-f]{64}$/i.test(p.resultHash)
+                || !/^\d{1,36}$/.test(p.gstdBonusAmount)
+                || !Number.isSafeInteger(p.computeUnits) || p.computeUnits < 0 || p.computeUnits > 1_000_000_000
+                || !Array.isArray(p.attestations) || p.attestations.length < 2 || p.attestations.length > 5) {
+                throw new Error('Malformed quorum proof; leaving it queued without sending a transaction');
+            }
+            console.log(`  [${i + 1}/${proofs.length}] task ${p.taskId.slice(0, 8)}... → ${p.workerAddr.slice(0, 20)}... (${p.attestations.length} attestations)`);
             const taskIdU64 = taskIdToUint64(p.taskId);
+            const workerAddr = Address.parse(p.workerAddr);
             const resultHashBig = BigInt('0x' + p.resultHash);
-            const attestationsCell = buildAttestationsChain(p.attestations);
             const gstdBonusNano = BigInt(p.gstdBonusAmount);
+            const messageHash = beginCell()
+                .storeAddress(settlementAddr)
+                .storeUint(taskIdU64, 64)
+                .storeAddress(workerAddr)
+                .storeUint(resultHashBig, 256)
+                .storeCoins(gstdBonusNano)
+                .storeUint(p.computeUnits, 64)
+                .endCell()
+                .hash();
+            const seenPubkeys = new Set<string>();
+            for (const attestation of p.attestations) {
+                if (!/^[0-9a-f]{64}$/i.test(attestation.pubkeyHex)
+                    || !/^[0-9a-f]{128}$/i.test(attestation.signatureHex)) {
+                    throw new Error('Malformed attestation; leaving it queued without sending a transaction');
+                }
+                const pubkey = attestation.pubkeyHex.toLowerCase();
+                if (seenPubkeys.has(pubkey)) {
+                    throw new Error('Duplicate attestor key; leaving it queued without sending a transaction');
+                }
+                seenPubkeys.add(pubkey);
+                const authorization = await client.runMethod(settlementAddr, 'is_attestor_authorized', [
+                    { type: 'int', value: BigInt(`0x${pubkey}`) },
+                ]);
+                if (!authorization.stack.readBoolean()) {
+                    throw new Error('Unregistered attestor; leaving it queued without sending a transaction');
+                }
+                if (!signVerify(
+                    Buffer.from(messageHash),
+                    Buffer.from(attestation.signatureHex, 'hex'),
+                    Buffer.from(attestation.pubkeyHex, 'hex'),
+                )) {
+                    throw new Error('Invalid attestation signature; leaving it queued without sending a transaction');
+                }
+            }
+            const attestationsCell = buildAttestationsChain(p.attestations);
 
             await settlement.send(
                 provider.sender(keyPair.secretKey),
