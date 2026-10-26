@@ -9,7 +9,8 @@
         "deploy:mainnet": "TON_NETWORK=mainnet npx ts-node --project tsconfig.deploy.json scripts/deploy-mainnet.ts",
         "verify": "node scripts/verify-contracts.js",
         "settle": "npx ts-node --project tsconfig.deploy.json scripts/settle-rewards.ts",
-        "test": "jest --runInBand"
+        "test": "jest --runInBand",
+        "verify:token": "node scripts/verify-canonical-token.cjs"
     },
     "dependencies": {
         "@tact-lang/compiler": "^1.5.0",
