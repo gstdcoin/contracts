@@ -1,3 +1,11 @@
+# GSTD TON contracts
+
+Production token: the existing GSTD Jetton, 1 billion issued, minting disabled. The archived GSTDJetton.tact source is not the deployed master and must not be used to create a replacement emission.
+
+Current platform withdrawals use owner-signed standard Jetton transfers, documented in [the platform withdrawal guide](https://github.com/gstdcoin/ai/blob/main/docs/WITHDRAWALS_AND_PRIVACY.md). They do not use the legacy Settlement/Escrow sender. scripts/settle-rewards.ts is deliberately disabled to prevent duplicate or unverified payouts.
+
+The deployed EcosystemTreasury matched its reviewed build in the October 2026 check. Settlement V2 and Escrow did not match the current compiled sources; this has not been resolved by a README change. No external security audit or trustless production settlement is claimed. Testnet verification is required before any new mainnet contract deployment.
+
 # GSTD Smart Contracts
 
 > TON smart-contract source and deployment records for GSTD.
