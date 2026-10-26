@@ -36,8 +36,9 @@ After deploy: update `deployment-mainnet.json` and the address constants in
 `gstdcoin/ai`'s `frontend/src/lib/config.ts`.
 
 ## CI
-`ci.yml` runs `npm run build` (Tact → FunC → BoC) on every push. It does
-not currently run the Jest test suite — that's a gap, not by design.
+`ci.yml` installs the lockfile, audits all dependencies at high/critical severity, runs 21 Jest sandbox tests, then compiles all Tact projects. Use `npm test` locally.
+
+The Zod and protobuf overrides were verified in an isolated copy: the compiler built 18 BOC artifacts with exactly the same SHA-256 hashes before and after the dependency update. Do not regenerate or overwrite an operator's uncommitted build files to repeat that comparison; use a clean copy.
 
 ## DO NOT
 - Do not deploy to mainnet without testnet verification
