@@ -248,3 +248,11 @@ they were originally deployed, it wasn't via a script that's still here.
 ## License
 
 PolyForm Noncommercial License 1.0.0 with an added permission for taking part in the GSTD network — see [LICENSE](LICENSE). The source is public and free for noncommercial use; commercial use by companies needs a separate license. Not an OSI open-source license. Earlier copies released under MIT remain under MIT.
+
+## Canonical GSTD transfer compatibility
+
+A public mainnet wallet snapshot and regression tests are in `tests/fixtures/canonical-gstd-wallet.json` and `tests/CanonicalJettonWallet.spec.ts`. The canonical master's `get_wallet_address` derives this exact wallet, and its wallet-code hash matches `a46ef8746f4ea669c2ce9455be129b693cd1c638cb021faaac58c7df01e0a163`.
+
+In a local TON sandbox, the actual platform withdrawal payload (`0x0f8a7ea5`, TEP-74) transferred tokens and deployed a previously absent recipient Jetton wallet with the 0.05 TON message budget, including a zero-initial-TON sender-wallet case. The internal receipt used `0x178d4519`. The unrelated generated header `1435380091` (`0x558e297b`) from PR #1 was rejected by the canonical deployed wallet with exit code 65535 and no token balance change. Do not apply that opcode replacement as a production GSTD payout fix; its testnet/local-source claims are a different compatibility question.
+
+These tests clone public code/data only. They do not spend the pool's 499 GSTD, treat it as platform backing, use a signing key or submit a mainnet transfer. Sandbox gas results are not a guarantee against future mainnet configuration changes. A funded end-to-end owner-signed payout remains a separate acceptance gate.
