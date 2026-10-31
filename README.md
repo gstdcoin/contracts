@@ -41,6 +41,7 @@ npm run verify:token
 ## Documentation
 
 - [Historical README and obsolete architecture](docs/ARCHIVED_CONTRACTS_README.md) — retained for provenance, not operating instructions.
+- [User-signed payment design and activation gates](docs/USER_SIGNED_PAYMENTS.md) — current custody boundary and a future opt-in escrow proposal.
 - [P2P settlement proposal](docs/P2P_SETTLEMENT_RFC.md) — a proposal, not an enabled payment mechanism.
 - [Platform and API](https://github.com/gstdcoin/ai) · [Compute node](https://github.com/gstdcoin/gstdbot) · [Public website](https://gstdtoken.com).
 
