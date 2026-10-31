@@ -144,6 +144,8 @@ contract DAOVotingV2 with Deployable, Ownable {
 
     // ── Execute passed proposal (after timelock) ────────────────────────
     receive(msg: ExecuteProposal) {
+        require(context().value >= ton("0.2"), "Caller must fund execution");
+        require(self.proposalAddresses.get(msg.proposalId) != null, "Unknown proposal");
         // Forward execution to the specific Proposal contract which validates
         // voting results, timelock, and quorum before executing.
         // executedCount is intentionally NOT incremented here — Proposal is authoritative.

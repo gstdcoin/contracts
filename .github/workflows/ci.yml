@@ -29,11 +29,11 @@ jobs:
       - name: Audit runtime and compiler dependencies
         run: npm audit --audit-level=high
 
-      - name: Run contract sandbox tests
-        run: npm test
-
       - name: Build contracts (Tact → FunC → BoC)
         run: npm run build
+
+      - name: Run contract sandbox tests against freshly generated bindings
+        run: npm test
 
       - name: Verify build artifacts
         run: |

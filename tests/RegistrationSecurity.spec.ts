@@ -1,0 +1,25 @@
+import {Blockchain} from '@ton/sandbox';
+import {beginCell,toNano,type Transaction} from '@ton/core';
+import {AgentRegistryV2} from '../build/AgentRegistryV2/AgentRegistryV2_AgentRegistryV2';
+import {AgentRegistry} from '../build/AgentRegistry/AgentRegistry_AgentRegistry';
+import {DAOVoting} from '../build/DAOVoting/DAOVoting_DAOVoting';
+import {DAOVotingV2} from '../build/DAOVotingV2/DAOVotingV2_DAOVotingV2';
+import {registration,fixtureNodeId} from './helpers/registration';
+import '@ton/test-utils';
+for(const [name,Factory] of [['V1',AgentRegistry],['V2',AgentRegistryV2]] as const)describe(name+' registration security',()=>{
+ async function setup(){const chain=await Blockchain.create(),owner=await chain.treasury('owner'),user=await chain.treasury('user'),attacker=await chain.treasury('attacker');const reg=chain.openContract(await Factory.fromInit(owner.address,owner.address)) as any;await reg.send(owner.getSender(),{value:toNano('2')},{$$type:'Deploy',queryId:0n});return{chain,owner,user,attacker,reg};}
+ it('rejects legacy unsigned registration',async()=>{const {user,reg}=await setup();const r=await reg.send(user.getSender(),{value:toNano('.2')},{$$type:'RegisterNode',nodeId:fixtureNodeId,publicKey:beginCell().storeUint(0,256).endCell().asSlice(),genesisHash:0n,nodeType:2n,capabilities:7n,region:3n});expect(r.transactions).toHaveTransaction({from:user.address,to:reg.address,success:false});});
+ it('preserves identity and counter state on underfunded registration then accepts caller-funded valid proof',async()=>{const {user,reg}=await setup(),m=registration(reg.address,user.address);const bad=await reg.send(user.getSender(),{value:toNano('.099')},m);expect(bad.transactions).toHaveTransaction({from:user.address,to:reg.address,success:false});expect((await reg.getGetNetworkStats()).totalNodes).toBe(0n);const ok=await reg.send(user.getSender(),{value:toNano('.1')},m);expect(ok.transactions).toHaveTransaction({from:user.address,to:reg.address,success:true});expect((await reg.getGetNetworkStats()).totalNodes).toBe(1n);const repeat=await reg.send(user.getSender(),{value:toNano('.1')},m);expect(repeat.transactions).toHaveTransaction({from:user.address,to:reg.address,success:false});});
+ it('rejects copied owner proof, foreign registry proof, altered fields, wrong key ID and expired proof',async()=>{const {user,attacker,reg,chain}=await setup();const other=await chain.treasury('other');const valid=registration(reg.address,user.address);const cases=[{sender:attacker,msg:valid},{sender:user,msg:registration(other.address,user.address)},{sender:user,msg:{...valid,capabilities:3n}},{sender:user,msg:registration(reg.address,user.address,{nodeId:12345n})},{sender:user,msg:registration(reg.address,user.address,{expiry:BigInt(Math.floor(Date.now()/1000)-1)})},{sender:user,msg:{...valid,signature:beginCell().storeUint(0,512).endCell()}}];for(const c of cases){const r=await reg.send(c.sender.getSender(),{value:toNano('.2')},c.msg);expect(r.transactions).toHaveTransaction({from:c.sender.address,to:reg.address,success:false});}expect((await reg.getGetNetworkStats()).totalNodes).toBe(0n);});
+});
+describe('DAO caller funded execution',()=>{it('rejects unknown and underfunded proposal execution without outgoing subsidy',async()=>{const chain=await Blockchain.create(),owner=await chain.treasury('owner'),attacker=await chain.treasury('attacker');const dao=chain.openContract(await DAOVotingV2.fromInit(owner.address,owner.address));await dao.send(owner.getSender(),{value:toNano('2')},{$$type:'Deploy',queryId:0n});for(const value of ['.001','.199','.2']){const r=await dao.send(attacker.getSender(),{value:toNano(value)},{$$type:'ExecuteProposal',proposalId:999n});expect(r.transactions).toHaveTransaction({from:attacker.address,to:dao.address,success:false});expect(r.transactions.some((tx:Transaction)=>[...tx.outMessages.values()].some(m=>m.info.type==='internal'&&m.info.src.equals(dao.address)&&m.info.value.coins===toNano('.15')))).toBe(false);}});});
+
+for(const [name,Factory] of [['legacy',DAOVoting],['V2',DAOVotingV2]] as const)describe(name+' known proposal funding',()=>{
+ it('rejects underfunded existing proposal relay without a subsidy',async()=>{
+ const chain=await Blockchain.create(),owner=await chain.treasury('owner'),user=await chain.treasury('user');
+ const dao=chain.openContract(await Factory.fromInit(owner.address,owner.address)) as any;
+ await dao.send(owner.getSender(),{value:toNano('2')},{$$type:'Deploy',queryId:0n});
+ await dao.send(owner.getSender(),{value:toNano('1')},{$$type:'CreateProposal',title:'funding regression',descriptionHash:0n,targetContract:owner.address,payload:beginCell().endCell(),votingPeriod:3600n});
+ for(const value of ['.001','.199']){const r=await dao.send(user.getSender(),{value:toNano(value)},{$$type:'ExecuteProposal',proposalId:0n});expect(r.transactions).toHaveTransaction({from:user.address,to:dao.address,success:false});expect(r.transactions.some((tx:Transaction)=>[...tx.outMessages.values()].some(m=>m.info.type==='internal'&&m.info.src.equals(dao.address)&&m.info.value.coins===toNano('.15')))).toBe(false);}
+ });
+});

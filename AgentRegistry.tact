@@ -20,6 +20,18 @@ message RegisterNode {
     region: Int as uint8; // 0=EU, 1=US-E, 2=US-W, 3=ASIA-JP, 4=ASIA-SG, 5=AFRICA
 }
 
+// Versioned proof-bearing registration. Legacy messages fail closed; state layout is unchanged.
+message(0x47535203) RegisterNodeSignedV3 {
+    nodeId: Int as uint256;
+    publicKey: Int as uint256;
+    genesisHash: Int as uint256;
+    nodeType: Int as uint8;
+    capabilities: Int as uint32;
+    region: Int as uint8;
+    expiry: Int as uint64;
+    signature: Cell;
+}
+
 message UpdateNodeStatus {
     nodeId: Int as uint256;
     status: Int as uint8; // 0=Offline, 1=Active, 2=Suspended, 3=Banned
@@ -94,6 +106,23 @@ contract AgentRegistry with Deployable, Ownable {
 
     // ── Register new node ───────────────────────────────────────────────
     receive(msg: RegisterNode) {
+        require(false, "Use signed registration V3");
+    }
+
+    receive(msg: RegisterNodeSignedV3) {
+        require(context().value >= ton("0.1"), "Caller must fund registration");
+        require(msg.expiry > now() && msg.expiry <= now() + 3600, "Registration proof expired or too distant");
+        require(msg.nodeType <= 3 && msg.region <= 5, "Invalid node attributes");
+        let keyBits: Slice = beginCell().storeUint(msg.publicKey, 256).endCell().asSlice();
+        require(sha256(keyBits) == msg.nodeId, "Node ID does not match public key");
+        let identityHash: Int = beginCell().storeUint(msg.nodeId, 256).storeUint(msg.publicKey, 256)
+            .storeUint(msg.genesisHash, 256).storeUint(msg.nodeType, 8)
+            .storeUint(msg.capabilities, 32).storeUint(msg.region, 8).endCell().hash();
+        let proofHash: Int = beginCell().storeUint(0x47535203, 32).storeAddress(myAddress())
+            .storeAddress(sender()).storeUint(identityHash, 256).storeUint(msg.expiry, 64).endCell().hash();
+        let sig: Slice = msg.signature.asSlice();
+        require(sig.bits() == 512 && sig.refs() == 0, "Invalid registration signature size");
+        require(checkSignature(proofHash, sig, msg.publicKey), "Invalid registration signature");
         // Prevent duplicate registration — re-registering would double-count stats
         require(self.registeredNodes.get(msg.nodeId) == null, "Node already registered");
 

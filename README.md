@@ -47,3 +47,13 @@ npm run verify:token
 ## License
 
 [PolyForm Noncommercial License 1.0.0](LICENSE) with an additional permission for participation in the GSTD network. Commercial use by companies requires a separate license. This is source-available, not an OSI open-source license; earlier MIT releases retain their original license.
+
+## Security remediation in source (October 2026)
+
+Registry source now rejects the old unauthenticated `RegisterNode` message. New clients must use `RegisterNodeSignedV3` (opcode `0x47535203`): the node ID is SHA-256 of the raw 32-byte Ed25519 public key, and the key signs the cell hash binding this registry address, the sending TON wallet, a hash of all identity attributes and an expiry no more than one hour away. See `tests/helpers/registration.ts` for the canonical encoding (its deterministic key is sandbox-only). A proof copied to another sender or registry is invalid; a registered node ID cannot be replayed. The protocol tag and registry address are the domain; identical-address deployments across TON networks are not independently distinguished by runtime network ID.
+
+Registration must attach at least 0.1 TON to fund its child deployment and processing. DAO execution must attach at least 0.2 TON and reference a known proposal. These are source guards, not an on-chain patch: new bytecode changes contract addresses. Existing deployed contracts retain their old behavior; do not fund or activate them based on source tests. Any migration or deployment requires separate review and owner signing. The source state layout remains unchanged, but the legacy registration API is deliberately rejected rather than accepted without a proof.
+
+This repair does not activate the legacy ClaimUptime path, fix DAO-to-ownable-target sender integration, or verify production custody funding. Current platform withdrawals remain the independent custody-owner-signed flow.
+
+Legacy DAO V1 proposal-address reconstruction remains a known unusable governance path; caller-funding guards do not repair it. Use no legacy DAO for ownership activation. The V2 ownable-target sender integration is also still an acceptance gate.

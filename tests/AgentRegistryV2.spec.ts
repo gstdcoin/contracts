@@ -1,3 +1,4 @@
+import {registration,fixtureNodeId} from './helpers/registration';
 import { Blockchain, SandboxContract, TreasuryContract } from '@ton/sandbox';
 import { Address, beginCell, toNano } from '@ton/core';
 import { AgentRegistryV2 } from '../build/AgentRegistryV2/AgentRegistryV2_AgentRegistryV2';
@@ -23,7 +24,7 @@ describe('AgentRegistryV2 — node address resolution fix', () => {
   let nodeOperator: SandboxContract<TreasuryContract>;
   let registry: SandboxContract<AgentRegistryV2>;
 
-  const NODE_ID = 12345n;
+  const NODE_ID = fixtureNodeId;
 
   beforeEach(async () => {
     blockchain = await Blockchain.create();
@@ -46,15 +47,7 @@ describe('AgentRegistryV2 — node address resolution fix', () => {
     const register = await registry.send(
       nodeOperator.getSender(),
       { value: toNano('0.5') },
-      {
-        $$type: 'RegisterNode',
-        nodeId: NODE_ID,
-        nodeType: 2n,
-        publicKey: beginCell().storeUint(0, 256).endCell().asSlice(),
-        genesisHash: 0n,
-        capabilities: 7n, // LLM + Embed + Vision
-        region: 3n,
-      },
+      registration(registry.address,nodeOperator.address),
     );
     expect(register.transactions).toHaveTransaction({ from: nodeOperator.address, to: registry.address, success: true });
 
@@ -76,15 +69,7 @@ describe('AgentRegistryV2 — node address resolution fix', () => {
     await registry.send(
       nodeOperator.getSender(),
       { value: toNano('0.5') },
-      {
-        $$type: 'RegisterNode',
-        nodeId: NODE_ID,
-        nodeType: 2n,
-        publicKey: beginCell().storeUint(0, 256).endCell().asSlice(),
-        genesisHash: 0n,
-        capabilities: 7n,
-        region: 3n,
-      },
+      registration(registry.address,nodeOperator.address),
     );
 
     const resolvedAddr = await registry.getGetNodeAddress(NODE_ID);
