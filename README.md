@@ -47,7 +47,7 @@ npm run verify:token
 
 ## License
 
-[PolyForm Noncommercial License 1.0.0](LICENSE) with an additional permission for participation in the GSTD network. Commercial use by companies requires a separate license. This is source-available, not an OSI open-source license; earlier MIT releases retain their original license.
+[PolyForm Noncommercial License 1.0.0](LICENSE) plus the additional GSTD network permission. Individuals and companies may participate commercially and build network applications; covered paid network compute settles in canonical GSTD. Unrelated business fees, local-only/free use and native TON gas are outside that payment condition. Other commercial core uses require a separate license. Third-party rights and earlier release licenses remain unchanged. The core is source-available, not OSI open source; the separately licensed [A2A SDK](https://github.com/gstdcoin/A2A) uses Apache-2.0.
 
 ## Security remediation in source (October 2026)
 
