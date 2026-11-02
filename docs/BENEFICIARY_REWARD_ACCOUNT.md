@@ -52,7 +52,7 @@ wallet initialization, and subsequent withdrawal. No real tokens or signatures u
 
 1. Review this account, gas/rent behavior and TON recovery policy; complete testnet
    configuration and verification. Keep the existing owner-signed route available.
-2. Implement a funded per-task escrow that reserves BEFORE execution and allocates
+2. Review and integrate the sandbox coordinator in TASK_ESCROW_PROTOTYPE.md, which reserves BEFORE execution and allocates
    only accepted paid work: 85% executor, 10% protocol, 5% reserve.
 3. Route the executor share to their account with independently verified canonical
    token receipts. A transfer must not also create a withdrawable platform credit.

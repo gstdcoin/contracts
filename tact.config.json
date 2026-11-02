@@ -69,6 +69,11 @@
             "name": "GstdRewardAccount",
             "path": "./GstdRewardAccount.tact",
             "output": "./build/GstdRewardAccount"
+        },
+        {
+            "name": "GstdTaskEscrow",
+            "path": "./GstdTaskEscrow.tact",
+            "output": "./build/GstdTaskEscrow"
         }
     ]
 }
