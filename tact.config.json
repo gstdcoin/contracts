@@ -64,6 +64,11 @@
             "name": "EcosystemTreasury",
             "path": "./EcosystemTreasury.tact",
             "output": "./build/EcosystemTreasury"
+        },
+        {
+            "name": "GstdRewardAccount",
+            "path": "./GstdRewardAccount.tact",
+            "output": "./build/GstdRewardAccount"
         }
     ]
 }
