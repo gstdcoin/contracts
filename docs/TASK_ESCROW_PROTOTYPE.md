@@ -53,8 +53,10 @@ measured fees and further UX work. Foreign assets are unsupported.
 - Network ID is constructor-bound and checked against chain configuration parameter19.
   Mainnet requires the canonical GSTD master. TestGstdMaster and the platform UI
   are testnet-only; test tokens have no value.
-- A complete independent security audit, funded wallet test and economic/gas review
-  remain prerequisites. Existing owner-signed payments are unchanged.
+- A scoped source review found no reportable new vulnerability in the frozen
+  contract/UI diff; it is not production security assurance. A funded testnet
+  wallet journey, transaction reconciliation and current gas review remain
+  necessary before activation. Existing owner-signed payments are unchanged.
 
 ## Sandbox verification
 
