@@ -1,4 +1,4 @@
-# Coordinated funded-task escrow — sandbox only
+# Coordinated funded-task escrow — testnet prototype
 
 This is NOT a deployed payment mode, replacement for the platform ledger, or a
 production-ready feature. See BENEFICIARY_REWARD_ACCOUNT.md for migration limits.
@@ -48,10 +48,11 @@ measured fees and further UX work. Foreign assets are unsupported.
 - Recipient tuple is constructor-bound but not globally hardcoded. A trusted funding
   UI/task agreement must verify canonical protocol/reserve recipients before funding.
 - Do not copy an arbitrary escrow address from another person.
-- No platform task runner, TonConnect UI, paid-ledger migration or production backing
-  movement is connected to this prototype.
-- Canonical mainnet master is fixed. Testnet asset configuration and verification
-  must be implemented before any mainnet deployment.
+- A separate testnet TonConnect UI is implemented in gstdcoin/ai at /escrow.
+  No platform task runner, paid-ledger migration or production backing movement is connected.
+- Network ID is constructor-bound and checked against chain configuration parameter19.
+  Mainnet requires the canonical GSTD master. TestGstdMaster and the platform UI
+  are testnet-only; test tokens have no value.
 - A complete independent security audit, funded wallet test and economic/gas review
   remain prerequisites. Existing owner-signed payments are unchanged.
 
@@ -66,3 +67,14 @@ delayed phase-zero rejection; repeated readiness and insufficient-gas rollback.
 The generator scripts/generate-money-rehearsal.cjs also produces synthetic canonical
 deposit/withdrawal receipts for the platform's cross-module moneyJourney test.
 No test signs or broadcasts a real wallet transaction.
+
+## Batch cost evidence and native recovery
+
+BatchEconomics.spec.ts compares five canonical funded/accepted/withdrawn lifecycles
+with one batched lifecycle. Consumed fees:0.191947035TON versus0.038391541TON,
+about80% less in the bundled Sandbox fee configuration, not a mainnet quote.
+Wallet transactions and native reclaim are included; test minting is excluded.
+ReclaimEscrowTon is payer-only and retains0.02TON in each of the four contracts.
+Canonical token wallets retain separate native storage balances. Attached budgets
+are not consumed fees. Full UI limitations and reproduction steps:
+https://github.com/gstdcoin/ai/blob/main/docs/BATCH_ESCROW.md
