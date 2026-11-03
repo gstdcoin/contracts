@@ -79,6 +79,11 @@
             "name": "TestGstdMaster",
             "path": "./TestGstdMaster.tact",
             "output": "./build/TestGstdMaster"
+        },
+        {
+            "name": "TestGstdMasterV2",
+            "path": "./TestGstdMasterV2.tact",
+            "output": "./build/TestGstdMasterV2"
         }
     ]
 }

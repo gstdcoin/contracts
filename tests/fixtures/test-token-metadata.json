@@ -1,0 +1,6 @@
+{
+  "name": "GSTD Test Token",
+  "symbol": "tGSTD",
+  "decimals": "9",
+  "description": "Valueless TON testnet token for GSTD escrow tests. Not GSTD mainnet."
+}

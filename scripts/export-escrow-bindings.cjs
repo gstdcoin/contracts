@@ -5,7 +5,7 @@ const root=path.resolve(__dirname,'..'),frontend=process.argv[2];
 if(!frontend)throw Error('Explicit frontend directory required');
 const out=path.join(path.resolve(frontend),'src/lib/escrow-generated');fs.mkdirSync(out,{recursive:true});
 const manifest={generated_from:'gstdcoin/contracts',network:'testnet only in platform UI',contracts:{}};
-for(const [project,name] of [['GstdTaskEscrow','GstdTaskEscrow'],['GstdTaskEscrow','GstdEscrowShare'],['TestGstdMaster','TestGstdMaster']]){
+for(const [project,name] of [['GstdTaskEscrow','GstdTaskEscrow'],['GstdTaskEscrow','GstdEscrowShare'],['TestGstdMaster','TestGstdMaster'],['TestGstdMasterV2','TestGstdMasterV2']]){
  const stem=path.join(root,'build',project,project+'_'+name);
  let source=fs.readFileSync(stem+'.ts','utf8').replace(/Cell\.fromHex\('([a-f0-9]+)'\)/g,(_,hex)=>"Cell.fromBoc(Buffer.from('"+hex+"','hex'))[0]");
  fs.writeFileSync(path.join(out,name+'.ts'),'// Generated; regenerate with contracts/scripts/export-escrow-bindings.cjs.\n'+source);
