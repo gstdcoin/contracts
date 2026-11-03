@@ -13,13 +13,13 @@ async function setup(late=false){
  const chain=await Blockchain.create();chain.now=late?1800000200:1800000000;
  const payer=await chain.treasury('payer'),worker=await chain.treasury('worker'),protocol=await chain.treasury('protocol'),reserve=await chain.treasury('reserve'),stranger=await chain.treasury('stranger');
  await chain.setShardAccount(wallet(payer.address),createShardAccount({address:wallet(payer.address),code,data:data(payer.address,toNano('100')),balance:toNano('.2')}));
- const task=chain.openContract(await GstdTaskEscrow.fromInit(payer.address,worker.address,protocol.address,reserve.address,123n,toNano('100'),1800000100n,code));
+ const task=chain.openContract(await GstdTaskEscrow.fromInit(payer.address,worker.address,protocol.address,reserve.address,123n,toNano('100'),1800000100n,code,master,-239n));
  await task.send(payer.getSender(),{value:toNano('.3')},{$$type:'Deploy',queryId:0n});
  await task.send(payer.getSender(),{value:toNano('.3')},{$$type:'SyncTask'});
  const specs=[{amount:toNano('85'),recipient:worker},{amount:toNano('10'),recipient:protocol},{amount:toNano('5'),recipient:reserve}];
  const shares:SandboxContract<GstdEscrowShare>[]=[];
  for(let role=0;role<3;role++){
-  const share=chain.openContract(await GstdEscrowShare.fromInit(task.address,payer.address,specs[role].recipient.address,BigInt(role),specs[role].amount,code));
+  const share=chain.openContract(await GstdEscrowShare.fromInit(task.address,payer.address,specs[role].recipient.address,BigInt(role),specs[role].amount,code,master,-239n));
   expect(share.address.equals(await task.getShareAddress(BigInt(role)))).toBe(true);
   expect(await task.getShareAmount(BigInt(role))).toBe(specs[role].amount);shares.push(share);
  }

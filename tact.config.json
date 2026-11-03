@@ -74,6 +74,11 @@
             "name": "GstdTaskEscrow",
             "path": "./GstdTaskEscrow.tact",
             "output": "./build/GstdTaskEscrow"
+        },
+        {
+            "name": "TestGstdMaster",
+            "path": "./TestGstdMaster.tact",
+            "output": "./build/TestGstdMaster"
         }
     ]
 }

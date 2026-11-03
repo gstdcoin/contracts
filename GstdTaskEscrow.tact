@@ -9,6 +9,7 @@ message(0x47544505) RefundExpiredTask {}
 message(0x47544506) CommitTask { phase: Int as uint8; }
 message(0x47544507) FundingReady { role: Int as uint8; }
 message(0x47544508) ReportFunding {}
+message(0x47544509) ReclaimEscrowTon {}
 message(0x7362d09c) EscrowGstdReceived {
  queryId: Int as uint64; amount: Int as coins; from: Address; forwardPayload: Slice as remaining;
 }
@@ -20,19 +21,22 @@ contract GstdEscrowShare {
  beneficiary: Address;
  role: Int as uint8;
  requiredAmount: Int as coins;
- walletCode: Cell;
+ walletCode: Cell;master: Address;network: Int as int32;
  funded: Int as coins;
  phase: Int as uint8;
- init(coordinator: Address,payer: Address,beneficiary: Address,role: Int,requiredAmount: Int,walletCode: Cell) {
+ init(coordinator: Address,payer: Address,beneficiary: Address,role: Int,requiredAmount: Int,walletCode: Cell,master: Address,network: Int) {
   // Instances are derived by the coordinator; no caller-selected withdrawal destination.
   require(role>=0 && role<=2 && requiredAmount>0,"Invalid share");
   require(walletCode.hash()==0xa46ef8746f4ea669c2ce9455be129b693cd1c638cb021faaac58c7df01e0a163,"Noncanonical wallet code");
+  require(getConfigParam(19)!!.beginParse().loadInt(32)==network && (network==-239 || network==-3),"Wrong network");
+  if(network==-239){require(master==address("0:efe9c616f673622a337737097c0fa0018d4887d6061f59519985f3fbfbdb59b2"),"Canonical GSTD only");}
+  self.master=master;self.network=network;
   self.coordinator=coordinator;self.payer=payer;self.beneficiary=beneficiary;
   self.role=role;self.requiredAmount=requiredAmount;self.walletCode=walletCode;self.funded=0;self.phase=0;
  }
  fun tokenWallet(): Address {
   return contractAddress(StateInit {code:self.walletCode,data:beginCell().storeCoins(0).storeAddress(myAddress())
-   .storeAddress(address("0:efe9c616f673622a337737097c0fa0018d4887d6061f59519985f3fbfbdb59b2"))
+   .storeAddress(self.master)
    .storeBit(false).endCell()});
  }
  fun report() {
@@ -55,9 +59,12 @@ contract GstdEscrowShare {
  }
  fun transferTo(recipient: Address,amount: Int,queryId: Int) {
   require(amount>0,"Zero amount");require(context().value>=ton("0.08"),"Attach 0.08 TON");
+  let prior: Int = myBalance()-context().value; if(prior<ton("0.02")){prior=ton("0.02");}
+  nativeReserve(prior,ReserveAtMost);
   send(SendParameters {to:self.tokenWallet(),value:ton("0.05"),mode:SendPayGasSeparately,bounce:true,
    body:beginCell().storeUint(0x0f8a7ea5,32).storeUint(queryId,64).storeCoins(amount)
     .storeAddress(recipient).storeAddress(recipient).storeBit(false).storeCoins(1).storeBit(false).endCell()});
+  send(SendParameters {to:sender(),value:0,mode:SendRemainingBalance+SendIgnoreErrors,bounce:false});
  }
  receive(msg: WithdrawAcceptedShare) {
   require(sender()==self.beneficiary,"Beneficiary only");require(self.phase==1,"Task not accepted");
@@ -66,6 +73,11 @@ contract GstdEscrowShare {
  receive(msg: RefundExpiredShare) {
   require(sender()==self.payer,"Payer only");require(self.phase==2,"Refund not authorized");
   self.transferTo(self.payer,msg.amount,msg.queryId);
+ }
+ receive(msg: ReclaimEscrowTon) {
+  require(sender()==self.payer,"Payer only");require(context().value>=ton("0.03"),"Attach reclaim gas");
+  nativeReserve(ton("0.02"),ReserveAtMost);
+  send(SendParameters {to:self.payer,value:0,mode:SendRemainingBalance+SendIgnoreErrors,bounce:false});
  }
  receive(msg: EscrowExcess) {}
  receive() {}
@@ -77,11 +89,14 @@ contract GstdEscrowShare {
 
 contract GstdTaskEscrow with Deployable {
  payer: Address;worker: Address;protocol: Address;reserve: Address;
- taskId: Int as uint256;budget: Int as coins;deadline: Int as uint64;walletCode: Cell;
+ taskId: Int as uint256;budget: Int as coins;deadline: Int as uint64;walletCode: Cell;master: Address;network: Int as int32;
  phase: Int as uint8;readyMask: Int as uint8;
- init(payer: Address,worker: Address,protocol: Address,reserve: Address,taskId: Int,budget: Int,deadline: Int,walletCode: Cell) {
+ init(payer: Address,worker: Address,protocol: Address,reserve: Address,taskId: Int,budget: Int,deadline: Int,walletCode: Cell,master: Address,network: Int) {
   require(budget>=100 && deadline>0,"Invalid task budget");
   require(walletCode.hash()==0xa46ef8746f4ea669c2ce9455be129b693cd1c638cb021faaac58c7df01e0a163,"Noncanonical wallet code");
+  require(getConfigParam(19)!!.beginParse().loadInt(32)==network && (network==-239 || network==-3),"Wrong network");
+  if(network==-239){require(master==address("0:efe9c616f673622a337737097c0fa0018d4887d6061f59519985f3fbfbdb59b2"),"Canonical GSTD only");}
+  self.master=master;self.network=network;
   self.payer=payer;self.worker=worker;self.protocol=protocol;self.reserve=reserve;
   self.taskId=taskId;self.budget=budget;self.deadline=deadline;self.walletCode=walletCode;self.phase=0;self.readyMask=0;
   self.validateAddress(payer);self.validateAddress(worker);self.validateAddress(protocol);self.validateAddress(reserve);
@@ -100,10 +115,12 @@ contract GstdTaskEscrow with Deployable {
  }
  fun shareInit(role: Int): StateInit {
   require(role>=0 && role<=2,"Invalid role");
-  return initOf GstdEscrowShare(myAddress(),self.payer,self.recipient(role),role,self.amount(role),self.walletCode);
+  return initOf GstdEscrowShare(myAddress(),self.payer,self.recipient(role),role,self.amount(role),self.walletCode,self.master,self.network);
  }
  fun synchronize() {
   require(context().value>=ton("0.30"),"Attach 0.30 TON sync budget");
+  let prior: Int=myBalance()-context().value;if(prior<ton("0.02")){prior=ton("0.02");}
+  nativeReserve(prior,ReserveAtMost);
   let role: Int=0;
   while(role<3){
    let init: StateInit=self.shareInit(role);
@@ -111,6 +128,7 @@ contract GstdTaskEscrow with Deployable {
     code:init.code,data:init.data,body:CommitTask {phase:self.phase}.toCell()});
    role+=1;
   }
+  send(SendParameters {to:sender(),value:0,mode:SendRemainingBalance+SendIgnoreErrors,bounce:false});
  }
  receive(msg: SyncTask) {self.synchronize();}
  receive(msg: FundingReady) {
@@ -127,6 +145,11 @@ contract GstdTaskEscrow with Deployable {
  receive(msg: RefundExpiredTask) {
   require(self.phase!=1,"Accepted work cannot be refunded");require(now()>self.deadline,"Task still active");
   self.phase=2;self.synchronize();
+ }
+ receive(msg: ReclaimEscrowTon) {
+  require(sender()==self.payer,"Payer only");require(context().value>=ton("0.03"),"Attach reclaim gas");
+  nativeReserve(ton("0.02"),ReserveAtMost);
+  send(SendParameters {to:self.payer,value:0,mode:SendRemainingBalance+SendIgnoreErrors,bounce:false});
  }
  receive(msg: EscrowExcess) {}
  receive() {}
