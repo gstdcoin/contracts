@@ -2,7 +2,13 @@
 
 TON smart-contract sources, deployment records and sandbox tests for the GSTD compute project. These contracts have not received an independent security audit. Source availability does not mean a contract is deployed, connected to platform payments or safe to fund.
 
-## What is used today
+[Start here / Начните здесь](https://github.com/gstdcoin/ai/blob/main/docs/START_HERE.md) · [Mainnet escrow beta workflow](https://github.com/gstdcoin/ai/blob/main/docs/MAINNET_ESCROW.md)
+
+## Current per-job escrow
+
+`GstdTaskEscrow.tact` and its three `GstdEscrowShare` instances bind network, canonical master, recipients, deadline and 85/10/5 amounts. The published platform beta lets the payer sign funding/acceptance and each beneficiary sign their claim. This is separate from platform-ledger withdrawals; the existing balances are not migrated. A real-node paid cycle, claims and expiry/refund were checked in testnet. Read-only mainnet token verification passed; a real mainnet payment/payout cycle is still unverified. Publishing these sources does not deploy or fund a mainnet contract. See [escrow design, tests and limits](docs/TASK_ESCROW_PROTOTYPE.md).
+
+## Platform ledger and legacy sources
 
 - The existing [canonical GSTD Jetton](https://tonviewer.com/EQDv6cYW9nNiKjN3Nwl8D6ABjUiH1gYfWVGZhfP7-9tZskTO) has 1 billion issued tokens and disabled minting. `GSTDJetton.tact` here is **not** the deployed master's source and must not be used to create a replacement emission.
 - Accepted paid compute is accounted for by the [platform money ledger](https://github.com/gstdcoin/ai/blob/main/docs/FINANCE_V2.md): **85% executor / 10% protocol / 5% reserve**. The reserve is not a token burn. Free or promotional requests do not create withdrawable GSTD, and presence alone earns nothing.
@@ -15,6 +21,7 @@ Public addresses and historical deployment records are in [deployment-mainnet.js
 
 | Component | Current boundary |
 |---|---|
+| GstdTaskEscrow / GstdEscrowShare | Published platform open beta; testnet paid cycle passed; mainnet RPC verified, real mainnet payout still unverified |
 | Canonical GSTD token | Existing frozen Jetton; this repo does not replace its master |
 | EcosystemTreasury | Matched the reviewed build in the October 2026 check; owner-controlled; not automatic task settlement |
 | SettlementMaster / deployed V2 and Escrow | Current compiled source did not match the checked deployed code; no verified production task-settlement integration |
@@ -41,7 +48,7 @@ npm run verify:token
 ## Documentation
 
 - [Historical README and obsolete architecture](docs/ARCHIVED_CONTRACTS_README.md) — retained for provenance, not operating instructions.
-- [User-signed payment design and activation gates](docs/USER_SIGNED_PAYMENTS.md) — current custody boundary and a future opt-in escrow proposal.
+- [User-signed payment design and activation gates](docs/USER_SIGNED_PAYMENTS.md) — current custody boundary and the platform-ledger boundary and opt-in contract settlement design.
 - [P2P settlement proposal](docs/P2P_SETTLEMENT_RFC.md) — a proposal, not an enabled payment mechanism.
 - [Platform and API](https://github.com/gstdcoin/ai) · [Compute node](https://github.com/gstdcoin/gstdbot) · [Public website](https://gstdtoken.com).
 
