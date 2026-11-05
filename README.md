@@ -8,7 +8,7 @@ TON smart-contract sources, deployment records and sandbox tests for the GSTD co
 
 ## Liquidity reserve candidate
 
-[GSTD / XAUt0: статус и объяснение на русском](docs/LIQUIDITY_RESERVE_RU.md) · [Technical controls and reproducible tests](docs/LIQUIDITY_RESERVE.md). The paused candidate has isolated real-DEX-code LP mint/refund proofs. It is not deployed; reserve funding, economic execution controls and the LP custody decision remain activation gates.
+[GSTD / XAUt0: статус и объяснение на русском](docs/LIQUIDITY_RESERVE_RU.md) · [Technical controls and reproducible tests](docs/LIQUIDITY_RESERVE.md). The paused candidate has isolated real-DEX-code LP mint/refund proofs. Received LP are permanently locked under the owner-selected policy; there is no administrator withdrawal or upgrade path. It is not deployed; reserve funding, economic execution controls and real-network verification remain activation gates.
 
 ## Current per-job escrow
 
