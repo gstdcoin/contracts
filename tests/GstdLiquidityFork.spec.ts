@@ -39,7 +39,7 @@ integration('GSTD -> real STON.fi pool code -> LP receipt / refund in isolated m
   await funder.send({to:fundingWallet,value:toNano('.3'),body:beginCell().storeUint(0x0f8a7ea5,32).storeUint(123,64).storeCoins(toNano('10'))
    .storeAddress(reserve.address).storeAddress(funder.address).storeBit(false).storeCoins(toNano('.1')).storeBit(false).endCell()});
   expect((await reserve.getStatus()).accountedGstd).toBe(toNano('10'));
-  return{chain,reserve,state};
+  return{chain,reserve,state,owner};
  }
  function quote(address:Address,min:bigint,deadline:number){
   const hash=beginCell().storeUint(0x47524c51,32).storeAddress(address).storeUint(0,64).storeCoins(toNano('1')).storeCoins(min).storeUint(deadline,32).endCell().hash();
@@ -57,6 +57,13 @@ integration('GSTD -> real STON.fi pool code -> LP receipt / refund in isolated m
   expect(after.pending).toBe(false);expect(after.totalLpReceived).toBeGreaterThanOrEqual(100n);expect(after.totalRefunded).toBe(0n);
   expect(await tokenBalance(f.chain,after.lpWallet)).toBe(after.totalLpReceived);
   expect(await tokenBalance(f.chain,after.gstdWallet)).toBe(before-toNano('1'));
+  // The policy owner cannot bypass the vault and transfer its permanently locked LP.
+  const attempted=await f.owner.send({to:after.lpWallet,value:toNano('.1'),body:beginCell()
+   .storeUint(0x0f8a7ea5,32).storeUint(99,64).storeCoins(after.totalLpReceived)
+   .storeAddress(f.owner.address).storeAddress(f.owner.address).storeBit(false).storeCoins(0).storeBit(false).endCell()});
+  expect(attempted.transactions).toHaveTransaction({from:f.owner.address,to:after.lpWallet,success:false});
+  expect(await tokenBalance(f.chain,after.lpWallet)).toBe(after.totalLpReceived);
+
  });
  it('keeps a failed minimum-LP attempt pending, then gets real GSTD back through the exact LPAccount refund path',async()=>{
   const f=await setup(),before=await tokenBalance(f.chain,f.state.gstdWallet);

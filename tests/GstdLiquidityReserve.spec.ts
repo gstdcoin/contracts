@@ -15,6 +15,14 @@ const oracle=keyPairFromSeed(Buffer.alloc(32,44)); // Public, deterministic TEST
 const oracleKey=BigInt('0x'+oracle.publicKey.toString('hex'));
 const amount=toNano('1'),minimumLp=1000n;
 describe('GstdLiquidityReserve — sandbox boundary tests, not a complete DEX fork',()=>{
+ it('exposes only the fixed operation, receipt and pause protocol: no LP withdrawal or upgrade entrypoint',()=>{
+  const abi=JSON.parse(readFileSync(join(__dirname,'../build/GstdLiquidityReserve/GstdLiquidityReserve_GstdLiquidityReserve.abi'),'utf8'));
+  expect(abi.receivers.map((r:any)=>r.receiver+':'+(r.message.type||r.message.kind)).sort()).toEqual([
+   'external:ExecuteReserveLp','external:RecoverReserveLp','internal:ReserveJettonReceived',
+   'internal:PauseReserveLp','internal:ReserveExcess','internal:empty','internal:Deploy',
+  ].sort());
+ });
+
  async function setup(gas='3'){
   const chain=await Blockchain.create();chain.now=1800000000;
   const owner=await chain.treasury('reserve-policy-owner'),attacker=await chain.treasury('not-reserve-owner');

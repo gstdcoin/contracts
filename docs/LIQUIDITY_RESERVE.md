@@ -10,9 +10,9 @@ The intended pool is STON.fi `EQA--JXG8VSyBJmLMqb2J2t4Pya0TS9SXHh7vHh8Iez25sLp`,
 
 `GstdLiquidityReserve.tact` is a paused-by-default candidate. It has NOT been deployed and automatic mainnet reserve funding is NOT enabled. No customer backing was transferred. Existing escrow addresses and commitments are unchanged.
 
-Six component tests and two isolated integration tests passed on 2026-11-05. The integrations execute captured public STON.fi router, pool, LP-account and LP-wallet code with their exact TVM libraries in TON Sandbox. They demonstrate an actual LP mint and a minimum-LP failure followed by a complete GSTD refund. All test funds exist only inside the emulator. These tests are not an external audit or a funded mainnet acceptance test.
+Seven component tests and two isolated integration tests cover the candidate. The integration also rejects a direct owner attempt to transfer the vault-owned LP. The integrations execute captured public STON.fi router, pool, LP-account and LP-wallet code with their exact TVM libraries in TON Sandbox. They demonstrate an actual LP mint and a minimum-LP failure followed by a complete GSTD refund. All test funds exist only inside the emulator. These tests are not an external audit or a funded mainnet acceptance test.
 
-The prototype has NO LP withdrawal method. This is a pending governance decision, not approval for permanent locking. Do not deploy or fund it before deciding LP custody and recovery policy.
+Owner decision, 2026-11-05: **permanently lock received LP in the reserve contract**. The contract has no LP withdrawal, LP burn/redemption, beneficiary replacement, generic execution or code-upgrade entrypoint. The owner may pause new operations, but cannot recover received LP. There is no 48-hour escape hatch. This is irreversible for this contract, including if future pool or market conditions deteriorate. GSTD recovery from a failed liquidity attempt remains distinct from withdrawal of successfully minted LP. This policy decision does not authorize deployment before the other activation gates pass.
 
 ## Contract controls
 
@@ -44,7 +44,7 @@ The snapshot is captured sequentially with bounded requests and unchanged code/d
 
 ## Required before activation
 
-1. Decide LP custody, delayed recovery and administrator authority; review the resulting contract and repeat the tests.
+1. Review the selected permanent LP lock and repeat the tests. Do not add an administrator withdrawal or upgrade path without treating it as a different contract and policy.
 2. Implement a durable reserve-only funding journal that debits only released reserve funds, reconciles canonical on-chain receipts, and cannot spend customer liabilities or fund twice after a retry.
 3. Implement quote simulation, stale-price checks, price-impact limits and a measured gas/value threshold. Skip uneconomic batches; never replenish merely to display activity.
 4. Integrate the keeper and public operation status, including unresolved/refunded operations. Never expose signing secrets or offer arbitrary transaction payloads.
