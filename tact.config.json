@@ -84,6 +84,11 @@
             "name": "TestGstdMasterV2",
             "path": "./TestGstdMasterV2.tact",
             "output": "./build/TestGstdMasterV2"
+        },
+        {
+            "name": "GstdLiquidityReserve",
+            "path": "./GstdLiquidityReserve.tact",
+            "output": "./build/GstdLiquidityReserve"
         }
     ]
 }

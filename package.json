@@ -10,7 +10,9 @@
         "verify": "node scripts/verify-contracts.js",
         "settle": "npx ts-node --project tsconfig.deploy.json scripts/settle-rewards.ts",
         "test": "jest --runInBand",
-        "verify:token": "node scripts/verify-canonical-token.cjs"
+        "verify:token": "node scripts/verify-canonical-token.cjs",
+        "build:liquidity": "./node_modules/.bin/tact --config tact.config.json --project GstdLiquidityReserve",
+        "test:liquidity": "npm run build:liquidity && jest tests/GstdLiquidityReserve.spec.ts tests/GstdLiquidityFork.spec.ts --runInBand"
     },
     "dependencies": {
         "@tact-lang/compiler": "^1.5.0",
@@ -22,6 +24,8 @@
         "qrcode-terminal": "^0.12.0"
     },
     "devDependencies": {
+        "@ston-fi/api": "0.31.0",
+        "@ston-fi/sdk": "2.7.0",
         "@ton/sandbox": "^0.44.0",
         "@ton/test-utils": "^0.12.0",
         "@types/jest": "^30.0.0",

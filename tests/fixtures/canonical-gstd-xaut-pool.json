@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-11-05T15:54:30.232Z",
+  "source": "https://tonapi.io/v2/blockchain/accounts/0:3ef895c6f154b204998b32a6f6276b783f26b44d2f525c787bbc787c21ecf6e6",
+  "protocol_source_commit": "af0a955cc835af9697cd383e201fefcbe1a6a87e",
+  "pool": "0:3ef895c6f154b204998b32a6f6276b783f26b44d2f525c787bbc787c21ecf6e6",
+  "router": "0:22bf722ec5803a64612e9ce819493b8c0736e98f045b5b0d3df96b04fa2a8a28",
+  "gold_router_wallet": "0:e78456ad6c32971a30385a46fcb69ed9896ad456956cfdd3e048fce546adb9d7",
+  "gstd_router_wallet": "0:a374e6ff3aeb0d3e6ff3917b1ee72c5ccb71de2c75d91f5eae53f1bad09913dc",
+  "owner": "0:a45c594d46cb9b529ed487b960fd2714a8b0a27dfd5008bb1d414d1aee4a61a9",
+  "lp_wallet_code": "te6cckEBAQEAIwAIQgLACDZEDQhORPuUMWEyrFohQX709CnuCbVWC1Z4szTD6PedWHM=",
+  "lp_wallet_code_hash": "bf13041750f2beeb688859c75689e2c18b9c90bd78e97b197aad7ad6bc520c84",
+  "lp_account_code": "te6cckEBAQEAIwAIQgLJWi7SKrUW93+dSJjcRXjnLxiiRI6PaDIzSwtL9QG8eU64SPQ=",
+  "lp_account_code_hash": "3f1bb3192caaaa1ab7ae7474de50e2e3625fe2757aed4be4f4e9c3fc85ac0b9a",
+  "expected_lp_account": "0:34ce53b5b5605164d04ea2f9295e234e1f141aa77743ddeee0b89b7075b8b204"
+}
