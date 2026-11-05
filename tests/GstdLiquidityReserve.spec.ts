@@ -23,10 +23,10 @@ describe('GstdLiquidityReserve — sandbox boundary tests, not a complete DEX fo
   ].sort());
  });
 
- async function setup(gas='3'){
+ async function setup(gas='3',network=-239n){
   const chain=await Blockchain.create();chain.now=1800000000;
   const owner=await chain.treasury('reserve-policy-owner'),attacker=await chain.treasury('not-reserve-owner');
-  const reserve=chain.openContract(await GstdLiquidityReserve.fromInit(owner.address,oracleKey,gstdCode,lpCode,accountCode,toNano('.5'),toNano('1'),toNano('2'),1n,10000000n,3600n));
+  const reserve=chain.openContract(await GstdLiquidityReserve.fromInit(owner.address,network,oracleKey,gstdCode,lpCode,accountCode,toNano('.5'),toNano('1'),toNano('2'),1n,10000000n,3600n));
   await reserve.send(owner.getSender(),{value:toNano('.2')},{$$type:'Deploy',queryId:0n});
   await reserve.send(owner.getSender(),{value:toNano(gas)},null);
   const f={chain,owner,attacker,reserve},state=await reserve.getStatus();
@@ -34,14 +34,24 @@ describe('GstdLiquidityReserve — sandbox boundary tests, not a complete DEX fo
   await notify(f,state.gstdWallet,owner.address,123n,toNano('10'));
   return f;
  }
- function execute(address:Address,sequence=0n,value=amount,min=minimumLp,deadline=1800000060,signingKey=oracle){
-  const hash=beginCell().storeUint(0x47524c51,32).storeAddress(address).storeUint(sequence,64).storeCoins(value).storeCoins(min).storeUint(deadline,32).endCell().hash();
+ function execute(address:Address,sequence=0n,value=amount,min=minimumLp,deadline=1800000060,signingKey=oracle,network=-239n){
+  const hash=beginCell().storeUint(0x47524c51,32).storeInt(network,32).storeAddress(address).storeUint(sequence,64).storeCoins(value).storeCoins(min).storeUint(deadline,32).endCell().hash();
   return{$$type:'ExecuteReserveLp' as const,sequence,amount:value,minimumLp:min,deadline:BigInt(deadline),signature:sign(hash,signingKey.secretKey)};
  }
  async function open(f:Awaited<ReturnType<typeof setup>>){await f.reserve.send(f.owner.getSender(),{value:toNano('.1')},{$$type:'PauseReserveLp',paused:false});}
  async function notify(f:Awaited<ReturnType<typeof setup>>,from:Address,origin:Address,queryId:bigint,value:bigint){
   return f.chain.sendMessage(internal({from,to:f.reserve.address,value:toNano('.1'),body:beginCell().store(storeReserveJettonReceived({$$type:'ReserveJettonReceived',queryId,amount:value,from:origin,payload:beginCell().endCell().beginParse()})).endCell()}));
  }
+ it('separates testnet addresses and rejects the wrong network domain before accepting an external quote',async()=>{
+  const main=await setup(),test=await setup('3',-3n);
+  expect(main.reserve.address.equals(test.reserve.address)).toBe(false);
+  expect((await test.reserve.getStatus()).networkId).toBe(-3n);
+  await open(test);
+  await expect(test.reserve.sendExternal(execute(test.reserve.address))).rejects.toThrow();
+  expect((await test.reserve.getStatus()).sequence).toBe(0n);
+  await test.reserve.sendExternal(execute(test.reserve.address,0n,amount,minimumLp,1800000060,oracle,-3n));
+  expect((await test.reserve.getStatus()).sequence).toBe(1n);
+ });
  it('pins the canonical token/pool wallet derivations to independent public getter fixtures',async()=>{
   expect(gstdCode.hash().toString('hex')).toBe(canonical.code_hash);
   expect(lpCode.hash().toString('hex')).toBe(pool.lp_wallet_code_hash);

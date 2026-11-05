@@ -26,7 +26,7 @@ integration('GSTD -> real STON.fi pool code -> LP receipt / refund in isolated m
    await chain.setShardAccount(Address.parse(a.address),createShardAccount({address:Address.parse(a.address),code,data,balance:BigInt(a.balance)}));
   }
   const owner=await chain.treasury('isolated-liquidity-owner');
-  const reserve=chain.openContract(await GstdLiquidityReserve.fromInit(owner.address,BigInt('0x'+key.publicKey.toString('hex')),gstdCode,lpCode,accountCode,toNano('.5'),toNano('1'),toNano('2'),1n,10000000n,3600n));
+  const reserve=chain.openContract(await GstdLiquidityReserve.fromInit(owner.address,-239n,BigInt('0x'+key.publicKey.toString('hex')),gstdCode,lpCode,accountCode,toNano('.5'),toNano('1'),toNano('2'),1n,10000000n,3600n));
   await reserve.send(owner.getSender(),{value:toNano('.2')},{$$type:'Deploy',queryId:0n});
   await reserve.send(owner.getSender(),{value:toNano('3')},null);
   await reserve.send(owner.getSender(),{value:toNano('.1')},{$$type:'PauseReserveLp',paused:false});
@@ -42,7 +42,7 @@ integration('GSTD -> real STON.fi pool code -> LP receipt / refund in isolated m
   return{chain,reserve,state,owner};
  }
  function quote(address:Address,min:bigint,deadline:number){
-  const hash=beginCell().storeUint(0x47524c51,32).storeAddress(address).storeUint(0,64).storeCoins(toNano('1')).storeCoins(min).storeUint(deadline,32).endCell().hash();
+  const hash=beginCell().storeUint(0x47524c51,32).storeInt(-239,32).storeAddress(address).storeUint(0,64).storeCoins(toNano('1')).storeCoins(min).storeUint(deadline,32).endCell().hash();
   return{$$type:'ExecuteReserveLp' as const,sequence:0n,amount:toNano('1'),minimumLp:min,deadline:BigInt(deadline),signature:sign(hash,key.secretKey)};
  }
  async function tokenBalance(chain:Blockchain,address:Address){
@@ -73,7 +73,7 @@ integration('GSTD -> real STON.fi pool code -> LP receipt / refund in isolated m
   expect(lpData.stack.readAddress().equals(f.reserve.address)).toBe(true);expect(lpData.stack.readAddress().toRawString()).toBe(poolFixture.pool);
   const left=lpData.stack.readBigNumber(),right=lpData.stack.readBigNumber();expect(left+right).toBe(toNano('1'));
   f.chain.now!+=901;
-  const deadline=f.chain.now!+60,hash=beginCell().storeUint(0x47524c52,32).storeAddress(f.reserve.address).storeUint(0,64).storeUint(deadline,32).endCell().hash();
+  const deadline=f.chain.now!+60,hash=beginCell().storeUint(0x47524c52,32).storeInt(-239,32).storeAddress(f.reserve.address).storeUint(0,64).storeUint(deadline,32).endCell().hash();
   const result=await f.reserve.sendExternal({$$type:'RecoverReserveLp',sequence:0n,deadline:BigInt(deadline),signature:sign(hash,key.secretKey)});
   const after=await f.reserve.getStatus();if(after.pending)console.log(JSON.stringify({first:trace(first),recovery:trace(result)}));
   expect(after.pending).toBe(false);expect(after.totalRefunded).toBe(toNano('1'));expect(after.totalLpReceived).toBe(0n);

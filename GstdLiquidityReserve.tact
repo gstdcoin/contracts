@@ -27,6 +27,7 @@ message(0xd53276db) ReserveExcess { queryId: Int as uint64; }
 contract GstdLiquidityReserve with Deployable {
     owner: Address;
     oracleKey: Int as uint256;
+    networkId: Int as int32;
     gstdWalletCode: Cell;
     lpWalletCode: Cell;
     lpAccountCode: Cell;
@@ -51,10 +52,12 @@ contract GstdLiquidityReserve with Deployable {
     totalLpReceived: Int as coins;
     totalRefunded: Int as coins;
 
-    init(owner: Address, oracleKey: Int, gstdWalletCode: Cell, lpWalletCode: Cell,
+    init(owner: Address, networkId: Int, oracleKey: Int, gstdWalletCode: Cell, lpWalletCode: Cell,
          lpAccountCode: Cell, minBatch: Int, maxBatch: Int, dailyLimit: Int,
          minimumLpNumerator: Int, minimumLpDenominator: Int, cooldown: Int) {
         require(owner != newAddress(0,0), "Zero owner");
+        require(networkId == -239 || networkId == -3, "Explicit TON network required");
+        self.networkId=networkId;
         require(oracleKey > 0, "Zero oracle key");
         require(gstdWalletCode.hash() == 0xa46ef8746f4ea669c2ce9455be129b693cd1c638cb021faaac58c7df01e0a163, "Canonical GSTD wallet only");
         require(lpWalletCode.hash() == 0xbf13041750f2beeb688859c75689e2c18b9c90bd78e97b197aad7ad6bc520c84, "Pinned pool LP wallet only");
@@ -103,7 +106,7 @@ contract GstdLiquidityReserve with Deployable {
         if(self.day != today) { spent=0; }
         require(spent+msg.amount <= self.dailyLimit, "Daily cap");
         require(myBalance() >= ton("2"), "Fund TON gas separately");
-        let hash: Int = beginCell().storeUint(0x47524c51,32).storeAddress(myAddress())
+        let hash: Int = beginCell().storeUint(0x47524c51,32).storeInt(self.networkId,32).storeAddress(myAddress())
             .storeUint(msg.sequence,64).storeCoins(msg.amount).storeCoins(msg.minimumLp).storeUint(msg.deadline,32).endCell().hash();
         require(checkSignature(hash,msg.signature,self.oracleKey), "Invalid bounded oracle quote");
         // No TON wallet key is used. Invalid/replayed quotes are rejected before acceptance.
@@ -129,7 +132,7 @@ contract GstdLiquidityReserve with Deployable {
         require(now() >= self.lastExecution+900, "Wait for chain reconciliation");
         require(self.lastRecovery == 0 || now() >= self.lastRecovery+86400, "Recovery cooldown");
         require(myBalance() >= ton("1.2"), "Fund recovery gas separately");
-        let hash: Int = beginCell().storeUint(0x47524c52,32).storeAddress(myAddress())
+        let hash: Int = beginCell().storeUint(0x47524c52,32).storeInt(self.networkId,32).storeAddress(myAddress())
             .storeUint(msg.sequence,64).storeUint(msg.deadline,32).endCell().hash();
         require(checkSignature(hash,msg.signature,self.oracleKey), "Invalid bounded recovery quote");
         acceptMessage();
@@ -191,13 +194,14 @@ contract GstdLiquidityReserve with Deployable {
         if(query+1 == self.sequence) { self.proveReturnedBalance(); }
     }
     get fun status(): ReserveLpStatus {
-        return ReserveLpStatus {paused:self.paused,pending:self.pending,sequence:self.sequence,
+        return ReserveLpStatus {networkId:self.networkId,paused:self.paused,pending:self.pending,sequence:self.sequence,
             pendingAmount:self.pendingAmount,pendingMinimumLp:self.pendingMinimumLp,daySpent:self.daySpent,accountedGstd:self.accountedGstd,
             totalSubmitted:self.totalSubmitted,totalLpReceived:self.totalLpReceived,totalRefunded:self.totalRefunded,
             gstdWallet:self.gstdWallet(),lpWallet:self.lpWallet(),lpAccount:self.lpAccount()};
     }
 }
 struct ReserveLpStatus {
+    networkId: Int;
     paused: Bool; pending: Bool; sequence: Int; pendingAmount: Int; pendingMinimumLp: Int; daySpent: Int;
     totalSubmitted: Int; totalLpReceived: Int; totalRefunded: Int; accountedGstd: Int;
     gstdWallet: Address; lpWallet: Address; lpAccount: Address;
