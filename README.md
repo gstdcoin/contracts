@@ -1,8 +1,14 @@
 # GSTD TON contracts
 
+**Русский:** исходники контрактов и тесты. Не отправляйте средства по адресу лишь потому, что опубликован код. [Карта проекта и инструкции](https://github.com/gstdcoin/ai/blob/main/docs/INDEX.md).
+
 TON smart-contract sources, deployment records and sandbox tests for the GSTD compute project. These contracts have not received an independent security audit. Source availability does not mean a contract is deployed, connected to platform payments or safe to fund.
 
 [Start here / Начните здесь](https://github.com/gstdcoin/ai/blob/main/docs/START_HERE.md) · [Mainnet escrow beta workflow](https://github.com/gstdcoin/ai/blob/main/docs/MAINNET_ESCROW.md)
+
+## Liquidity reserve candidate
+
+[GSTD / XAUt0: статус и объяснение на русском](docs/LIQUIDITY_RESERVE_RU.md) · [Technical controls and reproducible tests](docs/LIQUIDITY_RESERVE.md). The paused candidate has isolated real-DEX-code LP mint/refund proofs. It is not deployed; reserve funding, economic execution controls and the LP custody decision remain activation gates.
 
 ## Current per-job escrow
 
