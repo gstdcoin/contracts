@@ -2,9 +2,11 @@
 
 ## Current check on 2026-11-18
 
-The escrow v2 verification CI found new advisories in the test/build tool dependency graph. The high-severity Picomatch advisory has no published patched version at this check. The historical zero-vulnerability audit below describes the earlier lockfile check date.
+The escrow v2 verification CI found new advisories in the test/build tool dependency graph. The high-severity Picomatch advisory has no published upstream fix at this check. The dependency graph now resolves Picomatch to the checked MIT-licensed local fork in `vendor/picomatch`. Vulnerable glob and minimatch ranges resolve to 14.0.6 and 11.0.1 respectively.
 
-Build and Sandbox regression tests now run as a CI job alongside the mandatory dependency audit. An audit failure keeps the workflow unsuccessful while allowing the build/test evidence to complete. Both jobs require review before release.
+`npm run check:matcher` verifies the lockfile and actual consumer resolution and runs the security/compatibility checks before build and test. It covers the original repeated wildcard, raw outer grouping, case-folding, escaped/quoted inputs, and the parser entry points. The local fork explicitly rejects unsupported repeated glob bodies. Its README records provenance and compatibility limits. The registry audit reported zero vulnerabilities on the clean installation.
+
+Build and Sandbox regression tests run as a CI job alongside the mandatory dependency audit. Both jobs must pass for a successful workflow.
 
 See [Picomatch advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf), [Minimatch advisory](https://github.com/advisories/GHSA-g3hv-75wg-m249), and [Glob cancellation advisory](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4).
 
