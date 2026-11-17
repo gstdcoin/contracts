@@ -64,3 +64,25 @@ it('keeps the original full-refund path for a partially funded expired task',asy
  await x.shares[0].send(x.payer.getSender(),{value:toNano('.08')},{$$type:'RefundExpiredShare',amount:toNano('30'),queryId:7n});
  expect(await x.balance(x.payer.address)).toBe(toNano('110'));
 });
+
+it('delivers 85/10/5 to independent beneficiaries and records strictly local emulator fees', async () => {
+ const x=await setup();
+ const addresses=[x.payer.address,x.worker.address,x.protocol.address,x.reserve.address];
+ expect(new Set(addresses.map(address=>address.toRawString())).size).toBe(4);
+ await x.fundAll();
+ const acceptance=await x.task.send(x.payer.getSender(),{value:toNano('.3')},{$$type:'AcceptFundedTask'});
+ const fees=(tx:{totalFees:{coins:bigint}}[])=>tx.reduce((total,item)=>total+item.totalFees.coins,0n).toString();
+ const claims=[];
+ for(let i=0;i<3;i++){
+  const {recipient,amount}=x.specs[i];
+  const result=await x.shares[i].send(recipient.getSender(),{value:toNano('.08')},{$$type:'WithdrawAcceptedShare',amount,queryId:30n+BigInt(i)});
+  expect(await x.balance(recipient.address)).toBe(amount);
+  expect(await x.shares[i].getBeneficiaryRemaining()).toBe(0n);
+  claims.push(fees(result.transactions));
+ }
+ const y=await setup();await y.fund(0,toNano('30'));y.chain.now=1800000101;
+ const expiry=await y.task.send(y.payer.getSender(),{value:toNano('.3')},{$$type:'RefundExpiredTask'});
+ const refund=await y.shares[0].send(y.payer.getSender(),{value:toNano('.08')},{$$type:'RefundExpiredShare',amount:toNano('30'),queryId:48n});
+ expect(await y.balance(y.payer.address)).toBe(toNano('110'));
+ console.log(JSON.stringify({sandboxTotalFeesNanoTON:{accept:fees(acceptance.transactions),claims,expire:fees(expiry.transactions),refund:fees(refund.transactions)}}));
+});
