@@ -1,5 +1,13 @@
 # Dependency verification — 2026-10-26
 
+## Current check on 2026-11-18
+
+The escrow v2 verification CI found new advisories in the test/build tool dependency graph. The high-severity Picomatch advisory has no published patched version at this check. The historical zero-vulnerability audit below describes the earlier lockfile check date.
+
+Build and Sandbox regression tests now run as a CI job alongside the mandatory dependency audit. An audit failure keeps the workflow unsuccessful while allowing the build/test evidence to complete. Both jobs require review before release.
+
+See [Picomatch advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf), [Minimatch advisory](https://github.com/advisories/GHSA-g3hv-75wg-m249), and [Glob cancellation advisory](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4).
+
 The dependency update removes the vulnerable protobuf and Zod versions using overrides. No Tact source, ABI message, deployed contract, wallet owner or production key was changed.
 
 A clean isolated copy of commit dbeea76a4c3d2b304f939542bff1bc5411de8b89 was installed and built with the original lockfile. It was then rebuilt with the patched lockfile: all 18 BOC artifacts had identical SHA-256 hashes. All 21 real sandbox tests passed. The patched dependency audit reported zero known vulnerabilities at that time. CI now enforces the dependency check and sandbox tests.

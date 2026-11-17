@@ -26,9 +26,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Audit runtime and compiler dependencies
-        run: npm audit --audit-level=high
-
       - name: Build contracts (Tact → FunC → BoC)
         run: npm run build
 
@@ -40,3 +37,15 @@ jobs:
           echo "Checking build output..."
           ls -la build/ 2>/dev/null || echo "No build/ dir — check tact.config.json output path"
           find . -name "*.boc" 2>/dev/null | head -10
+
+  audit:
+    name: Audit runtime and compiler dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm audit --audit-level=high
