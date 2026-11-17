@@ -45,5 +45,6 @@
         "minimatch@>=7.0.0 <11.0.1": "11.0.1",
         "zod": "^4.6.7",
         "protobufjs": "^7.6.6"
-    }
+    },
+    "packageManager": "npm@11.13.0"
 }

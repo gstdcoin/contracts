@@ -1,3 +1,5 @@
+Toolchain: Node.js 22 and npm 11.13.0 (`npm install --global npm@11.13.0`). CI pins the same npm version as the lockfile generator.
+
 # Dependency verification — 2026-10-26
 
 ## Current check on 2026-11-18
