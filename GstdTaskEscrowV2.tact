@@ -1,0 +1,200 @@
+// Version 2 caps beneficiary withdrawals and reserves an explicit payer surplus.
+// Payer acceptance is explicit; it is not a proof of model execution.
+import "@stdlib/deploy";
+message(0x47544501) AcceptFundedTask {}
+message(0x47544502) WithdrawAcceptedShare { amount: Int as coins; queryId: Int as uint64; }
+message(0x47544503) RefundExpiredShare { amount: Int as coins; queryId: Int as uint64; }
+message(0x47544504) SyncTask {}
+message(0x47544505) RefundExpiredTask {}
+message(0x47544506) CommitTask { phase: Int as uint8; }
+message(0x47544507) FundingReady { role: Int as uint8; }
+message(0x47544508) ReportFunding {}
+message(0x47544509) ReclaimEscrowTon {}
+message(0x4754450a) ReturnAcceptedSurplus { amount: Int as coins; queryId: Int as uint64; }
+message(0x0f8a7ea5) ShareTokenTransfer {
+ queryId: Int as uint64; amount: Int as coins; recipient: Address; response: Address;
+ customPayload: Cell?; forwardAmount: Int as coins; forwardPayload: Slice as remaining;
+}
+message(0x7362d09c) EscrowGstdReceived {
+ queryId: Int as uint64; amount: Int as coins; from: Address; forwardPayload: Slice as remaining;
+}
+message(0xd53276db) EscrowExcess { queryId: Int as uint64; }
+
+contract GstdEscrowShareV2 {
+ coordinator: Address;
+ payer: Address;
+ beneficiary: Address;
+ role: Int as uint8;
+ requiredAmount: Int as coins;
+ walletCode: Cell;master: Address;network: Int as int32;
+ funded: Int as coins;
+ beneficiaryDebited: Int as coins;
+ surplusDebited: Int as coins;
+ transferPending: Int as uint8;
+ transferQuery: Int as uint64;
+ transferAmount: Int as coins;
+ phase: Int as uint8;
+ init(coordinator: Address,payer: Address,beneficiary: Address,role: Int,requiredAmount: Int,walletCode: Cell,master: Address,network: Int) {
+  // Instances are derived by the coordinator; no caller-selected withdrawal destination.
+  require(role>=0 && role<=2 && requiredAmount>0,"Invalid share");
+  require(walletCode.hash()==0xa46ef8746f4ea669c2ce9455be129b693cd1c638cb021faaac58c7df01e0a163,"Noncanonical wallet code");
+  require(getConfigParam(19)!!.beginParse().loadInt(32)==network && (network==-239 || network==-3),"Wrong network");
+  if(network==-239){require(master==address("0:efe9c616f673622a337737097c0fa0018d4887d6061f59519985f3fbfbdb59b2"),"Canonical GSTD only");}
+  self.master=master;self.network=network;
+  self.coordinator=coordinator;self.payer=payer;self.beneficiary=beneficiary;
+  self.role=role;self.requiredAmount=requiredAmount;self.walletCode=walletCode;self.funded=0;self.phase=0;
+  self.beneficiaryDebited=0;self.surplusDebited=0;self.transferPending=0;self.transferQuery=0;self.transferAmount=0;
+ }
+ fun tokenWallet(): Address {
+  return contractAddress(StateInit {code:self.walletCode,data:beginCell().storeCoins(0).storeAddress(myAddress())
+   .storeAddress(self.master)
+   .storeBit(false).endCell()});
+ }
+ fun report() {
+  require(self.funded>=self.requiredAmount,"Share not funded");
+  send(SendParameters {to:self.coordinator,value:ton("0.005"),mode:SendPayGasSeparately,bounce:true,
+   body:FundingReady {role:self.role}.toCell()});
+ }
+ receive(msg: EscrowGstdReceived) {
+  require(sender()==self.tokenWallet(),"Canonical wallet only");
+  self.funded+=msg.amount;
+  if(self.funded>=self.requiredAmount){self.report();}
+ }
+ receive(msg: ReportFunding) {
+  require(context().value>=ton("0.03"),"Attach report gas");self.report();
+ }
+ receive(msg: CommitTask) {
+  require(sender()==self.coordinator,"Coordinator only");
+  require(msg.phase<=2,"Invalid phase");
+  if(self.phase==0){self.phase=msg.phase;}else{require(self.phase==msg.phase,"Decision is final");}
+ }
+ fun transferTo(recipient: Address,amount: Int,queryId: Int) {
+  require(amount>0,"Zero amount");require(context().value>=ton("0.08"),"Attach 0.08 TON");
+  let prior: Int = myBalance()-context().value; if(prior<ton("0.02")){prior=ton("0.02");}
+  nativeReserve(prior,ReserveAtMost);
+  send(SendParameters {to:self.tokenWallet(),value:ton("0.05"),mode:SendPayGasSeparately,bounce:true,
+   body:beginCell().storeUint(0x0f8a7ea5,32).storeUint(queryId,64).storeCoins(amount)
+    .storeAddress(recipient).storeAddress(myAddress()).storeBit(false).storeCoins(1).storeBit(false).endCell()});
+  send(SendParameters {to:sender(),value:0,mode:SendRemainingBalance+SendIgnoreErrors,bounce:false});
+ }
+ receive(msg: WithdrawAcceptedShare) {
+  require(sender()==self.beneficiary,"Beneficiary only");require(self.phase==1,"Task not accepted");
+  require(self.transferPending==0 && msg.amount>0 && self.beneficiaryDebited+msg.amount<=self.requiredAmount,"Beneficiary entitlement exceeded or transfer pending");
+  self.transferPending=1;self.transferQuery+=1;self.transferAmount=msg.amount;
+  self.beneficiaryDebited+=msg.amount;
+  self.transferTo(self.beneficiary,msg.amount,self.transferQuery);
+ }
+ receive(msg: ReturnAcceptedSurplus) {
+  require(sender()==self.payer,"Payer only");require(self.phase==1,"Task not accepted");
+  require(self.transferPending==0 && msg.amount>0 && self.requiredAmount+self.surplusDebited+msg.amount<=self.funded,"Surplus exceeded or transfer pending");
+  self.transferPending=2;self.transferQuery+=1;self.transferAmount=msg.amount;
+  self.surplusDebited+=msg.amount;
+  self.transferTo(self.payer,msg.amount,self.transferQuery);
+ }
+ receive(msg: RefundExpiredShare) {
+  require(sender()==self.payer,"Payer only");require(self.phase==2,"Refund not authorized");
+  self.transferTo(self.payer,msg.amount,msg.queryId);
+ }
+ receive(msg: ReclaimEscrowTon) {
+  require(sender()==self.payer,"Payer only");require(context().value>=ton("0.03"),"Attach reclaim gas");
+  nativeReserve(ton("0.02"),ReserveAtMost);
+  send(SendParameters {to:self.payer,value:0,mode:SendRemainingBalance+SendIgnoreErrors,bounce:false});
+ }
+ receive(msg: EscrowExcess) {
+  // Excess is sent by the destination Jetton wallet after crediting.
+  if(self.transferPending!=0 && msg.queryId==self.transferQuery){
+   let recipient: Address=self.beneficiary;
+   if(self.transferPending==2){recipient=self.payer;}
+   let wallet: Address=contractAddress(StateInit {code:self.walletCode,data:beginCell().storeCoins(0).storeAddress(recipient).storeAddress(self.master).storeBit(false).endCell()});
+   require(sender()==wallet,"Canonical destination only");
+   self.transferPending=0;self.transferAmount=0;
+  }
+ }
+ receive() {}
+ bounced(msg: bounced<ShareTokenTransfer>) {
+  require(sender()==self.tokenWallet(),"Canonical source only");
+  if(self.transferPending!=0 && msg.queryId==self.transferQuery && msg.amount==self.transferAmount){
+   if(self.transferPending==1){self.beneficiaryDebited-=self.transferAmount;}else{self.surplusDebited-=self.transferAmount;}
+   self.transferPending=0;self.transferAmount=0;
+  }
+ }
+ get fun beneficiary_remaining(): Int {return self.requiredAmount-self.beneficiaryDebited;}
+ get fun payer_surplus(): Int {return max(0,self.funded-self.requiredAmount-self.surplusDebited);}
+ get fun transfer_pending(): Int {return self.transferPending;}
+ get fun state(): Int {return self.phase;}
+ get fun credited_funding(): Int {return self.funded;}
+ get fun jetton_wallet_address(): Address {return self.tokenWallet();}
+}
+
+contract GstdTaskEscrowV2 with Deployable {
+ payer: Address;worker: Address;protocol: Address;reserve: Address;
+ taskId: Int as uint256;budget: Int as coins;deadline: Int as uint64;walletCode: Cell;master: Address;network: Int as int32;
+ phase: Int as uint8;readyMask: Int as uint8;
+ init(payer: Address,worker: Address,protocol: Address,reserve: Address,taskId: Int,budget: Int,deadline: Int,walletCode: Cell,master: Address,network: Int) {
+  require(budget>=100 && deadline>0,"Invalid task budget");
+  require(walletCode.hash()==0xa46ef8746f4ea669c2ce9455be129b693cd1c638cb021faaac58c7df01e0a163,"Noncanonical wallet code");
+  require(getConfigParam(19)!!.beginParse().loadInt(32)==network && (network==-239 || network==-3),"Wrong network");
+  if(network==-239){require(master==address("0:efe9c616f673622a337737097c0fa0018d4887d6061f59519985f3fbfbdb59b2"),"Canonical GSTD only");}
+  self.master=master;self.network=network;
+  self.payer=payer;self.worker=worker;self.protocol=protocol;self.reserve=reserve;
+  self.taskId=taskId;self.budget=budget;self.deadline=deadline;self.walletCode=walletCode;self.phase=0;self.readyMask=0;
+  self.validateAddress(payer);self.validateAddress(worker);self.validateAddress(protocol);self.validateAddress(reserve);
+ }
+ fun validateAddress(a: Address) {
+  require(a!=newAddress(0,0),"Zero recipient");
+  let s: Slice = beginCell().storeAddress(a).endCell().beginParse();s.skipBits(3);require(s.loadInt(8)==0,"Basechain only");
+ }
+ fun amount(role: Int): Int {
+  if(role==0){return self.budget*85/100;}
+  if(role==1){return self.budget*10/100;}
+  return self.budget-self.budget*85/100-self.budget*10/100;
+ }
+ fun recipient(role: Int): Address {
+  if(role==0){return self.worker;}if(role==1){return self.protocol;}return self.reserve;
+ }
+ fun shareInit(role: Int): StateInit {
+  require(role>=0 && role<=2,"Invalid role");
+  return initOf GstdEscrowShareV2(myAddress(),self.payer,self.recipient(role),role,self.amount(role),self.walletCode,self.master,self.network);
+ }
+ fun synchronize() {
+  require(context().value>=ton("0.30"),"Attach 0.30 TON sync budget");
+  let prior: Int=myBalance()-context().value;if(prior<ton("0.02")){prior=ton("0.02");}
+  nativeReserve(prior,ReserveAtMost);
+  let role: Int=0;
+  while(role<3){
+   let init: StateInit=self.shareInit(role);
+   send(SendParameters {to:contractAddress(init),value:ton("0.08"),mode:SendPayGasSeparately,bounce:true,
+    code:init.code,data:init.data,body:CommitTask {phase:self.phase}.toCell()});
+   role+=1;
+  }
+  send(SendParameters {to:sender(),value:0,mode:SendRemainingBalance+SendIgnoreErrors,bounce:false});
+ }
+ receive(msg: SyncTask) {self.synchronize();}
+ receive(msg: FundingReady) {
+  require(msg.role<=2,"Invalid role");require(sender()==contractAddress(self.shareInit(msg.role)),"Canonical share only");
+  self.readyMask=self.readyMask | (1 << msg.role);
+ }
+ receive(msg: AcceptFundedTask) {
+  require(sender()==self.payer,"Payer only");require(self.phase!=2,"Already refunded");
+  if(self.phase==0){
+   require(now()<=self.deadline,"Task expired");require(self.readyMask==7,"Task not fully funded");self.phase=1;
+  }
+  self.synchronize();
+ }
+ receive(msg: RefundExpiredTask) {
+  require(self.phase!=1,"Accepted work cannot be refunded");require(now()>self.deadline,"Task still active");
+  self.phase=2;self.synchronize();
+ }
+ receive(msg: ReclaimEscrowTon) {
+  require(sender()==self.payer,"Payer only");require(context().value>=ton("0.03"),"Attach reclaim gas");
+  nativeReserve(ton("0.02"),ReserveAtMost);
+  send(SendParameters {to:self.payer,value:0,mode:SendRemainingBalance+SendIgnoreErrors,bounce:false});
+ }
+ receive(msg: EscrowExcess) {}
+ receive() {}
+ bounced(raw: Slice) {}
+ get fun state(): Int {return self.phase;}
+ get fun funding_mask(): Int {return self.readyMask;}
+ get fun share_address(role: Int): Address {return contractAddress(self.shareInit(role));}
+ get fun share_amount(role: Int): Int {require(role>=0 && role<=2,"Invalid role");return self.amount(role);}
+}

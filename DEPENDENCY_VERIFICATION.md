@@ -1,4 +1,16 @@
+Toolchain: Node.js 22 and npm 11.13.0 (`npm install --global npm@11.13.0`). CI pins the same npm version as the lockfile generator.
+
 # Dependency verification — 2026-10-26
+
+## Current check on 2026-11-18
+
+The escrow v2 verification CI found new advisories in the test/build tool dependency graph. The high-severity Picomatch advisory has no published upstream fix at this check. The dependency graph now resolves Picomatch to the checked MIT-licensed local fork in `vendor/picomatch`. Vulnerable glob and minimatch ranges resolve to 14.0.6 and 11.0.1 respectively.
+
+`npm run check:matcher` verifies the lockfile and actual consumer resolution and runs the security/compatibility checks before build and test. It covers the original repeated wildcard, raw outer grouping, case-folding, escaped/quoted inputs, and the parser entry points. The local fork explicitly rejects unsupported repeated glob bodies. Its README records provenance and compatibility limits. The registry audit reported zero vulnerabilities on the clean installation.
+
+Build and Sandbox regression tests run as a CI job alongside the mandatory dependency audit. Both jobs must pass for a successful workflow. The public DEX snapshot is captured before the complete suite. On 2026-11-18, all 75 contract tests passed without skips, including three tests of the exact unsigned v2 Testnet payloads and a complete cycle with four independent signed Wallet V5R1 accounts; five matcher regression groups also passed. The public Testnet v2 cycle separately confirmed 85/10/5 token credits, a partial expiry refund and actual trace fees. See [Testnet procedure and evidence](docs/ESCROW_V2_TESTNET.md). This does not establish mainnet gas costs, an independent-custodian audit or production readiness of the full platform.
+
+See [Picomatch advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf), [Minimatch advisory](https://github.com/advisories/GHSA-g3hv-75wg-m249), and [Glob cancellation advisory](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4).
 
 The dependency update removes the vulnerable protobuf and Zod versions using overrides. No Tact source, ABI message, deployed contract, wallet owner or production key was changed.
 

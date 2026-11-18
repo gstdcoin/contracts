@@ -1,0 +1,263 @@
+{
+  "schema": 1,
+  "network": -3,
+  "chain": "TON Testnet",
+  "verifiedAt": "2026-11-18T06:33:47.478Z",
+  "realMoneySpent": false,
+  "realPublicChainTransactions": true,
+  "keysInReport": false,
+  "independentSigningWallets": 4,
+  "independentCustodians": false,
+  "wallets": {
+    "payer": "kQB55vgcQgjREn8yiOPPwBwI-GtCuxkNZ5y-4uZUaFajGNCf",
+    "worker": "kQCHrp-x2s4RK3Y453LwYHiA6cZ4M-RUHPEBqT_jAOZtdqZI",
+    "protocol": "kQBbMXb-mIChPrNWBumTG0rDYXtgIShX0Ue-5El5wENKHHF6",
+    "reserve": "kQAYmZTK-OwLZbh4vrefHdBVQDhd-f3vsAQ4w66HSjhtp_s8"
+  },
+  "token": {
+    "symbol": "tGSTD",
+    "valueless": true,
+    "master": "kQDYHsXE05wQyGbK6CzQYwKDjqUJHb6Y_q43-LUmMEq3QYJA"
+  },
+  "success": {
+    "task": "kQDntW8EHsF8FHFBxSp3oI5b1M77L7g5VtdrEA8Zne5ZOFRZ",
+    "state": 1,
+    "fundingMask": 7,
+    "budgetNanoToken": "1000000000",
+    "payouts": {
+      "worker": "850000000",
+      "protocol": "100000000",
+      "reserve": "50000000"
+    },
+    "claims": [
+      {
+        "share": "kQDKe08qnUW_gPWztdIHUiJyQpIOPaJyj-UmYFejflJXoC4I",
+        "remaining": "0",
+        "pending": "0"
+      },
+      {
+        "share": "kQBZ8WKAE7wgP0e5Pi6u0pfwQ_jRcgrR9iGKBhbdciG34w8S",
+        "remaining": "0",
+        "pending": "0"
+      },
+      {
+        "share": "kQAUnBSLQldJj9BE1bMj9E_2YxgLAa82IkS2kr-GQBvYeIT-",
+        "remaining": "0",
+        "pending": "0"
+      }
+    ]
+  },
+  "refund": {
+    "task": "kQDenRgReodH--A3Baf_iH-k1Im1rHl2NaUjRm14JauGoVaB",
+    "state": 2,
+    "fundedBeforeExpiry": "425000000",
+    "payerBalanceAfterFunding": "0",
+    "payerBalanceAfterRefund": "425000000",
+    "amountRefunded": "425000000"
+  },
+  "finalBalancesNanoToken": {
+    "payer": "425000000",
+    "worker": "850000000",
+    "protocol": "100000000",
+    "reserve": "50000000"
+  },
+  "accountTransactions": 80,
+  "walletRequests": 13,
+  "sumTransactionTotalFeesNanoTON": "71969367",
+  "computeGasUnits": 616263,
+  "expectedOneNanoNotificationSkips": 4,
+  "feeScope": "Complete escrow traces, including mint; excludes wallet activation and native gas top-ups. Testnet configuration only.",
+  "transactions": [
+    {
+      "step": "escrow-v2-live-refund-20261118.json-refund-claim",
+      "signer": "payer",
+      "hash": "5318a28af74bcf78313d6692af4f65696691899ccbe083545488eda3252aeda5",
+      "feesNanoTON": "3558104",
+      "accountTransactions": 7,
+      "expectedAncillarySkips": 1
+    },
+    {
+      "step": "escrow-v2-live-refund-20261118.json-refund-expire",
+      "signer": "payer",
+      "hash": "394a75a3c6253d32088a9ee64d591a5c8532920c0687636824e078a75b9d676d",
+      "feesNanoTON": "6300803",
+      "accountTransactions": 6,
+      "expectedAncillarySkips": 0
+    },
+    {
+      "step": "escrow-v2-live-refund-20261118.json-refund-fund",
+      "signer": "payer",
+      "hash": "604c0c7bfc2838e41e5b883f7459add03e244b98e0db453ed3ed0d84608c4384",
+      "feesNanoTON": "2743637",
+      "accountTransactions": 5,
+      "expectedAncillarySkips": 0
+    },
+    {
+      "step": "escrow-v2-live-refund-20261118.json-refund-sync",
+      "signer": "payer",
+      "hash": "7d901853da0eeb67f18ac733b4e4fa6dfdd13ac14230f5ffe198d47cbe47171c",
+      "feesNanoTON": "12570104",
+      "accountTransactions": 6,
+      "expectedAncillarySkips": 0
+    },
+    {
+      "step": "escrow-v2-live-success-20261118.json-mint",
+      "signer": "payer",
+      "hash": "4c9e57e493cf9b3bca6e5f9ab4d105a8178cd00fa9200d1e9267814f2b2fc3ca",
+      "feesNanoTON": "4293028",
+      "accountTransactions": 5,
+      "expectedAncillarySkips": 0
+    },
+    {
+      "step": "escrow-v2-live-success-20261118.json-success-accept",
+      "signer": "payer",
+      "hash": "e3ae5ad260159f32d2a6aa149fc5596fe309f4d11b656d6e9e7364cee82dbf36",
+      "feesNanoTON": "6310704",
+      "accountTransactions": 6,
+      "expectedAncillarySkips": 0
+    },
+    {
+      "step": "escrow-v2-live-success-20261118.json-success-claim-0",
+      "signer": "worker",
+      "hash": "ebbbf5cb2732c349014c9c18d52b9cef7931e064906ecc0b772d29120d4a21e2",
+      "feesNanoTON": "4196631",
+      "accountTransactions": 7,
+      "expectedAncillarySkips": 1
+    },
+    {
+      "step": "escrow-v2-live-success-20261118.json-success-claim-1",
+      "signer": "protocol",
+      "hash": "eeff6b051ea44868614f03758934ce6944a07684fb2d549a12ce85996145e7b6",
+      "feesNanoTON": "4196635",
+      "accountTransactions": 7,
+      "expectedAncillarySkips": 1
+    },
+    {
+      "step": "escrow-v2-live-success-20261118.json-success-claim-2",
+      "signer": "reserve",
+      "hash": "705cb8e5ffec9453fcbc9fcb1375400170a12af943799f734e2b759536076f5f",
+      "feesNanoTON": "4196638",
+      "accountTransactions": 7,
+      "expectedAncillarySkips": 1
+    },
+    {
+      "step": "escrow-v2-live-success-20261118.json-success-fund-0",
+      "signer": "payer",
+      "hash": "cce61b65822946cce3d8d5451b53c2d38606ded4fe37622ad1ebf5a3a0589cde",
+      "feesNanoTON": "3670237",
+      "accountTransactions": 6,
+      "expectedAncillarySkips": 0
+    },
+    {
+      "step": "escrow-v2-live-success-20261118.json-success-fund-1",
+      "signer": "payer",
+      "hash": "7c70211fa357fb12c916dc2b284e77bb307bff9e1f6cf8f69a982fd409797c70",
+      "feesNanoTON": "3676103",
+      "accountTransactions": 6,
+      "expectedAncillarySkips": 0
+    },
+    {
+      "step": "escrow-v2-live-success-20261118.json-success-fund-2",
+      "signer": "payer",
+      "hash": "31ec4f3afa6bb8e3b0011c10f9b231a1df175a5342a1fbc0f501b3a6e7975d83",
+      "feesNanoTON": "3686643",
+      "accountTransactions": 6,
+      "expectedAncillarySkips": 0
+    },
+    {
+      "step": "escrow-v2-live-success-20261118.json-success-sync",
+      "signer": "payer",
+      "hash": "15fd21ead23ead69ff34ac88ffb13d5f6345db2a90dfc2b9c4d940321ddc6c19",
+      "feesNanoTON": "12570100",
+      "accountTransactions": 6,
+      "expectedAncillarySkips": 0
+    }
+  ],
+  "onChainCodeHashesVerified": [
+    {
+      "kind": "master",
+      "address": "kQDYHsXE05wQyGbK6CzQYwKDjqUJHb6Y_q43-LUmMEq3QYJA",
+      "hash": "10281da9d3f619d3d63c9d37cdca11bd66435edbac5742e108e59ac5b4fd4981"
+    },
+    {
+      "kind": "task",
+      "address": "kQDntW8EHsF8FHFBxSp3oI5b1M77L7g5VtdrEA8Zne5ZOFRZ",
+      "hash": "7bf4e113d6dd889fa99331a32d2437a6014f3a341058f2e1de8664ee68e44cbf"
+    },
+    {
+      "kind": "task",
+      "address": "kQDenRgReodH--A3Baf_iH-k1Im1rHl2NaUjRm14JauGoVaB",
+      "hash": "7bf4e113d6dd889fa99331a32d2437a6014f3a341058f2e1de8664ee68e44cbf"
+    },
+    {
+      "kind": "share",
+      "address": "kQDKe08qnUW_gPWztdIHUiJyQpIOPaJyj-UmYFejflJXoC4I",
+      "hash": "782976bc6e6b0e330a2ce80e151c03161811184862a9acae11ba0bb086983180"
+    },
+    {
+      "kind": "share",
+      "address": "kQBZ8WKAE7wgP0e5Pi6u0pfwQ_jRcgrR9iGKBhbdciG34w8S",
+      "hash": "782976bc6e6b0e330a2ce80e151c03161811184862a9acae11ba0bb086983180"
+    },
+    {
+      "kind": "share",
+      "address": "kQAUnBSLQldJj9BE1bMj9E_2YxgLAa82IkS2kr-GQBvYeIT-",
+      "hash": "782976bc6e6b0e330a2ce80e151c03161811184862a9acae11ba0bb086983180"
+    },
+    {
+      "kind": "share",
+      "address": "kQDsv-n5MeYLzOFUaMyRoKamPObC-XwADYbeMfMPvaPo76og",
+      "hash": "782976bc6e6b0e330a2ce80e151c03161811184862a9acae11ba0bb086983180"
+    },
+    {
+      "kind": "share",
+      "address": "kQBDiwuSdpzfNe83NLvqpfe3rBoz0fjiROKUzedhKZOQsPhP",
+      "hash": "782976bc6e6b0e330a2ce80e151c03161811184862a9acae11ba0bb086983180"
+    },
+    {
+      "kind": "share",
+      "address": "kQAjmvVnelqoKmNbcc9bW3GDicND7xWAofFy8k7WrwVmCHpb",
+      "hash": "782976bc6e6b0e330a2ce80e151c03161811184862a9acae11ba0bb086983180"
+    },
+    {
+      "kind": "canonical-token-wallet",
+      "address": "kQBY0JivaEfgQKdbeWmzVl3IOdeTe9vep5kSQHn4ZuCoh1u7",
+      "hash": "a46ef8746f4ea669c2ce9455be129b693cd1c638cb021faaac58c7df01e0a163"
+    },
+    {
+      "kind": "canonical-token-wallet",
+      "address": "kQCrypIOmw6A3JmvOAj05xpeIsyd2r9kfIYcCwPWFPtpRt95",
+      "hash": "a46ef8746f4ea669c2ce9455be129b693cd1c638cb021faaac58c7df01e0a163"
+    },
+    {
+      "kind": "canonical-token-wallet",
+      "address": "kQDaTQf3PZa29mogg1hO3NxZjtpNM4yPZ-8RPglN99MXSfXD",
+      "hash": "a46ef8746f4ea669c2ce9455be129b693cd1c638cb021faaac58c7df01e0a163"
+    },
+    {
+      "kind": "canonical-token-wallet",
+      "address": "kQBlq0WM5iuSShDR3bgoJu-jLfnQHiJFe7P1yoVELKs5MV8Z",
+      "hash": "a46ef8746f4ea669c2ce9455be129b693cd1c638cb021faaac58c7df01e0a163"
+    },
+    {
+      "kind": "v5r1-wallet",
+      "address": "kQB55vgcQgjREn8yiOPPwBwI-GtCuxkNZ5y-4uZUaFajGNCf",
+      "hash": "20834b7b72b112147e1b2fb457b84e74d1a30f04f737d4f62a668e9552d2b72f"
+    },
+    {
+      "kind": "v5r1-wallet",
+      "address": "kQCHrp-x2s4RK3Y453LwYHiA6cZ4M-RUHPEBqT_jAOZtdqZI",
+      "hash": "20834b7b72b112147e1b2fb457b84e74d1a30f04f737d4f62a668e9552d2b72f"
+    },
+    {
+      "kind": "v5r1-wallet",
+      "address": "kQBbMXb-mIChPrNWBumTG0rDYXtgIShX0Ue-5El5wENKHHF6",
+      "hash": "20834b7b72b112147e1b2fb457b84e74d1a30f04f737d4f62a668e9552d2b72f"
+    },
+    {
+      "kind": "v5r1-wallet",
+      "address": "kQAYmZTK-OwLZbh4vrefHdBVQDhd-f3vsAQ4w66HSjhtp_s8",
+      "hash": "20834b7b72b112147e1b2fb457b84e74d1a30f04f737d4f62a668e9552d2b72f"
+    }
+  ]
+}

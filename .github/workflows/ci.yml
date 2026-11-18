@@ -20,17 +20,22 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
+
+      - name: Use the lockfile npm version
+        run: npm install --global npm@11.13.0
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Audit runtime and compiler dependencies
-        run: npm audit --audit-level=high
-
       - name: Build contracts (Tact → FunC → BoC)
         run: npm run build
+
+      - name: Capture public STON.fi state for isolated DEX tests
+        run: |
+          node scripts/capture-liquidity-fork.mjs "$RUNNER_TEMP/gstd-ston-fork.json"
+          echo "GSTD_STON_FORK_FIXTURE=$RUNNER_TEMP/gstd-ston-fork.json" >> "$GITHUB_ENV"
 
       - name: Run contract sandbox tests against freshly generated bindings
         run: npm test
@@ -40,3 +45,17 @@ jobs:
           echo "Checking build output..."
           ls -la build/ 2>/dev/null || echo "No build/ dir — check tact.config.json output path"
           find . -name "*.boc" 2>/dev/null | head -10
+
+  audit:
+    name: Audit runtime and compiler dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Use the lockfile npm version
+        run: npm install --global npm@11.13.0
+      - run: npm ci
+      - run: npm audit --audit-level=high
