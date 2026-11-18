@@ -33,7 +33,9 @@ npm run test:liquidity
 
 This builds only the new project. The two integration tests explicitly skip when no public chain snapshot is supplied; that skip is not a successful full-cycle result.
 
-For the opt-in integration (read-only public API requests; no wallet keys):
+For the full integration (read-only public API requests; no wallet keys), `npm run test:liquidity:fork` captures an isolated temporary snapshot and runs all ten liquidity checks. CI also captures a public snapshot before the full Jest suite, so the DEX checks run rather than skip. An unavailable or changed snapshot fails verification instead of substituting fixtures.
+
+For an explicitly retained local snapshot:
 
 ```sh
 node scripts/capture-liquidity-fork.mjs /tmp/gstd-ston-fork.json
@@ -56,3 +58,5 @@ The snapshot is captured sequentially with bounded requests and unchanged code/d
 Use: Reserve accumulated; Waiting for an economical batch; Awaiting chain confirmation; LP received; Refund pending; Refunded; Paused.
 
 Show the pool link, reserve amount, separate TON budget, minimum expected LP, actual received LP and transaction links. Explain the benefit as deeper liquidity and possible pool fees; never display guaranteed node income from reserve liquidity. New operators should need neither shell commands nor manual contract payload construction.
+
+On 2026-11-18 a fresh snapshot of four accounts and five TVM libraries used 13 bounded read-only requests. Both real-code DEX lifecycle tests passed, including LP issuance and full GSTD refund after a minimum-LP failure. All ten liquidity tests passed; no chain transaction was sent.

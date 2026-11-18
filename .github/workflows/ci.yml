@@ -32,6 +32,11 @@ jobs:
       - name: Build contracts (Tact → FunC → BoC)
         run: npm run build
 
+      - name: Capture public STON.fi state for isolated DEX tests
+        run: |
+          node scripts/capture-liquidity-fork.mjs "$RUNNER_TEMP/gstd-ston-fork.json"
+          echo "GSTD_STON_FORK_FIXTURE=$RUNNER_TEMP/gstd-ston-fork.json" >> "$GITHUB_ENV"
+
       - name: Run contract sandbox tests against freshly generated bindings
         run: npm test
 
