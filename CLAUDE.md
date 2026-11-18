@@ -36,7 +36,7 @@ After deploy: update `deployment-mainnet.json` and the address constants in
 `gstdcoin/ai`'s `frontend/src/lib/config.ts`.
 
 ## CI
-`ci.yml` installs the lockfile, audits all dependencies at high/critical severity, runs the Jest sandbox suite (including canonical-token fork regressions), then compiles all Tact projects. Use `npm test` locally.
+`ci.yml` installs the lockfile, audits all dependencies at high/critical severity, compiles all Tact projects, captures a bounded public STON.fi snapshot, then runs the complete Jest Sandbox suite with DEX integration enabled. `npm run test:liquidity:fork` runs the full liquidity path locally without keys or chain broadcasts. `npm run escrow:testnet:preflight` verifies the Testnet network with read-only calls; see docs/ESCROW_V2_TESTNET.md for unsigned v2 requests.
 
 The Zod and protobuf overrides were verified in an isolated copy: the compiler built 18 BOC artifacts with exactly the same SHA-256 hashes before and after the dependency update. Do not regenerate or overwrite an operator's uncommitted build files to repeat that comparison; use a clean copy.
 
