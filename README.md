@@ -1,5 +1,11 @@
 # GSTD TON contracts
 
+[![CI](https://github.com/gstdcoin/contracts/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/gstdcoin/contracts/actions/workflows/ci.yml)
+
+[Project map / Карта проекта](https://github.com/gstdcoin/ai/blob/main/docs/INDEX.md) · [Release evidence](https://github.com/gstdcoin/ai/blob/main/docs/READINESS.md) · [Repository maintenance](https://github.com/gstdcoin/ai/blob/main/docs/REPOSITORY_MAINTENANCE.md)
+
+Default branch: `master`.
+
 **Русский:** исходники контрактов и тесты. Не отправляйте средства по адресу лишь потому, что опубликован код. [Карта проекта и инструкции](https://github.com/gstdcoin/ai/blob/main/docs/INDEX.md).
 
 TON smart-contract sources, deployment records and sandbox tests for the GSTD compute project. These contracts have not received an independent security audit. Source availability does not mean a contract is deployed, connected to platform payments or safe to fund.
@@ -10,9 +16,15 @@ TON smart-contract sources, deployment records and sandbox tests for the GSTD co
 
 [GSTD / XAUt0: статус и объяснение на русском](docs/LIQUIDITY_RESERVE_RU.md) · [Technical controls and reproducible tests](docs/LIQUIDITY_RESERVE.md). The paused candidate has isolated real-DEX-code LP mint/refund proofs. Received LP are permanently locked under the owner-selected policy; there is no administrator withdrawal or upgrade path. It is not deployed; reserve funding, economic execution controls and real-network verification remain activation gates.
 
-## Current per-job escrow
+## Platform escrow beta (v1)
 
 `GstdTaskEscrow.tact` and its three `GstdEscrowShare` instances bind network, canonical master, recipients, deadline and 85/10/5 amounts. The published platform beta lets the payer sign funding/acceptance and each beneficiary sign their claim. This is separate from platform-ledger withdrawals; the existing balances are not migrated. A real-node paid cycle, claims and expiry/refund were checked in testnet. Read-only mainnet token verification passed; a real mainnet payment/payout cycle is still unverified. Publishing these sources does not deploy or fund a mainnet contract. See [escrow design, tests and limits](docs/TASK_ESCROW_PROTOTYPE.md).
+
+## Escrow v2 Testnet evidence
+
+`GstdTaskEscrowV2.tact` and `TestGstdMasterV2.tact` have a separate public Testnet result. Four Wallet V5 accounts with independent keys under one local operator completed 0.85/0.10/0.05 tGSTD payouts and a 0.425 tGSTD expiry refund. The evidence contains 13 signed requests, 80 account transactions, actual trace fees and matching on-chain code hashes for all 17 involved accounts. This does not switch the platform's mainnet contract version or establish independent-custodian/mainnet settlement.
+
+[Reproduction procedure and limitations](docs/ESCROW_V2_TESTNET.md) · [Public receipts](docs/evidence/escrow-v2-testnet-20261118.json) · [CI evidence](https://github.com/gstdcoin/contracts/actions/runs/44252837614). All 75 contract tests passed in that run, including signed Wallet V5 and real-snapshot DEX cases; five matcher regression groups also passed.
 
 ## Platform ledger and legacy sources
 
@@ -28,6 +40,7 @@ Public addresses and historical deployment records are in [deployment-mainnet.js
 | Component | Current boundary |
 |---|---|
 | GstdTaskEscrow / GstdEscrowShare | Published platform open beta; testnet paid cycle passed; mainnet RPC verified, real mainnet payout still unverified |
+| GstdTaskEscrowV2 / GstdEscrowShareV2 | Public Testnet payout/refund evidence; not a mainnet activation |
 | Canonical GSTD token | Existing frozen Jetton; this repo does not replace its master |
 | EcosystemTreasury | Matched the reviewed build in the October 2026 check; owner-controlled; not automatic task settlement |
 | SettlementMaster / deployed V2 and Escrow | Current compiled source did not match the checked deployed code; no verified production task-settlement integration |
@@ -40,12 +53,18 @@ Nothing here establishes automatic swaps from arbitrary currencies, automatic bu
 
 ## Local development and read-only verification
 
+Use Node.js 22 and npm 11.13.0:
+
 ```bash
 npm ci
 npm run build
 npm test
+npm run test:liquidity:fork
+npm run escrow:testnet:preflight
 npm run verify:token
 ```
+
+Without a public DEX fixture, the ordinary local suite skips the two fork tests. `test:liquidity:fork` captures an isolated public snapshot and runs the liquidity cases; CI captures the fixture before the complete suite, so its 75-test run has no skips. Preflight and token verification are read-only; neither signs nor sends a transaction.
 
 `build` compiles Tact sources locally; it does not deploy them. `verify:token` uses public network reads to check the canonical master, fixed issuance, empty admin, wallet-code hash and address derivation. `npm run verify` performs additional read-only account/code checks, not a full behavioral audit. Do not treat a successful getter or build as proof of payouts.
 
