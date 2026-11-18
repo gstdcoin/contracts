@@ -14,6 +14,17 @@ The preflight defaults to the fixed `testnet.tonapi.io` endpoint. It reads param
 
 Prepare four distinct wallet accounts in your wallet app on Testnet. Get free test coins using the official [TON Testgiver procedure](https://docs.ton.org/onboarding/wallet-apps/get-coins). Use public addresses marked as Testnet. Never paste a mnemonic into this tool, the compute worker or chat. Wallets still need to approve their own messages.
 
+For a Windows operator without existing Testnet wallets, `escrow:testnet:wallets` creates four independent 24-word TON mnemonics and Wallet V5R1 accounts with wallet network ID `-3`. It requires PowerShell 7 (`pwsh.exe`) on PATH. Give it new paths outside every Git checkout, with existing parent directories:
+
+```powershell
+npm run escrow:testnet:wallets -- --vault C:/GSTD-local/testnet-private --public C:/GSTD-local/public-testnet-wallets.json
+npm run escrow:testnet:wallets -- verify --vault C:/GSTD-local/testnet-private --public C:/GSTD-local/public-testnet-wallets.json
+```
+
+The tool restricts the vault directory to the current Windows user and SYSTEM before generating secrets. It saves the mnemonic bundle with Windows DPAPI `CurrentUser` encryption, never as plaintext, verifies the directory ACL, and derives all four addresses again from the encrypted bundle before reporting success. It preserves existing files, rejects vault paths inside Git repositories and mainnet configuration, and emits only public addresses. The public JSON is compatible with `escrow:testnet:prepare`. These commands make no network requests, signatures or broadcasts and do not initialize the accounts on chain.
+
+Keep this encrypted vault and its Windows profile available: DPAPI recovery depends on the same Windows user/profile and machine. It is a local Testnet operator tool, not a portable wallet backup or a compute-node key store. Never use these test accounts for assets with real value. Do not upload the encrypted bundle to GitHub, CI or a worker. The ordinary preparation commands above continue to handle public data only.
+
 Create a local JSON object with public `payer`, `worker`, `protocol` and `reserve` addresses. Then:
 
 ```sh

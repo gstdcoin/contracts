@@ -54,6 +54,7 @@ it('rejects mainnet configuration, duplicate actors, mainnet-formatted addresses
     expect(()=>assertTestnetChoice('mainnet')).toThrow('testnet_only');
     await expect(createTestnetPlan({...x.addresses,worker:x.addresses.payer},1800000000)).rejects.toThrow('independent_wallets_required');
     await expect(createTestnetPlan({...x.addresses,worker:Address.parse(x.addresses.worker).toString({testOnly:false})},1800000000)).rejects.toThrow('testnet_basechain_address_required');
+    await expect(createTestnetPlan({...x.addresses,worker:'a'.repeat(64)},1800000000)).rejects.toThrow('invalid_public_testnet_address');
     for(const amount of ['1.5','99','100000000001']) await expect(createTestnetPlan(x.addresses,1800000000,amount)).rejects.toThrow();
     await expect(transactionForStep(x.plan,'success-accept',1800003601)).rejects.toThrow('task_expired');
     await expect(transactionForStep(x.plan,'refund-expire',1800000120)).rejects.toThrow('refund_deadline_not_reached');

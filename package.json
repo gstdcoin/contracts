@@ -17,6 +17,7 @@
         "build:liquidity": "tact --config tact.config.json --project GstdLiquidityReserve",
         "test:liquidity": "npm run build:liquidity && jest tests/GstdLiquidityReserve.spec.ts tests/GstdLiquidityFork.spec.ts --runInBand",
         "test:liquidity:fork": "node scripts/test-liquidity-fork.mjs",
+        "escrow:testnet:wallets": "node scripts/create-testnet-wallets.cjs",
         "escrow:testnet:preflight": "ts-node --project tsconfig.deploy.json scripts/escrow-v2-testnet.ts preflight",
         "escrow:testnet:prepare": "ts-node --project tsconfig.deploy.json scripts/escrow-v2-testnet.ts prepare",
         "escrow:testnet:transaction": "ts-node --project tsconfig.deploy.json scripts/escrow-v2-testnet.ts transaction"

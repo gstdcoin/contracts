@@ -36,7 +36,7 @@ function actors(value:Wallets):Record<Role,Address> {
     const result = {} as Record<Role,Address>;
     for (const role of roles) {
         if (typeof value?.[role] !== 'string' || value[role].length > 100) throw Error('four_public_testnet_addresses_required');
-        const parsed = Address.parseFriendly(value[role]);
+        const parsed = (()=>{try{return Address.parseFriendly(value[role]);}catch{throw Error('invalid_public_testnet_address');}})();
         if (!parsed.isTestOnly || parsed.address.workChain !== 0 || parsed.address.hash.equals(Buffer.alloc(32))) throw Error('testnet_basechain_address_required');
         result[role] = parsed.address;
     }
@@ -163,7 +163,8 @@ export async function testnetPreflight() {
         signing_required:true,broadcasts:false,real_transactions:false};
 }
 function publicJson(path:string) {
-    const raw=readFileSync(path);if(raw.length>1_000_000) throw Error('public_plan_file_too_large');return JSON.parse(raw.toString('utf8'));
+    const raw=readFileSync(path);if(raw.length>1_000_000) throw Error('public_plan_file_too_large');
+    try{return JSON.parse(raw.toString('utf8'));}catch{throw Error('invalid_public_plan_json');}
 }
 async function main() {
     assertTestnetChoice();
