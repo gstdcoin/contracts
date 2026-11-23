@@ -1,5 +1,7 @@
 # GSTD TON contracts
 
+> Domain migration proposal: website `gstdtoken.xyz`, platform `app.gstdtoken.xyz`. DNS/HTTPS and Telegram cutover must be verified before announcing the new host as live. See [migration status](https://github.com/gstdcoin/ai/blob/main/docs/DOMAIN_MIGRATION.md).
+
 [![CI](https://github.com/gstdcoin/contracts/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/gstdcoin/contracts/actions/workflows/ci.yml)
 
 [Project map / Карта проекта](https://github.com/gstdcoin/ai/blob/main/docs/INDEX.md) · [Release evidence](https://github.com/gstdcoin/ai/blob/main/docs/READINESS.md) · [Repository maintenance](https://github.com/gstdcoin/ai/blob/main/docs/REPOSITORY_MAINTENANCE.md)
@@ -75,7 +77,7 @@ Without a public DEX fixture, the ordinary local suite skips the two fork tests.
 - [Historical README and obsolete architecture](docs/ARCHIVED_CONTRACTS_README.md) — retained for provenance, not operating instructions.
 - [User-signed payment design and activation gates](docs/USER_SIGNED_PAYMENTS.md) — current custody boundary and the platform-ledger boundary and opt-in contract settlement design.
 - [P2P settlement proposal](docs/P2P_SETTLEMENT_RFC.md) — a proposal, not an enabled payment mechanism.
-- [Platform and API](https://github.com/gstdcoin/ai) · [Compute node](https://github.com/gstdcoin/gstdbot) · [Public website](https://gstdtoken.com).
+- [Platform and API](https://github.com/gstdcoin/ai) · [Compute node](https://github.com/gstdcoin/gstdbot) · [Public website](https://gstdtoken.xyz).
 
 ## License
 

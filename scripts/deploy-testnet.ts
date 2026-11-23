@@ -62,7 +62,7 @@ function buildMetadataCell(): Cell {
             description: 'AI Compute Network Governance & Utility Token',
             symbol:      'GSTD',
             decimals:    '9',
-            image:       'https://app.gstdtoken.com/gstd-logo.png',
+            image:       'https://app.gstdtoken.xyz/gstd-logo.png',
         }))
         .endCell();
     return meta;

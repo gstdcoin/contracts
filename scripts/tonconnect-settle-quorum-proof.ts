@@ -15,7 +15,7 @@
  *   npx ts-node --project tsconfig.deploy.json scripts/tonconnect-settle-quorum-proof.ts
  *
  * Optional:
- *   PLATFORM_API      — defaults to https://app.gstdtoken.com/api/v1
+ *   PLATFORM_API      — defaults to https://app.gstdtoken.xyz/api/v1
  *   SETTLE_VALUE_TON  — TON attached per settlement call (default 0.2)
  */
 
@@ -26,7 +26,7 @@ import { connectWallet, sendForApproval, sleep } from './lib/tonconnect-helper';
 
 const SETTLE_ADDR  = process.env.SETTLEMENT_ADDRESS || '';
 const API_SECRET   = process.env.TREASURY_SECRET || '';
-const PLATFORM_API = (process.env.PLATFORM_API || 'https://app.gstdtoken.com/api/v1').replace(/\/$/, '');
+const PLATFORM_API = (process.env.PLATFORM_API || 'https://app.gstdtoken.xyz/api/v1').replace(/\/$/, '');
 const SETTLE_VALUE = process.env.SETTLE_VALUE_TON || '0.2';
 
 interface AttestationEntry { pubkeyHex: string; signatureHex: string }
